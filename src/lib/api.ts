@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { Register } from "../types/type";
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -41,3 +42,27 @@ instance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const authApi = {
+  register: async ({
+    email,
+    password,
+    fullName,
+    phone,
+    roleType,
+  }: Register) => {
+    try {
+      const newUser = {
+        email,
+        password,
+        fullName,
+        roleType,
+      };
+
+      const { data } = await axios.post("/register", newUser);
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  },
+};
