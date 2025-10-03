@@ -6,7 +6,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Fontisto from "@expo/vector-icons/Fontisto";
 
 import { COLORS } from "../styles/theme/color";
-const roles = [
+export const roles = [
   {
     id: "pet_owner",
     label: "Evcil Hayvan Sahibi",
@@ -66,7 +66,7 @@ export default function RoleOption({
             <TouchableOpacity
               key={role.id}
               onPress={() => onSelectRole(role.id)}
-              className={`flex-row items-center p-4 mb-2 border rounded-lg ${
+              className={`flex-row items-center p-5 mb-3 border rounded-lg ${
                 selectedRole === role.id
                   ? "border-primary bg-primary/10"
                   : "border-border"

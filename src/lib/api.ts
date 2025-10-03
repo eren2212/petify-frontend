@@ -56,13 +56,16 @@ export const authApi = {
         email,
         password,
         fullName,
+        phone,
         roleType,
       };
 
-      const { data } = await axios.post("/register", newUser);
-      console.log(data);
-    } catch (error) {
-      console.log(error);
+      // { newUser } yerine direkt newUser gönder!
+      const { data } = await instance.post("/auth/register", newUser);
+      return data;
+    } catch (error: any) {
+      console.log("Register Error:", error.response?.data || error.message);
+      throw error;
     }
   },
 };
