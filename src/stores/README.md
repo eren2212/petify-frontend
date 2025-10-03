@@ -148,3 +148,4 @@ const handleLogout = () => {
 3. **Actions'ları ayırın**: State ve actions'ları ayrı hook'larda kullanın
 4. **Type safety**: TypeScript tiplerini kullanın
 5. **Error handling**: Async işlemlerde hata yönetimini unutmayın
+
