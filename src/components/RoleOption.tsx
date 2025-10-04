@@ -18,7 +18,7 @@ export const roles = [
     icon: <AntDesign name="shop" size={24} color={COLORS.text} />,
   },
   {
-    id: "veterinarian",
+    id: "pet_clinic",
     label: "Veteriner Kliniği",
     icon: <FontAwesome5 name="clinic-medical" size={22} color={COLORS.text} />,
   },

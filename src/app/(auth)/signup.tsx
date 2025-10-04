@@ -224,6 +224,12 @@ export default function SignUp() {
                       value: 6,
                       message: "Şifre en az 6 karakter olmalıdır",
                     },
+                    pattern: {
+                      value:
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
+                      message:
+                        "Şifre en az bir büyük harf, bir küçük harf, bir sayı ve bir özel karakter içermelidir",
+                    },
                   }}
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
