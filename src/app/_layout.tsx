@@ -3,6 +3,7 @@ import "../../global.css";
 import { AuthProvider } from "../providers/AuthProvider";
 import { ThemeProvider, DefaultTheme } from "@react-navigation/native";
 import { COLORS } from "../styles/theme/color";
+import Toast from "react-native-toast-message";
 
 const MyTheme = {
   ...DefaultTheme,
@@ -17,6 +18,7 @@ export default function RootLayout() {
     <ThemeProvider value={MyTheme}>
       <AuthProvider>
         <Slot />
+        <Toast />
       </AuthProvider>
     </ThemeProvider>
   );
