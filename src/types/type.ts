@@ -5,3 +5,9 @@ export interface Register {
   phone?: string;
   roleType: string;
 }
+
+export interface Login {
+  email: string;
+  password: string;
+  roleType: string;
+}

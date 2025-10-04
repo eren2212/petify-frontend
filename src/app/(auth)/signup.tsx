@@ -22,9 +22,25 @@ export default function SignUp() {
     control,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedRole, setSelectedRole] = useState("pet_owner");
+
+  // Şifre değerini takip et
+  const password = watch("password", "");
+
+  // Şifre validasyon kuralları
+  const passwordRules = {
+    minLength: password.length >= 8,
+    hasLowerCase: /[a-z]/.test(password),
+    hasUpperCase: /[A-Z]/.test(password),
+    hasNumber: /\d/.test(password),
+    hasSpecialChar: /[@$!%*?&]/.test(password),
+  };
+
+  // Tüm kurallar sağlanıyor mu?
+  const isPasswordValid = Object.values(passwordRules).every(Boolean);
 
   const onSubmit = async (data: any) => {
     try {
@@ -220,16 +236,9 @@ export default function SignUp() {
                   name="password"
                   rules={{
                     required: "Şifre alanı zorunludur",
-                    minLength: {
-                      value: 6,
-                      message: "Şifre en az 6 karakter olmalıdır",
-                    },
-                    pattern: {
-                      value:
-                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
-                      message:
-                        "Şifre en az bir büyük harf, bir küçük harf, bir sayı ve bir özel karakter içermelidir",
-                    },
+                    validate: () =>
+                      isPasswordValid ||
+                      "Lütfen tüm şifre gereksinimlerini karşılayın",
                   }}
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
@@ -240,15 +249,97 @@ export default function SignUp() {
                       placeholderTextColor="#999"
                       onBlur={onBlur}
                       onChangeText={onChange}
-                      value={value}
+                      value={value || ""}
+                      defaultValue=""
                       secureTextEntry
+                      autoComplete="new-password"
+                      textContentType="newPassword"
+                      autoCorrect={false}
+                      autoCapitalize="none"
+                      keyboardType="default"
                     />
                   )}
                 />
-                {errors.password && (
-                  <Text className="text-red-500 text-sm mt-1">
-                    {errors.password.message as string}
-                  </Text>
+
+                {/* Şifre Gereksinimleri */}
+                {password.length > 0 && (
+                  <View className="mt-3 bg-card/50 rounded-lg p-3 border border-border/50">
+                    <Text className="text-sm text-text/70 mb-2 font-medium">
+                      Şifre Gereksinimleri:
+                    </Text>
+
+                    <View className="space-y-1">
+                      {/* Minimum Uzunluk */}
+                      <View className="flex-row items-center mb-2">
+                        <Text
+                          className={`text-base mr-2 ${passwordRules.minLength ? "text-green-500" : "text-red-500"}`}
+                        >
+                          {passwordRules.minLength ? "✓" : "✗"}
+                        </Text>
+                        <Text
+                          className={`text-sm ${passwordRules.minLength ? "text-green-500" : "text-text/60"}`}
+                        >
+                          En az 8 karakter
+                        </Text>
+                      </View>
+
+                      {/* Küçük Harf */}
+                      <View className="flex-row items-center mb-2">
+                        <Text
+                          className={`text-base mr-2 ${passwordRules.hasLowerCase ? "text-green-500" : "text-red-500"}`}
+                        >
+                          {passwordRules.hasLowerCase ? "✓" : "✗"}
+                        </Text>
+                        <Text
+                          className={`text-sm ${passwordRules.hasLowerCase ? "text-green-500" : "text-text/60"}`}
+                        >
+                          En az bir küçük harf (a-z)
+                        </Text>
+                      </View>
+
+                      {/* Büyük Harf */}
+                      <View className="flex-row items-center mb-2">
+                        <Text
+                          className={`text-base mr-2 ${passwordRules.hasUpperCase ? "text-green-500" : "text-red-500"}`}
+                        >
+                          {passwordRules.hasUpperCase ? "✓" : "✗"}
+                        </Text>
+                        <Text
+                          className={`text-sm ${passwordRules.hasUpperCase ? "text-green-500" : "text-text/60"}`}
+                        >
+                          En az bir büyük harf (A-Z)
+                        </Text>
+                      </View>
+
+                      {/* Sayı */}
+                      <View className="flex-row items-center mb-2">
+                        <Text
+                          className={`text-base mr-2 ${passwordRules.hasNumber ? "text-green-500" : "text-red-500"}`}
+                        >
+                          {passwordRules.hasNumber ? "✓" : "✗"}
+                        </Text>
+                        <Text
+                          className={`text-sm ${passwordRules.hasNumber ? "text-green-500" : "text-text/60"}`}
+                        >
+                          En az bir sayı (0-9)
+                        </Text>
+                      </View>
+
+                      {/* Özel Karakter */}
+                      <View className="flex-row items-center">
+                        <Text
+                          className={`text-base mr-2 ${passwordRules.hasSpecialChar ? "text-green-500" : "text-red-500"}`}
+                        >
+                          {passwordRules.hasSpecialChar ? "✓" : "✗"}
+                        </Text>
+                        <Text
+                          className={`text-sm ${passwordRules.hasSpecialChar ? "text-green-500" : "text-text/60"}`}
+                        >
+                          En az bir özel karakter (@$!%*?&)
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
                 )}
               </View>
 
