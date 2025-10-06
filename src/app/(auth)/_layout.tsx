@@ -1,7 +1,9 @@
 import { Redirect, Stack } from "expo-router";
-import { useAuth } from "../../providers/AuthProvider";
+import { useAuthStore } from "../../stores";
+
 export default function AuthLayout() {
-  const { isAuthenticated } = useAuth();
+  // Zustand store'dan auth durumunu al
+  const { isAuthenticated } = useAuthStore();
 
   if (isAuthenticated) {
     return <Redirect href="/(protected)/" />;

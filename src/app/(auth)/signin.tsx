@@ -17,9 +17,8 @@ import { useState } from "react";
 import { roles } from "../../components/RoleOption";
 
 import RoleOption from "../../components/RoleOption";
-import { authApi } from "../../lib/api";
 import Toast from "react-native-toast-message";
-import { useAuth } from "../../providers/AuthProvider";
+import { useAuthStore } from "../../stores";
 
 export default function SignIn() {
   const {
@@ -30,7 +29,9 @@ export default function SignIn() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedRole, setSelectedRole] = useState("pet_owner");
-  const { checkAuth } = useAuth();
+
+  // Zustand store'dan signIn fonksiyonunu al
+  const { signIn } = useAuthStore();
 
   const getRoleLabel = () => {
     return roles.find((role) => role.id === selectedRole)?.label || "";
@@ -38,26 +39,32 @@ export default function SignIn() {
 
   const onSubmit = async (data: any) => {
     try {
-      const userınformation = {
+      const loginData = {
         email: data.email,
         password: data.password,
         roleType: selectedRole,
       };
 
-      await authApi.login(userınformation);
+      // Zustand store üzerinden login yap
+      const result = await signIn(loginData);
 
-      // Auth durumunu güncelle - bu AuthProvider'ı tetikler
-      await checkAuth();
-
-      // Login başarılı - AuthProvider otomatik olarak yönlendirecek
-      Toast.show({
-        type: "success",
-        text1: "Giriş Başarılı",
-        text2: "Hoş geldiniz!",
-        bottomOffset: 40,
-      });
-
-      // Manuel yönlendirme yapmıyoruz - AuthProvider otomatik yönlendirir
+      if (result.error) {
+        // Hata varsa toast göster
+        Toast.show({
+          type: "error",
+          text1: "Başarısız Giriş",
+          text2: result.error,
+          bottomOffset: 40,
+        });
+      } else {
+        // Başarılı - AuthProvider otomatik olarak yönlendirecek
+        Toast.show({
+          type: "success",
+          text1: "Giriş Başarılı",
+          text2: "Hoş geldiniz!",
+          bottomOffset: 40,
+        });
+      }
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.error?.description ||
