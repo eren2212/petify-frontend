@@ -60,8 +60,34 @@ export const authApi = {
         roleType,
       };
 
-      // { newUser } yerine direkt newUser gönder!
       const { data } = await instance.post("/auth/register", newUser);
+
+      // ⭐ Backend'den gelen response'u AsyncStorage'a kaydet
+      if (data?.data?.session) {
+        await AsyncStorage.setItem(
+          "access_token",
+          data.data.session.access_token
+        );
+        await AsyncStorage.setItem(
+          "refresh_token",
+          data.data.session.refresh_token
+        );
+
+        // ⭐ User bilgilerini userRole ile birlikte kaydet
+        if (data.data.user) {
+          const userWithRole = {
+            ...data.data.user,
+            role_type: roleType,
+            role_status: data.data.roleStatus || "pending",
+          };
+          await AsyncStorage.setItem("user", JSON.stringify(userWithRole));
+          console.log(
+            "✅ Register: User with role saved to storage:",
+            userWithRole
+          );
+        }
+      }
+
       return data;
     } catch (error: any) {
       console.log("Register Error:", error.response?.data || error.message);
@@ -89,9 +115,18 @@ export const authApi = {
           data.data.session.refresh_token
         );
 
-        // User bilgilerini de kaydet
-        if (data.data.user) {
-          await AsyncStorage.setItem("user", JSON.stringify(data.data.user));
+        // ⭐ User bilgilerini userRole ile birlikte kaydet
+        if (data.data.user && data.data.userRole) {
+          const userWithRole = {
+            ...data.data.user,
+            role_type: data.data.userRole.role_type,
+            role_status: data.data.userRole.status,
+          };
+          await AsyncStorage.setItem("user", JSON.stringify(userWithRole));
+          console.log(
+            "✅ Login: User with role saved to storage:",
+            userWithRole
+          );
         }
       }
 
@@ -116,6 +151,17 @@ export const authApi = {
       // Backend hatası olsa bile local storage'ı temizle (client-side logout)
       await AsyncStorage.multiRemove(["access_token", "refresh_token", "user"]);
 
+      throw error;
+    }
+  },
+
+  // ⭐ YENİ: Kullanıcı bilgilerini rol ile birlikte getir
+  getMe: async () => {
+    try {
+      const { data } = await instance.get("/auth/me");
+      return data;
+    } catch (error: any) {
+      console.log("GetMe Error:", error.response?.data || error.message);
       throw error;
     }
   },

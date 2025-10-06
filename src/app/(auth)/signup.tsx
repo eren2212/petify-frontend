@@ -14,8 +14,8 @@ import { useForm, Controller } from "react-hook-form";
 import RoleOption, { roles } from "../../components/RoleOption";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Link, router } from "expo-router";
-import { authApi } from "../../lib/api";
 import Toast from "react-native-toast-message";
+import { useAuthStore } from "../../stores";
 
 export default function SignUp() {
   const {
@@ -26,6 +26,9 @@ export default function SignUp() {
   } = useForm();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedRole, setSelectedRole] = useState("pet_owner");
+
+  // Zustand store'dan signUp fonksiyonunu al
+  const { signUp } = useAuthStore();
 
   // Şifre değerini takip et
   const password = watch("password", "");
@@ -44,23 +47,35 @@ export default function SignUp() {
 
   const onSubmit = async (data: any) => {
     try {
-      const formData = {
+      const registerData = {
         email: data.email,
         password: data.password,
         fullName: data.fullName,
-        phone: data.phoneNumber, // phoneNumber -> phone
-        roleType: selectedRole, // role -> roleType
+        phone: data.phoneNumber,
+        roleType: selectedRole,
       };
 
-      await authApi.register(formData);
-      Toast.show({
-        type: "success",
-        text1: "Başarılı",
-        text2: "Lütfen mail kutunuza gelen maili onaylayın!!",
-        bottomOffset: 40,
-      });
-      // Başarılı kayıt sonrası yönlendirme yapılabilir
-      router.push("/signin");
+      // Zustand store üzerinden kayıt ol
+      const result = await signUp(registerData);
+
+      if (result.error) {
+        // Hata varsa toast göster
+        Toast.show({
+          type: "error",
+          text1: "Kayıt Başarısız",
+          text2: result.error,
+          bottomOffset: 40,
+        });
+      } else {
+        // Başarılı - kullanıcıya bilgi ver ve signin'e yönlendir
+        Toast.show({
+          type: "success",
+          text1: "Başarılı",
+          text2: "Hesabınız oluşturuldu! Giriş yapabilirsiniz.",
+          bottomOffset: 40,
+        });
+        // AuthProvider otomatik yönlendirecek
+      }
     } catch (error: any) {
       // Backend'den gelen hata mesajını al
       const errorMessage =
@@ -73,6 +88,7 @@ export default function SignUp() {
         type: "error",
         text1: "Kayıt Başarısız",
         text2: errorMessage,
+        bottomOffset: 40,
       });
     }
   };

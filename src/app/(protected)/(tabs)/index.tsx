@@ -1,19 +1,17 @@
 import { View, Text, Pressable, TouchableOpacity } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import { authApi } from "../../../lib/api";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import Toast from "react-native-toast-message";
-import { useAuth } from "../../../providers/AuthProvider";
+import { useAuthStore } from "../../../stores";
 
 export default function Home() {
-  const { checkAuth } = useAuth();
+  // Zustand store'dan signOut ve user bilgilerini al
+  const { signOut, user } = useAuthStore();
 
   const handleLogout = async () => {
     try {
-      await authApi.logout();
-
-      // Auth durumunu güncelle - bu AuthProvider'ı tetikler
-      await checkAuth();
+      // Store'daki signOut fonksiyonunu kullan
+      await signOut();
 
       Toast.show({
         type: "success",
@@ -24,9 +22,6 @@ export default function Home() {
       // AuthProvider otomatik olarak signin'e yönlendirecek
     } catch (error: any) {
       console.error("Logout error:", error);
-
-      // Hata olsa bile auth durumunu kontrol et
-      await checkAuth();
 
       Toast.show({
         type: "error",
