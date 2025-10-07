@@ -107,7 +107,6 @@ export const useAuthStore = create<AuthState>()(
             return { error: "Giriş yapılırken bir hata oluştu" };
           }
         } catch (error: any) {
-          console.error("Sign in error:", error);
           return {
             error:
               error?.response?.data?.message ||
@@ -124,29 +123,10 @@ export const useAuthStore = create<AuthState>()(
 
           // Backend'e register isteği at
           const response = await authApi.register(registerData);
+          console.log(JSON.stringify(response, null, 2));
 
           // Backend response formatı: { success, data: { user, session, roleStatus } }
-          if (response?.data?.session && response?.data?.user) {
-            // Kayıt sırasında rol bilgisini user objesine ekle
-            const userWithRole = {
-              ...response.data.user,
-              role_type: registerData.roleType,
-              role_status: response.data.roleStatus || "pending",
-            };
-
-            console.log(" Signup başarılı - User with role:", userWithRole);
-
-            // Session ve user bilgilerini store'a kaydet
-            set({
-              session: response.data.session,
-              user: userWithRole,
-              isAuthenticated: true,
-            });
-
-            return {};
-          } else {
-            return { error: "Kayıt olurken bir hata oluştu" };
-          }
+          return {};
         } catch (error: any) {
           console.error("Sign up error:", error);
           return {

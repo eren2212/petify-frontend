@@ -149,3 +149,4 @@ const handleLogout = () => {
 4. **Type safety**: TypeScript tiplerini kullanın
 5. **Error handling**: Async işlemlerde hata yönetimini unutmayın
 
+
