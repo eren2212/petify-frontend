@@ -71,7 +71,7 @@ export default function SignUp() {
         Toast.show({
           type: "success",
           text1: "Başarılı",
-          text2: "Hesabınız oluşturuldu! Giriş yapabilirsiniz.",
+          text2: "Hesabınız oluşturuldu! Mailinizi onaylayınız.",
           bottomOffset: 40,
         });
         // AuthProvider otomatik yönlendirecek
