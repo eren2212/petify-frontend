@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from "react-native";
-import { useAuthStore } from "../../../stores/authStore";
+import { useAuthStore } from "../../../../stores/authStore";
 
 export default function () {
   const { signOut } = useAuthStore();
