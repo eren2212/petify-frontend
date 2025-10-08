@@ -51,8 +51,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const roleType = user?.role_type;
 
       // Role göre başlangıç sayfası
-      const roleRedirects: Record<string, string> = {
-        pet_owner: "/(protected)/(tabs)/index",
+      const roleRedirects: Record<string, any> = {
+        pet_owner: "/(protected)/(tabs)",
         pet_shop: "/(protected)/(tabs)/products",
         pet_clinic: "/(protected)/(tabs)/doctors",
         pet_sitter: "/(protected)/(tabs)/services",
@@ -65,14 +65,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           : "/(protected)/(tabs)";
 
       console.log(`✅ Redirecting ${roleType} to ${redirectPath}...`);
-      router.replace(redirectPath);
+      router.replace(redirectPath as any);
     } else if (isAuthenticated && inTabsGroup && !currentTab) {
       // ⭐⭐ YENİ: Uygulama ilk açıldığında currentTab undefined olabilir
       const roleType = user?.role_type;
 
       if (roleType) {
-        const roleRedirects: Record<string, string> = {
-          pet_owner: "/(protected)/(tabs)/index",
+        const roleRedirects: Record<string, any> = {
+          pet_owner: "/(protected)/(tabs)",
           pet_shop: "/(protected)/(tabs)/products",
           pet_clinic: "/(protected)/(tabs)/doctors",
           pet_sitter: "/(protected)/(tabs)/services",
@@ -82,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         const redirectPath = roleRedirects[roleType];
         if (redirectPath) {
           console.log(`🚀 Initial redirect to ${redirectPath}...`);
-          router.replace(redirectPath);
+          router.replace(redirectPath as any);
         }
       }
     }

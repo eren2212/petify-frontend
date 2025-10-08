@@ -12,7 +12,7 @@ export default function Home() {
   // ⭐ Flash'ı engelle - pet_owner değilse hemen yönlendir
   useEffect(() => {
     if (roleType && roleType !== "pet_owner") {
-      const roleRedirects: Record<string, string> = {
+      const roleRedirects: Record<string, any> = {
         pet_shop: "/(protected)/(tabs)/products",
         pet_clinic: "/(protected)/(tabs)/doctors",
         pet_sitter: "/(protected)/(tabs)/services",
@@ -21,7 +21,7 @@ export default function Home() {
 
       const redirectPath = roleRedirects[roleType];
       if (redirectPath) {
-        router.replace(redirectPath);
+        router.replace(redirectPath as any);
       }
     }
   }, [roleType]);
