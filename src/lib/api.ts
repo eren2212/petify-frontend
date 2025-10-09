@@ -155,10 +155,17 @@ export const authApi = {
     }
   },
 
-  // ⭐ YENİ: Kullanıcı bilgilerini rol ile birlikte getir
+  // ⭐ Kullanıcı bilgilerini rol ve profil ile birlikte getir
   getMe: async () => {
     try {
       const { data } = await instance.get("/auth/me");
+
+      // Backend'den gelen user bilgisini AsyncStorage'a kaydet
+      if (data?.data?.user) {
+        await AsyncStorage.setItem("user", JSON.stringify(data.data.user));
+        console.log("✅ GetMe: User data updated in storage");
+      }
+
       return data;
     } catch (error: any) {
       console.log("GetMe Error:", error.response?.data || error.message);

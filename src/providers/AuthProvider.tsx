@@ -11,7 +11,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const segments = useSegments();
 
   // Zustand store'dan auth state'i al
-  const { user, isAuthenticated, isLoading, initialize } = useAuthStore();
+  const { isAuthenticated, isLoading, initialize } = useAuthStore();
 
   useEffect(() => {
     // İlk yüklemede auth durumunu kontrol et
@@ -35,58 +35,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const inAuthGroup = segments[0] === "(auth)";
     const inProtectedGroup = segments[0] === "(protected)";
-    const inTabsGroup = segments.at(1) === "(tabs)";
-    const currentTab = segments.at(2);
 
     console.log("Current segments:", segments);
     console.log("isAuthenticated:", isAuthenticated);
-    console.log("User role:", user?.role_type);
 
     if (!isAuthenticated && inProtectedGroup) {
       // Authenticated değilse ve protected sayfadaysa, login'e yönlendir
       console.log("Redirecting to signin...");
       router.replace("/(auth)/signin");
     } else if (isAuthenticated && inAuthGroup) {
-      // Authenticated ise ve auth sayfasındaysa, role göre doğru tab'a yönlendir
-      const roleType = user?.role_type;
-
-      // Role göre başlangıç sayfası
-      const roleRedirects: Record<string, any> = {
-        pet_owner: "/(protected)/(tabs)",
-        pet_shop: "/(protected)/(tabs)/products",
-        pet_clinic: "/(protected)/(tabs)/doctors",
-        pet_sitter: "/(protected)/(tabs)/services",
-        pet_hotel: "/(protected)/(tabs)/services",
-      };
-
-      const redirectPath =
-        roleType && roleRedirects[roleType]
-          ? roleRedirects[roleType]
-          : "/(protected)/(tabs)";
-
-      console.log(`✅ Redirecting ${roleType} to ${redirectPath}...`);
-      router.replace(redirectPath as any);
-    } else if (isAuthenticated && inTabsGroup && !currentTab) {
-      // ⭐⭐ YENİ: Uygulama ilk açıldığında currentTab undefined olabilir
-      const roleType = user?.role_type;
-
-      if (roleType) {
-        const roleRedirects: Record<string, any> = {
-          pet_owner: "/(protected)/(tabs)",
-          pet_shop: "/(protected)/(tabs)/products",
-          pet_clinic: "/(protected)/(tabs)/doctors",
-          pet_sitter: "/(protected)/(tabs)/services",
-          pet_hotel: "/(protected)/(tabs)/services",
-        };
-
-        const redirectPath = roleRedirects[roleType];
-        if (redirectPath) {
-          console.log(`🚀 Initial redirect to ${redirectPath}...`);
-          router.replace(redirectPath as any);
-        }
-      }
+      // Authenticated ise ve auth sayfasındaysa, ana sayfaya yönlendir
+      // Role-based routing TanStack Query ile user profile yüklendikten sonra yapılacak
+      console.log("✅ Redirecting to protected area...");
+      router.replace("/(protected)/(tabs)");
     }
-  }, [isAuthenticated, segments, isLoading, user]);
+  }, [isAuthenticated, segments, isLoading]);
 
   if (isLoading) {
     return (
