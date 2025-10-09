@@ -4,8 +4,8 @@
 // Auth hooks
 export * from "./useAuth";
 
-// User profile hooks (sonradan eklenecek)
-// export * from './useProfile';
+// User profile hooks
+export * from "./useProfile";
 
 // Products hooks (sonradan eklenecek)
 // export * from './useProducts';

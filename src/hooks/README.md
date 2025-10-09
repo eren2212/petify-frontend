@@ -65,3 +65,4 @@ export default function ProfileScreen() {
 - ✅ Server state (backend'den gelen data) = TanStack Query hooks
 - ✅ Client state (UI state, preferences) = Zustand stores
 - ✅ Query keys tutarlı olmalı: `['resource', 'action', ...params]`
+
