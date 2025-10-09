@@ -4,15 +4,17 @@ import {
   Pressable,
   ActivityIndicator,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import { useAuthStore } from "../../../../stores/authStore";
 import { useCurrentUser, getActiveRole } from "../../../../hooks/useAuth";
 import AvatarPicker from "../../../../components/AvatarPicker";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 
 export default function ProfileScreen() {
   const { signOut } = useAuthStore();
-
+  const router = useRouter();
   // TanStack Query'den user bilgisini al
   const { data: user, isLoading } = useCurrentUser();
 
@@ -44,6 +46,15 @@ export default function ProfileScreen() {
             Tıklayarak değiştir
           </Text>
         </View>
+
+        <TouchableOpacity
+          onPress={() => router.push("/edit")}
+          className="bg-primary px-12 py-4 rounded-full w-full max-w-xs shadow-lg  mb-7"
+        >
+          <Text className="text-white font-bold text-center text-base">
+            Profili Düzenle
+          </Text>
+        </TouchableOpacity>
 
         {/* Profil Bilgileri */}
         <View className="w-full bg-white rounded-2xl p-6 shadow-sm mb-6">
