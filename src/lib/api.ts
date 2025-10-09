@@ -173,3 +173,42 @@ export const authApi = {
     }
   },
 };
+
+// Profile API
+export const profileApi = {
+  // Avatar yükleme
+  uploadAvatar: async (imageUri: string) => {
+    try {
+      // FormData oluştur
+      const formData = new FormData();
+
+      // React Native'de dosya bilgilerini çıkar
+      const filename = imageUri.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename || "");
+      const type = match ? `image/${match[1]}` : "image/jpeg";
+
+      // FormData'ya dosyayı ekle
+      formData.append("avatar", {
+        uri: imageUri,
+        name: filename || "avatar.jpg",
+        type,
+      } as any);
+
+      // Multipart request gönder
+      const { data } = await instance.post("/profile/avatar", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("✅ Avatar uploaded:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Avatar Upload Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+};
