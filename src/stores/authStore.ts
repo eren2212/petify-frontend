@@ -3,28 +3,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authApi } from "../lib/api";
 import type { Login, Register } from "../types/type";
-
-// Backend'den dönen user tipi
-export interface User {
-  id: string;
-  email: string;
-  full_name?: string;
-  phone?: string;
-  role_type?: string;
-  role_status?: string;
-  created_at?: string;
-  updated_at?: string;
-  [key: string]: any;
-}
-
-export interface UserRole {
-  id: string;
-  user_id: string;
-  role_type: string;
-  status: "pending" | "approved" | "rejected";
-  created_at: string;
-  updated_at: string;
-}
+import { queryClient } from "../lib/queryClient";
 
 // Backend'den dönen session tipi
 export interface Session {
@@ -33,14 +12,12 @@ export interface Session {
 }
 
 export interface AuthState {
-  // State
-  user: User | null;
+  // State - Sadece auth bilgileri (user profile TanStack Query'de yönetilecek)
   session: Session | null;
   isAuthenticated: boolean;
   isLoading: boolean;
 
   // Actions
-  setUser: (user: User | null) => void;
   setSession: (session: Session | null) => void;
   setLoading: (loading: boolean) => void;
   signIn: (loginData: Login) => Promise<{ error?: string }>;
@@ -54,23 +31,14 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       // Initial state
-      user: null,
       session: null,
       isAuthenticated: false,
       isLoading: true,
 
       // Actions
-      setUser: (user) => {
-        set({
-          user,
-          isAuthenticated: !!user,
-        });
-      },
-
       setSession: (session) => {
         set({
           session,
-          // Session yalnızca token'ları içeriyor, user ayrı set edilmeli
           isAuthenticated: !!session,
         });
       },
@@ -87,19 +55,16 @@ export const useAuthStore = create<AuthState>()(
           const response = await authApi.login(loginData);
 
           // Backend response formatı: { success, data: { user, session, userRole } }
-          if (response?.data?.session && response?.data?.user) {
-            //  Backend'den gelen userRole bilgisini user objesine ekle
-            const userWithRole = {
-              ...response.data.user,
-              role_type: response.data.userRole?.role_type || null,
-              role_status: response.data.userRole?.status || null,
-            };
-
-            // Session ve user bilgilerini store'a kaydet
+          if (response?.data?.session) {
+            // Sadece session bilgilerini store'a kaydet
             set({
               session: response.data.session,
-              user: userWithRole,
               isAuthenticated: true,
+            });
+
+            // ✅ TanStack Query cache'ini invalidate et (yeni user bilgisi için)
+            queryClient.invalidateQueries({
+              queryKey: ["auth", "currentUser"],
             });
 
             return {};
@@ -125,6 +90,9 @@ export const useAuthStore = create<AuthState>()(
           const response = await authApi.register(registerData);
           console.log(JSON.stringify(response, null, 2));
 
+          // ✅ TanStack Query cache'ini invalidate et (yeni user bilgisi için)
+          queryClient.invalidateQueries({ queryKey: ["auth", "currentUser"] });
+
           // Backend response formatı: { success, data: { user, session, roleStatus } }
           return {};
         } catch (error: any) {
@@ -145,12 +113,19 @@ export const useAuthStore = create<AuthState>()(
           // Backend'e logout isteği at
           await authApi.logout();
 
-          // Store'u temizle
-          get().reset();
+          // ✅ TanStack Query cache'ini tamamen temizle
+          queryClient.clear();
+
+          // Store'u temizle (AsyncStorage dahil)
+          await get().reset();
         } catch (error) {
           console.error("Sign out error:", error);
+
+          // ✅ Hata olsa bile cache'i temizle
+          queryClient.clear();
+
           // Hata olsa bile store'u temizle (client-side logout)
-          get().reset();
+          await get().reset();
         } finally {
           set({ isLoading: false });
         }
@@ -160,30 +135,26 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ isLoading: true });
 
-          // AsyncStorage'dan token ve user bilgilerini oku
-          const [accessToken, refreshToken, userStr] = await Promise.all([
+          // AsyncStorage'dan token bilgilerini oku
+          const [accessToken, refreshToken] = await Promise.all([
             AsyncStorage.getItem("access_token"),
             AsyncStorage.getItem("refresh_token"),
-            AsyncStorage.getItem("user"),
           ]);
 
-          // Eğer token ve user varsa, store'a kaydet
-          if (accessToken && refreshToken && userStr) {
-            const user = JSON.parse(userStr);
+          // Eğer token varsa, store'a kaydet
+          if (accessToken && refreshToken) {
             const session = {
               access_token: accessToken,
               refresh_token: refreshToken,
             };
 
             set({
-              user,
               session,
               isAuthenticated: true,
             });
           } else {
             // Token yoksa authenticated değil
             set({
-              user: null,
               session: null,
               isAuthenticated: false,
             });
@@ -192,7 +163,6 @@ export const useAuthStore = create<AuthState>()(
           console.error("Auth initialization error:", error);
           // Hata durumunda auth bilgilerini temizle
           set({
-            user: null,
             session: null,
             isAuthenticated: false,
           });
@@ -201,9 +171,15 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      reset: () => {
+      reset: async () => {
+        // AsyncStorage'ı temizle
+        await AsyncStorage.multiRemove([
+          "access_token",
+          "refresh_token",
+          "user",
+        ]);
+
         set({
-          user: null,
           session: null,
           isAuthenticated: false,
           isLoading: false,
@@ -213,9 +189,8 @@ export const useAuthStore = create<AuthState>()(
     {
       name: "auth-storage",
       storage: createJSONStorage(() => AsyncStorage),
-      // Only persist user and session, not loading states
+      // Only persist session, not loading states
       partialize: (state) => ({
-        user: state.user,
         session: state.session,
         isAuthenticated: state.isAuthenticated,
       }),

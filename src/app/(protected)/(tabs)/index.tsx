@@ -1,18 +1,25 @@
 import { useEffect } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import Toast from "react-native-toast-message";
 import { useAuthStore } from "../../../stores";
+import { useCurrentUser, getActiveRole } from "../../../hooks/useAuth";
 
 export default function Home() {
-  const { signOut, user } = useAuthStore();
-  const roleType = user?.role_type;
+  const { signOut } = useAuthStore();
+
+  // TanStack Query'den user bilgisini al
+  const { data: user, isLoading } = useCurrentUser();
+
+  // Aktif rolü al (approved olan)
+  const activeRole = getActiveRole(user);
+  const roleType = activeRole?.role_type;
 
   // ⭐ Flash'ı engelle - pet_owner değilse hemen yönlendir
   useEffect(() => {
     if (roleType && roleType !== "pet_owner") {
-      const roleRedirects: Record<string, string> = {
+      const roleRedirects: Record<string, any> = {
         pet_shop: "/(protected)/(tabs)/products",
         pet_clinic: "/(protected)/(tabs)/doctors",
         pet_sitter: "/(protected)/(tabs)/services",
@@ -21,10 +28,22 @@ export default function Home() {
 
       const redirectPath = roleRedirects[roleType];
       if (redirectPath) {
-        router.replace(redirectPath);
+        router.replace(redirectPath as any);
       }
     }
   }, [roleType]);
+
+  // Loading state - User yüklenirken göster
+  if (isLoading) {
+    return (
+      <SafeAreaProvider>
+        <SafeAreaView className="flex-1 bg-background items-center justify-center">
+          <ActivityIndicator size="large" color="#8B5CF6" />
+          <Text className="text-text mt-4">Yükleniyor...</Text>
+        </SafeAreaView>
+      </SafeAreaProvider>
+    );
+  }
 
   // pet_owner değilse null döndür (hiçbir şey render etme)
   if (roleType && roleType !== "pet_owner") {

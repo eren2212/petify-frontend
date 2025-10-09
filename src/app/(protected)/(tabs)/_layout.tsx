@@ -1,13 +1,17 @@
 import { Tabs } from "expo-router";
-import { useAuthStore } from "../../../stores";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { COLORS } from "../../../styles/theme/color";
+import { useCurrentUser, getActiveRole } from "../../../hooks/useAuth";
 
 export default function TabsLayout() {
-  const { user } = useAuthStore();
-  const roleType = user?.role_type;
+  // TanStack Query'den user bilgisini al
+  const { data: user } = useCurrentUser();
+
+  // Aktif rolü al (approved olan)
+  const activeRole = getActiveRole(user);
+  const roleType = activeRole?.role_type;
 
   return (
     <Tabs
