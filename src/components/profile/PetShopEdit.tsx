@@ -7,48 +7,51 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { profileApi } from "../../lib/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { User } from "../../hooks/useAuth";
 import AvatarDeleteButton from "../AvatarDeleteButton";
-import Feather from "@expo/vector-icons/Feather";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import { Feather, AntDesign } from "@expo/vector-icons";
 
 interface PetShopEditProps {
   user: User | null | undefined;
+}
+
+interface FormData {
+  full_name: string;
+  phone_number: string;
 }
 
 export default function PetShopEdit({ user }: PetShopEditProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const [fullName, setFullName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [initialFullName, setInitialFullName] = useState("");
-  const [initialPhoneNumber, setInitialPhoneNumber] = useState("");
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isDirty },
+    reset,
+  } = useForm<FormData>({
+    defaultValues: {
+      full_name: "",
+      phone_number: "",
+    },
+  });
 
-  // User verisi geldiğinde state'leri başlat
   useEffect(() => {
     if (user?.profile) {
-      const name = user.profile.full_name || "";
-      const phone = user.profile.phone_number || "";
-      setFullName(name);
-      setPhoneNumber(phone);
-      setInitialFullName(name);
-      setInitialPhoneNumber(phone);
+      reset({
+        full_name: user.profile.full_name || "",
+        phone_number: user.profile.phone_number || "",
+      });
     }
-  }, [user]);
+  }, [user, reset]);
 
-  // Değişiklik kontrolü
-  const hasChanges =
-    fullName.trim() !== initialFullName ||
-    phoneNumber.trim() !== initialPhoneNumber;
-
-  // TODO: Pet Shop'a özel endpoint eklendiğinde güncellenecek
   const updateMutation = useMutation({
-    mutationFn: profileApi.updateInformation, // Geçici - değişecek
+    mutationFn: profileApi.updateInformation,
     onSuccess: (response) => {
       const updatedProfile = response.data.profile;
 
@@ -80,17 +83,15 @@ export default function PetShopEdit({ user }: PetShopEditProps) {
     },
   });
 
-  const handleUpdate = () => {
-    if (!hasChanges) return;
-
+  const onSubmit = (data: FormData) => {
     const updateData: { full_name?: string; phone_number?: string } = {};
 
-    if (fullName.trim() !== initialFullName) {
-      updateData.full_name = fullName.trim();
+    if (data.full_name.trim()) {
+      updateData.full_name = data.full_name.trim();
     }
 
-    if (phoneNumber.trim() !== initialPhoneNumber) {
-      updateData.phone_number = phoneNumber.trim();
+    if (data.phone_number.trim()) {
+      updateData.phone_number = data.phone_number.trim();
     }
 
     updateMutation.mutate(updateData);
@@ -113,13 +114,37 @@ export default function PetShopEdit({ user }: PetShopEditProps) {
           <Text className="text-sm font-medium text-gray-700 mb-2">
             İsim Soyisim
           </Text>
-          <TextInput
-            value={fullName}
-            onChangeText={setFullName}
-            placeholder="Adınızı ve soyadınızı girin"
-            className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-900 text-base"
-            placeholderTextColor="#9CA3AF"
+          <Controller
+            control={control}
+            name="full_name"
+            rules={{
+              required: "İsim soyisim zorunludur",
+              minLength: {
+                value: 3,
+                message: "En az 3 karakter olmalıdır",
+              },
+              pattern: {
+                value: /^[a-zA-ZğüşöçİĞÜŞÖÇ\s]+$/,
+                message: "Sadece harf girebilirsiniz",
+              },
+            }}
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                value={value}
+                onChangeText={onChange}
+                placeholder="Adınızı ve soyadınızı girin"
+                className={`bg-gray-50 border ${
+                  errors.full_name ? "border-red-500" : "border-gray-200"
+                } rounded-xl px-4 py-3.5 text-gray-900 text-base`}
+                placeholderTextColor="#9CA3AF"
+              />
+            )}
           />
+          {errors.full_name && (
+            <Text className="text-red-500 text-xs mt-1">
+              {errors.full_name.message}
+            </Text>
+          )}
         </View>
 
         {/* Telefon Numarası */}
@@ -127,14 +152,38 @@ export default function PetShopEdit({ user }: PetShopEditProps) {
           <Text className="text-sm font-medium text-gray-700 mb-2">
             Telefon Numarası
           </Text>
-          <TextInput
-            value={phoneNumber}
-            onChangeText={setPhoneNumber}
-            placeholder="Telefon numaranızı girin"
-            keyboardType="phone-pad"
-            className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-900 text-base"
-            placeholderTextColor="#9CA3AF"
+          <Controller
+            control={control}
+            name="phone_number"
+            rules={{
+              required: "Telefon numarası zorunludur",
+              pattern: {
+                value: /^[0-9]{10}$/,
+                message: "Geçerli bir 10 haneli telefon numarası girin",
+              },
+            }}
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                value={value}
+                onChangeText={(text) => {
+                  const numericValue = text.replace(/[^0-9]/g, "");
+                  onChange(numericValue);
+                }}
+                placeholder="Telefon numaranızı girin"
+                keyboardType="phone-pad"
+                maxLength={10}
+                className={`bg-gray-50 border ${
+                  errors.phone_number ? "border-red-500" : "border-gray-200"
+                } rounded-xl px-4 py-3.5 text-gray-900 text-base`}
+                placeholderTextColor="#9CA3AF"
+              />
+            )}
           />
+          {errors.phone_number && (
+            <Text className="text-red-500 text-xs mt-1">
+              {errors.phone_number.message}
+            </Text>
+          )}
         </View>
       </View>
 
@@ -157,10 +206,14 @@ export default function PetShopEdit({ user }: PetShopEditProps) {
 
       {/* Güncelle Butonu */}
       <TouchableOpacity
-        onPress={handleUpdate}
-        disabled={!hasChanges || updateMutation.isPending}
+        onPress={handleSubmit(onSubmit)}
+        disabled={
+          !isDirty || updateMutation.isPending || Object.keys(errors).length > 0
+        }
         className={`rounded-xl p-4 flex-row items-center justify-center ${
-          hasChanges && !updateMutation.isPending
+          isDirty &&
+          !updateMutation.isPending &&
+          Object.keys(errors).length === 0
             ? "bg-blue-500"
             : "bg-gray-300"
         }`}
@@ -171,14 +224,24 @@ export default function PetShopEdit({ user }: PetShopEditProps) {
           <>
             <Text
               className={`text-xl mr-2 ${
-                hasChanges ? "text-white" : "text-gray-500"
+                isDirty && Object.keys(errors).length === 0
+                  ? "text-white"
+                  : "text-gray-500"
               }`}
             >
-              <Feather name="save" size={24} color="black" />
+              <Feather
+                name="save"
+                size={24}
+                color={
+                  isDirty && Object.keys(errors).length === 0 ? "white" : "gray"
+                }
+              />
             </Text>
             <Text
               className={`font-bold text-base ${
-                hasChanges ? "text-white" : "text-gray-500"
+                isDirty && Object.keys(errors).length === 0
+                  ? "text-white"
+                  : "text-gray-500"
               }`}
             >
               Güncelle
@@ -187,9 +250,15 @@ export default function PetShopEdit({ user }: PetShopEditProps) {
         )}
       </TouchableOpacity>
 
-      {!hasChanges && (
+      {!isDirty && (
         <Text className="text-center text-gray-400 text-xs mt-3">
           Değişiklik yapmadınız
+        </Text>
+      )}
+
+      {Object.keys(errors).length > 0 && (
+        <Text className="text-center text-red-500 text-xs mt-3">
+          Lütfen hataları düzeltin
         </Text>
       )}
     </ScrollView>
