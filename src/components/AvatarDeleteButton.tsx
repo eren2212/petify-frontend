@@ -1,7 +1,7 @@
 // components/AvatarDeleteButton.tsx
 import { TouchableOpacity, Text, ActivityIndicator, Alert } from "react-native";
 import { useDeleteAvatar } from "../hooks/useProfile";
-import Feather from "@expo/vector-icons/Feather";
+import { Feather } from "@expo/vector-icons";
 
 interface AvatarDeleteButtonProps {
   hasAvatar: boolean;
