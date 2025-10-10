@@ -211,4 +211,37 @@ export const profileApi = {
       throw error;
     }
   },
+
+  // Profil bilgilerini güncelle
+  updateInformation: async (data: {
+    full_name?: string;
+    phone_number?: string;
+  }) => {
+    try {
+      const response = await instance.put("/profile/information", data);
+      console.log("✅ Profile information updated:", response.data);
+      return response.data;
+    } catch (error: any) {
+      console.log(
+        "Update Information Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Avatar silme
+  deleteAvatar: async () => {
+    try {
+      const { data } = await instance.delete("/profile/avatar");
+      console.log("✅ Avatar deleted:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Delete Avatar Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
 };
