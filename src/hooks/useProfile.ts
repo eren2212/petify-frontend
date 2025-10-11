@@ -1,5 +1,5 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { profileApi } from "../lib/api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { profileApi, petApi } from "../lib/api";
 
 /**
  * Avatar yükleme mutation hook'u
@@ -69,6 +69,53 @@ export function useDeleteAvatar() {
     },
     onError: (error: any) => {
       console.error("❌ Avatar delete failed:", error);
+    },
+  });
+}
+
+/**
+ * Pet türlerini getir
+ */
+export function usePetTypes() {
+  return useQuery({
+    queryKey: ["pets", "types"],
+    queryFn: async () => {
+      const response = await petApi.getPetTypes();
+      return response.data.pet_types || [];
+    },
+    staleTime: 1000 * 60 * 30, // 30 dakika (pet types nadiren değişir)
+  });
+}
+
+/**
+ * Kullanıcının hayvanlarını getir
+ */
+export function useMyPets() {
+  return useQuery({
+    queryKey: ["pets", "myPets"],
+    queryFn: async () => {
+      const response = await petApi.getMyPets();
+      return response.data.pets || [];
+    },
+    staleTime: 1000 * 60 * 5, // 5 dakika
+  });
+}
+
+/**
+ * Yeni hayvan ekleme
+ */
+export function useAddPet() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: petApi.addPet,
+    onSuccess: () => {
+      // Pet listesini yenile
+      queryClient.invalidateQueries({ queryKey: ["pets", "myPets"] });
+      console.log("✅ Pet added successfully");
+    },
+    onError: (error: any) => {
+      console.error("❌ Pet add failed:", error);
     },
   });
 }
