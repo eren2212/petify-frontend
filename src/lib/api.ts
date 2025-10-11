@@ -245,3 +245,110 @@ export const profileApi = {
     }
   },
 };
+
+// Pet API
+export const petApi = {
+  // Pet türlerini getir
+  getPetTypes: async () => {
+    try {
+      const { data } = await instance.get("/pet/types");
+      console.log("✅ Pet types fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Pet Types Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Kullanıcının tüm hayvanlarını getir
+  getMyPets: async () => {
+    try {
+      const { data } = await instance.get("/profile/pet");
+      console.log("✅ Pets fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log("Get Pets Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+
+  // Yeni hayvan ekle
+  addPet: async (petData: any) => {
+    try {
+      const { data } = await instance.post("/profile/pet/add", petData);
+      console.log("✅ Pet added:", data);
+      return data;
+    } catch (error: any) {
+      console.log("Add Pet Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+
+  // Pet resmi yükle
+  uploadPetImage: async (petId: string, imageUri: string) => {
+    try {
+      const formData = new FormData();
+      const filename = imageUri.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename || "");
+      const type = match ? `image/${match[1]}` : "image/jpeg";
+
+      formData.append("petImage", {
+        uri: imageUri,
+        name: filename || "pet.jpg",
+        type,
+      } as any);
+
+      const { data } = await instance.post(
+        `/profile/pet/${petId}/image`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log("✅ Pet image uploaded:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Pet Image Upload Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Pet'in resimlerini getir
+  getPetImages: async (petId: string) => {
+    try {
+      const { data } = await instance.get(`/profile/pet/${petId}/images`);
+      console.log("✅ Pet images fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Pet Images Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Pet resmini sil
+  deletePetImage: async (imageId: string) => {
+    try {
+      const { data } = await instance.delete(`/profile/pet/image/${imageId}`);
+      console.log("✅ Pet image deleted:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Delete Pet Image Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+};
