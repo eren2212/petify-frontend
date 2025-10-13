@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   FlatList,
+  Image,
 } from "react-native";
 import { useState } from "react";
 import { useAuthStore } from "../../stores/authStore";
@@ -16,6 +17,7 @@ import AddPetModal from "../pet/AddPetModal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Pet } from "../../types/type";
+import { getPetTypeImageByName } from "../../constants/petTypes";
 
 export default function ProfileScreen() {
   const { signOut } = useAuthStore();
@@ -123,8 +125,14 @@ export default function ProfileScreen() {
                 className="bg-white rounded-2xl p-4 mb-4 mr-4 shadow-sm"
                 style={{ width: 160, height: 160 }}
               >
-                <View className="flex-1 items-center justify-center bg-gray-100 rounded-xl mb-2">
-                  <Text className="text-4xl">🐾</Text>
+                <View className="flex-1 items-center justify-center bg-gray-100 rounded-xl mb-2 overflow-hidden">
+                  <Image
+                    source={getPetTypeImageByName(
+                      item.pet_type?.name_tr || item.pet_type?.name
+                    )}
+                    style={{ width: "100%", height: "100%" }}
+                    resizeMode="cover"
+                  />
                 </View>
                 <Text className="text-base font-bold text-gray-900 text-center">
                   {item.name}

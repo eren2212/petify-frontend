@@ -27,6 +27,11 @@ export interface Pet {
   id: string;
   user_id: string;
   pet_type_id: string;
+  pet_type?: {
+    id: string;
+    name: string;
+    name_tr: string;
+  };
   name: string;
   breed?: string;
   age_years?: number;
