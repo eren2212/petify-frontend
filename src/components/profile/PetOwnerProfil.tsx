@@ -138,7 +138,7 @@ export default function ProfileScreen() {
                   {item.name}
                 </Text>
                 <Text className="text-xs text-gray-500 text-center">
-                  {item.breed || "Unknown"}
+                  {item.pet_type?.name_tr || "Unknown"}
                 </Text>
               </TouchableOpacity>
             )}
