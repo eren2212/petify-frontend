@@ -121,7 +121,7 @@ export default function ProfileScreen() {
             contentContainerStyle={{ paddingHorizontal: 24 }}
             renderItem={({ item }: { item: Pet }) => (
               <TouchableOpacity
-                onPress={() => console.log("Pet detail:", item.id)}
+                onPress={() => router.push(`/pets/${item.id}`)}
                 className="bg-white rounded-2xl p-4 mb-4 mr-4 shadow-sm"
                 style={{ width: 160, height: 160 }}
               >

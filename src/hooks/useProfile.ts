@@ -98,6 +98,13 @@ export function useMyPets() {
       return response.data.pets || [];
     },
     staleTime: 1000 * 60 * 5, // 5 dakika
+    // 401 hatası için retry yapma (token geçersiz)
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 }
 
@@ -116,6 +123,50 @@ export function useAddPet() {
     },
     onError: (error: any) => {
       console.error("❌ Pet add failed:", error);
+    },
+  });
+}
+
+/**
+ * Hayvan detayını getir
+ */
+export function usePetDetail(petId: string) {
+  return useQuery({
+    queryKey: ["pets", "detail", petId],
+    queryFn: async () => {
+      const response = await petApi.getPetDetail(petId);
+      return response.data.pet;
+    },
+    enabled: !!petId, // petId varsa query çalışsın
+    staleTime: 1000 * 60 * 5, // 5 dakika
+    // 401 hatası için retry yapma (token geçersiz)
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+  });
+}
+
+/**
+ * Pet resimlerini getir
+ */
+export function usePetImages(petId: string) {
+  return useQuery({
+    queryKey: ["pets", "images", petId],
+    queryFn: async () => {
+      const response = await petApi.getPetImages(petId);
+      return response.data.images || [];
+    },
+    enabled: !!petId, // petId varsa query çalışsın
+    staleTime: 1000 * 60 * 5, // 5 dakika
+    // 401 hatası için retry yapma (token geçersiz)
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
     },
   });
 }
