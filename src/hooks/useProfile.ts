@@ -170,3 +170,54 @@ export function usePetImages(petId: string) {
     },
   });
 }
+
+/**
+ * Hayvan bilgilerini güncelle
+ */
+export function useUpdatePet(petId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (petData: any) => petApi.updatePet(petData, petId),
+    onSuccess: (response) => {
+      // Pet detayını güncelle
+      queryClient.setQueryData(["pets", "detail", petId], (oldData: any) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          ...response.data.pet,
+        };
+      });
+
+      // Pet listesini yenile
+      queryClient.invalidateQueries({ queryKey: ["pets", "myPets"] });
+      queryClient.invalidateQueries({ queryKey: ["pets", "detail", petId] });
+
+      console.log("✅ Pet updated successfully");
+    },
+    onError: (error: any) => {
+      console.error("❌ Pet update failed:", error);
+    },
+  });
+}
+
+/**
+ * Pet resmini sil
+ */
+export function useDeletePetImage(petId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => petApi.deletePetImage(petId),
+    onSuccess: () => {
+      // Pet detayını ve resimlerini yenile
+      queryClient.invalidateQueries({ queryKey: ["pets", "detail", petId] });
+      queryClient.invalidateQueries({ queryKey: ["pets", "images", petId] });
+      queryClient.invalidateQueries({ queryKey: ["pets", "myPets"] });
+      console.log("✅ Pet image deleted successfully");
+    },
+    onError: (error: any) => {
+      console.error("❌ Pet image delete failed:", error);
+    },
+  });
+}

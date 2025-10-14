@@ -454,7 +454,7 @@ export default function AddPetModal({ visible, onClose }: AddPetModalProps) {
               className={`py-4 rounded-full ${
                 isAdding || !selectedPetType || !petName.trim()
                   ? "bg-gray-300"
-                  : "bg-green-400"
+                  : "bg-text"
               }`}
             >
               {isAdding ? (

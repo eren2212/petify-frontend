@@ -357,9 +357,11 @@ export const petApi = {
   },
 
   // Pet resmini sil
-  deletePetImage: async (imageId: string) => {
+  deletePetImage: async (petId: string) => {
     try {
-      const { data } = await instance.delete(`/profile/pet/image/${imageId}`);
+      const { data } = await instance.delete("/profile/pet/image", {
+        data: { petId },
+      });
       console.log("✅ Pet image deleted:", data);
       return data;
     } catch (error: any) {
@@ -382,6 +384,17 @@ export const petApi = {
         "Get Pet Detail Error:",
         error.response?.data || error.message
       );
+      throw error;
+    }
+  },
+
+  updatePet: async (petData: any, petId: string) => {
+    try {
+      const { data } = await instance.put(`/pet/my/${petId}`, petData);
+      console.log("✅ Pet updated:", data);
+      return data;
+    } catch (error: any) {
+      console.log("Update Pet Error:", error.response?.data || error.message);
       throw error;
     }
   },

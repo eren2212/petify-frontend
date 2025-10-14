@@ -15,6 +15,7 @@ import { useRouter } from "expo-router";
 import { User } from "../../hooks/useAuth";
 import AvatarDeleteButton from "../AvatarDeleteButton";
 import { Feather, AntDesign } from "@expo/vector-icons";
+import Toast from "react-native-toast-message";
 
 interface PetOwnerEditProps {
   user: User | null | undefined;
@@ -73,18 +74,18 @@ export default function PetOwnerEdit({ user }: PetOwnerEditProps) {
       // Ek güvence için invalidate et
       queryClient.invalidateQueries({ queryKey: ["auth", "currentUser"] });
 
-      Alert.alert("Başarılı", "Profil bilgileriniz güncellendi", [
-        {
-          text: "Tamam",
-          onPress: () => router.back(),
-        },
-      ]);
+      Toast.show({
+        type: "success",
+        text1: "Profil bilgileriniz başarıyla güncellendi ",
+        bottomOffset: 40,
+      });
     },
     onError: (error: any) => {
-      Alert.alert(
-        "Hata",
-        error.response?.data?.message || "Profil güncellenirken bir hata oluştu"
-      );
+      Toast.show({
+        type: "error",
+        text1: "Profil güncellenirken bir hata oluştu",
+        bottomOffset: 40,
+      });
     },
   });
 
