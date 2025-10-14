@@ -50,24 +50,6 @@ export default function PetDetailScreen() {
     return genderMap[gender || "unknown"] || "Bilinmiyor";
   };
 
-  // Yaş hesaplama
-  const getAgeText = () => {
-    const years = pet.age_years || 0;
-    const months = pet.age_months || 0;
-
-    if (years === 0 && months === 0) return "Yaş bilgisi yok";
-
-    let ageText = "";
-    if (years > 0) {
-      ageText += `${years} yaşında`;
-    }
-    if (months > 0) {
-      if (years > 0) ageText += ", ";
-      ageText += `${months} aylık`;
-    }
-    return ageText;
-  };
-
   // Resim kaynağını belirle
   const getImageSource = () => {
     // Eğer kullanıcının yüklediği resim varsa onu kullan
@@ -118,9 +100,8 @@ export default function PetDetailScreen() {
           {/* Kısa Bilgi */}
           <Text className="text-base text-gray-500 mt-3 text-center leading-relaxed">
             {pet.pet_type?.name_tr || "Hayvan"}
-            {pet.breed && `, ${pet.breed}`}
-            {pet.gender && ` • ${getGenderLabel(pet.gender)}`}
-            {(pet.age_years || pet.age_months) && ` • ${getAgeText()}`}
+            {pet.gender && ` • ${getGenderLabel(pet.gender)} • `}
+            {pet.age_display}
           </Text>
         </View>
 
@@ -154,7 +135,9 @@ export default function PetDetailScreen() {
             <View className="flex-row justify-between items-center py-3.5">
               <Text className="text-gray-500 text-base">Yaş</Text>
               <Text className="text-gray-900 font-semibold text-base">
-                {getAgeText()}
+                {pet.age_unit == "months" || pet.age_unit == "days"
+                  ? pet.age_display
+                  : pet.age}
               </Text>
             </View>
 
