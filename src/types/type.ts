@@ -34,8 +34,8 @@ export interface Pet {
   };
   name: string;
   breed?: string;
-  age_years?: number;
-  age_months?: number;
+  age?: Date;
+  age_display?: string;
   gender?: "male" | "female" | "unknown";
   weight_kg?: number;
   color?: string;
@@ -61,8 +61,8 @@ export interface CreatePetRequest {
   pet_type_id: string;
   name: string;
   breed?: string;
-  age_years?: number;
-  age_months?: number;
+  age?: Date;
+  age_display?: string;
   gender?: "male" | "female" | "unknown";
   weight_kg?: number;
   color?: string;
