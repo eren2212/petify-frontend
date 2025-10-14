@@ -13,6 +13,13 @@ export default function PetsLayout() {
           title: "Hayvan Detayı",
         }}
       />
+      <Stack.Screen
+        name="edit"
+        options={{
+          headerShown: true,
+          title: "Hayvan Profilini Düzenleme",
+        }}
+      />
     </Stack>
   );
 }

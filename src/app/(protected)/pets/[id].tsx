@@ -1,4 +1,11 @@
-import { View, Text, ScrollView, ActivityIndicator, Image } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  ActivityIndicator,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { usePetDetail, usePetImages } from "../../../hooks/useProfile";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -238,6 +245,17 @@ export default function PetDetailScreen() {
               </Text>
             )}
           </View>
+        </View>
+
+        <View className="flex-row justify-center items-center mt-8">
+          <TouchableOpacity
+            onPress={() => router.push(`/pets/edit?id=${id}`)}
+            className="bg-primary px-16 py-4 rounded-full w-11/12 shadow-lg mb-6"
+          >
+            <Text className="text-white font-bold text-center text-base">
+              Düzenle
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>

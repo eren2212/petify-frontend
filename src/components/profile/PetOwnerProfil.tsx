@@ -88,7 +88,7 @@ export default function ProfileScreen() {
         {/* Profili Düzenle Butonu */}
         <TouchableOpacity
           onPress={() => router.push("/edit")}
-          className="bg-blue-500 px-16 py-4 rounded-full w-11/12 shadow-lg active:bg-blue-600 mb-6"
+          className="bg-primary px-16 py-4 rounded-full w-11/12 shadow-lg  mb-6"
         >
           <Text className="text-white font-bold text-center text-base">
             Profili Düzenle
@@ -101,7 +101,7 @@ export default function ProfileScreen() {
             <Text className="text-xl font-bold text-gray-900">Hayvanlarım</Text>
             <TouchableOpacity
               onPress={() => setIsAddPetModalVisible(true)}
-              className="bg-green-500 px-4 py-2 rounded-lg"
+              className="bg-text px-4 py-2 rounded-lg"
             >
               <Text className="text-white font-semibold">+ Hayvan Ekle</Text>
             </TouchableOpacity>

@@ -50,4 +50,4 @@ export const THEMES = {
 };
 
 // 👇 buradan aktif temayı değiştirebilirsin
-export const COLORS = THEMES.softBlue;
+export const COLORS = THEMES.paw;
