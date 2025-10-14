@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { authApi } from '../lib/api';
-import { useAuthStore } from '../stores/authStore';
+import { useQuery } from "@tanstack/react-query";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { authApi } from "../lib/api";
+import { useAuthStore } from "../stores/authStore";
 
 /**
  * Backend'den dönen user tipi
@@ -9,8 +9,13 @@ import { useAuthStore } from '../stores/authStore';
 export interface UserRole {
   id: string;
   user_id: string;
-  role_type: 'pet_owner' | 'pet_shop' | 'pet_clinic' | 'pet_sitter' | 'pet_hotel';
-  status: 'pending' | 'approved' | 'rejected';
+  role_type:
+    | "pet_owner"
+    | "pet_shop"
+    | "pet_clinic"
+    | "pet_sitter"
+    | "pet_hotel";
+  status: "pending" | "approved" | "rejected";
   created_at: string;
   updated_at: string;
 }
@@ -41,17 +46,17 @@ export function getActiveRole(user: User | null | undefined): UserRole | null {
   if (!user || !user.roles || user.roles.length === 0) {
     return null;
   }
-  
+
   // Approved olan ilk rolü bul
-  const approvedRole = user.roles.find((role) => role.status === 'approved');
+  const approvedRole = user.roles.find((role) => role.status === "approved");
   return approvedRole || null;
 }
 
 /**
  * TanStack Query Hook: Mevcut kullanıcı bilgilerini çeker
- * 
+ *
  * @returns Query object with user data
- * 
+ *
  * Özellikler:
  * - AsyncStorage'dan initial data olarak yükler (hızlı başlangıç)
  * - Auth varsa backend'den güncel veriyi çeker
@@ -62,7 +67,7 @@ export function useCurrentUser() {
   const { isAuthenticated } = useAuthStore();
 
   return useQuery({
-    queryKey: ['auth', 'currentUser'],
+    queryKey: ["auth", "currentUser"],
     queryFn: async (): Promise<User> => {
       const response = await authApi.getMe();
       return response.data.user as User;
@@ -75,6 +80,14 @@ export function useCurrentUser() {
     refetchOnWindowFocus: true,
     // Mount olunca otomatik çek
     refetchOnMount: true,
+    // 401 hatası için retry yapma (token geçersiz)
+    retry: (failureCount, error: any) => {
+      // 401 hatası ise retry yapma
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      // Diğer hatalar için 3 kez dene
+      return failureCount < 3;
+    },
   });
 }
-

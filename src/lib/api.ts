@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Login, Register } from "../types/type";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -35,9 +36,27 @@ instance.interceptors.response.use(
     return response;
   },
   async (error) => {
-    // 401 hatası = Token geçersiz, storage temizle
+    // 401 hatası = Token geçersiz veya süresi dolmuş
     if (error.response?.status === 401) {
+      console.log("🚨 401 Unauthorized - Token geçersiz, çıkış yapılıyor...");
+
+      // AsyncStorage'ı temizle
       await AsyncStorage.multiRemove(["access_token", "refresh_token", "user"]);
+
+      // QueryClient cache'ini temizle (import etmeden direk kullanıyoruz)
+      const { queryClient } = await import("./queryClient");
+      queryClient.clear();
+
+      // AuthStore'u temizle (import etmeden direk kullanıyoruz)
+      const { useAuthStore } = await import("../stores/authStore");
+      useAuthStore.getState().reset();
+
+      // Signin sayfasına yönlendir
+      try {
+        router.replace("/(auth)/signin");
+      } catch (routerError) {
+        console.error("Router yönlendirme hatası:", routerError);
+      }
     }
     return Promise.reject(error);
   }
@@ -346,6 +365,21 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Delete Pet Image Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Pet detayını getir
+  getPetDetail: async (petId: string) => {
+    try {
+      const { data } = await instance.get(`/pet/my/${petId}`);
+      console.log("✅ Pet detail fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Pet Detail Error:",
         error.response?.data || error.message
       );
       throw error;
