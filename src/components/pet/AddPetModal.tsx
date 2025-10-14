@@ -8,7 +8,9 @@ import {
   ScrollView,
   ActivityIndicator,
   Image,
+  Platform,
 } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { usePetTypes, useAddPet } from "../../hooks/useProfile";
 import { getPopularBreeds } from "../../constants/petBreeds";
 import { PetType } from "../../types/type";
@@ -29,12 +31,11 @@ export default function AddPetModal({ visible, onClose }: AddPetModalProps) {
   const [showPetTypeDropdown, setShowPetTypeDropdown] = useState(false);
   const [showBreedDropdown, setShowBreedDropdown] = useState(false);
   const [showGenderDropdown, setShowGenderDropdown] = useState(false);
-  const [showAgeUnitDropdown, setShowAgeUnitDropdown] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedBreed, setSelectedBreed] = useState<string>("");
   const [customBreed, setCustomBreed] = useState<string>("");
   const [petName, setPetName] = useState<string>("");
-  const [ageValue, setAgeValue] = useState<string>("");
-  const [ageUnit, setAgeUnit] = useState<"year" | "month">("year");
+  const [birthdate, setBirthdate] = useState<Date | null>(null);
   const [gender, setGender] = useState<"male" | "female" | "unknown">(
     "unknown"
   );
@@ -53,12 +54,6 @@ export default function AddPetModal({ visible, onClose }: AddPetModalProps) {
     { value: "unknown", label: "Bilinmiyor" },
   ];
 
-  // Age unit seçenekleri
-  const ageUnitOptions = [
-    { value: "year", label: "Yıl" },
-    { value: "month", label: "Ay" },
-  ];
-
   // Pet türü değiştiğinde cinsleri güncelle
   useEffect(() => {
     if (selectedPetType) {
@@ -75,8 +70,7 @@ export default function AddPetModal({ visible, onClose }: AddPetModalProps) {
     setSelectedBreed("");
     setCustomBreed("");
     setPetName("");
-    setAgeValue("");
-    setAgeUnit("year");
+    setBirthdate(null);
     setGender("unknown");
     setWeight("");
     setColor("");
@@ -102,26 +96,11 @@ export default function AddPetModal({ visible, onClose }: AddPetModalProps) {
     // Cins belirleme: Eğer "Diğer" seçildiyse custom breed kullan
     const finalBreed = selectedBreed === "Diğer" ? customBreed : selectedBreed;
 
-    // Yaş hesaplama: unit'e göre year veya month olarak gönder
-    const ageData: {
-      age_years?: number;
-      age_months?: number;
-    } = {};
-
-    if (ageValue) {
-      const ageNum = parseInt(ageValue);
-      if (ageUnit === "year") {
-        ageData.age_years = ageNum;
-      } else {
-        ageData.age_months = ageNum;
-      }
-    }
-
     const petData = {
       pet_type_id: selectedPetType.id,
       name: petName.trim(),
       breed: finalBreed || undefined,
-      ...ageData,
+      birthdate: birthdate ? birthdate.toISOString().split("T")[0] : undefined,
       gender,
       weight_kg: weight ? parseFloat(weight) : undefined,
       color: color || undefined,
@@ -182,14 +161,16 @@ export default function AddPetModal({ visible, onClose }: AddPetModalProps) {
     return selected ? selected.label : "Cinsiyet";
   };
 
-  const handleAgeUnitSelect = (unit: "year" | "month") => {
-    setAgeUnit(unit);
-    setShowAgeUnitDropdown(false);
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    setShowDatePicker(Platform.OS === "ios");
+    if (selectedDate) {
+      setBirthdate(selectedDate);
+    }
   };
 
-  const getAgeUnitLabel = () => {
-    const selected = ageUnitOptions.find((opt) => opt.value === ageUnit);
-    return selected ? selected.label : "Yıl";
+  const formatDate = (date: Date | null) => {
+    if (!date) return "Doğum Tarihi Seç";
+    return date.toLocaleDateString("tr-TR");
   };
 
   return (
@@ -349,52 +330,30 @@ export default function AddPetModal({ visible, onClose }: AddPetModalProps) {
               </View>
             )}
 
-            {/* Yaş (Value + Unit) */}
+            {/* Doğum Tarihi */}
             <View className="mb-4">
-              <Text className="text-sm text-gray-600 mb-2">Yaş</Text>
-              <View className="flex-row gap-2">
-                <View className="flex-1">
-                  <TextInput
-                    value={ageValue}
-                    onChangeText={setAgeValue}
-                    placeholder="Yaş"
-                    placeholderTextColor="#9CA3AF"
-                    keyboardType="numeric"
-                    className="border border-gray-200 rounded-xl px-4 py-3 text-gray-900 bg-white"
-                  />
-                </View>
-                <View className="w-24">
-                  <TouchableOpacity
-                    onPress={() => setShowAgeUnitDropdown(!showAgeUnitDropdown)}
-                    className="border border-gray-200 rounded-xl px-3 py-3 bg-white flex-row justify-between items-center"
-                  >
-                    <Text className="text-gray-900">{getAgeUnitLabel()}</Text>
-                    <Text className="text-gray-400">
-                      {showAgeUnitDropdown ? "▲" : "▼"}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
+              <Text className="text-sm text-gray-600 mb-2">Doğum Tarihi</Text>
+              <TouchableOpacity
+                onPress={() => setShowDatePicker(!showDatePicker)}
+                className="border border-gray-200 rounded-xl px-4 py-3 bg-white flex-row justify-between items-center"
+              >
+                <Text className={birthdate ? "text-gray-900" : "text-gray-400"}>
+                  {formatDate(birthdate)}
+                </Text>
+                <Text className="text-gray-400">📅</Text>
+              </TouchableOpacity>
 
-              {/* Age Unit Dropdown */}
-              {showAgeUnitDropdown && (
-                <View className="mt-2 bg-white border border-gray-200 rounded-xl">
-                  {ageUnitOptions.map((option, index: number) => (
-                    <TouchableOpacity
-                      key={option.value}
-                      onPress={() =>
-                        handleAgeUnitSelect(option.value as "year" | "month")
-                      }
-                      className={`px-4 py-3 ${
-                        index < ageUnitOptions.length - 1
-                          ? "border-b border-gray-100"
-                          : ""
-                      }`}
-                    >
-                      <Text className="text-gray-900">{option.label}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+              {/* DateTimePicker */}
+              {showDatePicker && (
+                <DateTimePicker
+                  value={birthdate || new Date()}
+                  mode="date"
+                  display={Platform.OS === "ios" ? "spinner" : "default"}
+                  onChange={handleDateChange}
+                  maximumDate={new Date()}
+                  locale="tr-TR"
+                  textColor="black"
+                />
               )}
             </View>
 

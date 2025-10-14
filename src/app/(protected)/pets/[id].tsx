@@ -118,7 +118,6 @@ export default function PetDetailScreen() {
           {/* Kısa Bilgi */}
           <Text className="text-base text-gray-500 mt-3 text-center leading-relaxed">
             {pet.pet_type?.name_tr || "Hayvan"}
-            {pet.breed && `, ${pet.breed}`}
             {pet.gender && ` • ${getGenderLabel(pet.gender)}`}
             {(pet.age_years || pet.age_months) && ` • ${getAgeText()}`}
           </Text>
