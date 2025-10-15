@@ -66,7 +66,7 @@ export default function PetImagePicker({
 
       <View className="items-center">
         {/* Resim Önizleme */}
-        <View className="w-32 h-32 rounded-full bg-gray-100 mb-4 overflow-hidden border-2 border-gray-200">
+        <View className="w-32 h-32 rounded-2xl bg-gray-100 mb-4 overflow-hidden border-2 border-gray-200">
           {currentImageUrl ? (
             <Image
               source={{ uri: currentImageUrl }}
