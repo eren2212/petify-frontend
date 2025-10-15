@@ -142,9 +142,9 @@ export default function PetDetailScreen() {
             <View className="flex-row justify-between items-center py-3.5">
               <Text className="text-gray-500 text-base">Yaş</Text>
               <Text className="text-gray-900 font-semibold text-base">
-                {pet.age_unit == "months" || pet.age_unit == "days"
+                {(pet.age_unit == "months" || pet.age_unit == "days"
                   ? pet.age_display
-                  : pet.age}
+                  : pet.age) || "Belirtilmemiş"}
               </Text>
             </View>
 

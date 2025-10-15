@@ -357,11 +357,9 @@ export const petApi = {
   },
 
   // Pet resmini sil
-  deletePetImage: async (petId: string) => {
+  deletePetImage: async (imageId: string) => {
     try {
-      const { data } = await instance.delete("/profile/pet/image", {
-        data: { petId },
-      });
+      const { data } = await instance.delete(`/profile/pet/image/${imageId}`);
       console.log("✅ Pet image deleted:", data);
       return data;
     } catch (error: any) {
