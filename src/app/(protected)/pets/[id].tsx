@@ -83,7 +83,7 @@ export default function PetDetailScreen() {
         {/* Pet Image & Header */}
         <View className="items-center pt-4 pb-8 px-6">
           <View
-            className="w-44 h-44 rounded-full overflow-hidden bg-white"
+            className="w-44 h-44 rounded-2xl overflow-hidden bg-white"
             style={{
               shadowColor: "#000",
               shadowOffset: { width: 0, height: 8 },
