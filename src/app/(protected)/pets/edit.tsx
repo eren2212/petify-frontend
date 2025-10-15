@@ -48,8 +48,6 @@ export default function PetEditScreen() {
   // Pet verisi geldiğinde form'u doldur
   useEffect(() => {
     if (pet) {
-      console.log("🐾 Pet Edit - Pet Data:", pet);
-      console.log("🐾 Pet Edit - image_url:", pet.image_url);
       reset({
         name: pet.name || "",
         weight_kg: pet.weight_kg ? pet.weight_kg.toString() : "",
@@ -243,7 +241,7 @@ export default function PetEditScreen() {
         </View>
 
         {/* Pet Resmi Silme Butonu */}
-        <PetAvatarDeleteButton petId={petId} hasImage={!!pet?.image_url} />
+        <PetAvatarDeleteButton petId={petId} />
 
         {/* Güncelle Butonu */}
         <TouchableOpacity

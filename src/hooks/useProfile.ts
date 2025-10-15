@@ -208,7 +208,7 @@ export function useDeletePetImage(petId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => petApi.deletePetImage(petId),
+    mutationFn: (imageId: string) => petApi.deletePetImage(imageId),
     onSuccess: () => {
       // Pet detayını ve resimlerini yenile
       queryClient.invalidateQueries({ queryKey: ["pets", "detail", petId] });

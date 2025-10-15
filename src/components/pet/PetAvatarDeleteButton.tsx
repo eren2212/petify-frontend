@@ -1,21 +1,24 @@
 import { TouchableOpacity, Text, ActivityIndicator, Alert } from "react-native";
-import { useDeletePetImage } from "../../hooks/useProfile";
+import { useDeletePetImage, usePetImages } from "../../hooks/useProfile";
 import { Feather } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
 
 interface PetAvatarDeleteButtonProps {
   petId: string;
-  hasImage: boolean;
 }
 
 export default function PetAvatarDeleteButton({
   petId,
-  hasImage,
 }: PetAvatarDeleteButtonProps) {
+  const { data: petImages = [] } = usePetImages(petId);
   const deletePetImageMutation = useDeletePetImage(petId);
 
+  // İlk resmi al (varsa) - Bu profil resmi olarak kabul ediliyor
+  const firstImage = petImages.length > 0 ? petImages[0] : null;
+  const hasImage = !!firstImage;
+
   const handleDelete = () => {
-    if (!hasImage) {
+    if (!hasImage || !firstImage) {
       Alert.alert("Uyarı", "Silinecek resim bulunamadı");
       return;
     }
@@ -29,7 +32,8 @@ export default function PetAvatarDeleteButton({
           text: "Sil",
           style: "destructive",
           onPress: () => {
-            deletePetImageMutation.mutate(undefined, {
+            // İlk resmin ID'sini gönder
+            deletePetImageMutation.mutate(firstImage.id, {
               onSuccess: () => {
                 Toast.show({
                   type: "success",
