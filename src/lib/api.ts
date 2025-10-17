@@ -396,4 +396,32 @@ export const petApi = {
       throw error;
     }
   },
+
+  addVaccination: async (petVaccination: any) => {
+    try {
+      const { data } = await instance.post("/pet/vaccination", petVaccination);
+      console.log("Vaccination added:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Vaccination added Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  getVaccination: async (petId: string) => {
+    try {
+      const { data } = await instance.get(`/pet/vaccination/${petId}`);
+      console.log("Get Vaccination :", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get vaccination error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
 };
