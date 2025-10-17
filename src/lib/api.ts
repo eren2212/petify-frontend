@@ -424,4 +424,21 @@ export const petApi = {
       throw error;
     }
   },
+
+  // Tek bir aşının detayını getir
+  getVaccinationDetail: async (vaccinationId: string) => {
+    try {
+      const { data } = await instance.get(
+        `/pet/vaccination/detail/${vaccinationId}`
+      );
+      console.log("✅ Vaccination detail fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Vaccination Detail Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
 };

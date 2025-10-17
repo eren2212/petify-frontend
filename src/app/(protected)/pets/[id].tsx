@@ -16,6 +16,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getPetTypeImageByName } from "../../../constants/petTypes";
 import AddVaccinationModal from "../../../components/pet/AddVaccinationModal";
+import { Ionicons, Entypo, MaterialIcons } from "@expo/vector-icons";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000/api";
 
@@ -249,39 +250,41 @@ export default function PetDetailScreen() {
               <View>
                 {vaccinations.map((vaccination: any, index: number) => (
                   <View key={vaccination.id}>
-                    <View className="py-4">
+                    <TouchableOpacity
+                      className="py-4 active:bg-gray-50"
+                      onPress={() =>
+                        router.push(`/pets/vaccination/${vaccination.id}`)
+                      }
+                    >
                       <View className="flex-row justify-between items-start mb-2">
                         <View className="flex-1">
                           <Text className="text-gray-900 font-bold text-base mb-1">
                             {vaccination.vaccine_name}
                           </Text>
                           <Text className="text-gray-500 text-sm">
-                            📅 {formatDate(vaccination.vaccination_date)}
+                            <Ionicons
+                              name="calendar-number"
+                              size={18}
+                              color="black"
+                            />{" "}
+                            {formatDate(vaccination.vaccination_date)}
                           </Text>
                         </View>
-                        <View className="bg-purple-50 px-3 py-1.5 rounded-full ml-3">
-                          <Text className="text-purple-600 font-semibold text-xs">
-                            ✓ Yapıldı
-                          </Text>
+                        <View className="flex-row items-center">
+                          <View className="bg-purple-50 px-3 py-1.5 rounded-full mr-2">
+                            <Text className="text-purple-600 font-semibold text-xs">
+                              <Entypo name="check" size={14} color="black" />{" "}
+                              Yapıldı
+                            </Text>
+                          </View>
+                          <Ionicons
+                            name="chevron-forward"
+                            size={20}
+                            color="#9CA3AF"
+                          />
                         </View>
                       </View>
-
-                      {vaccination.veterinarian && (
-                        <View className="flex-row items-center mt-2">
-                          <Text className="text-gray-400 text-sm">
-                            👨‍⚕️ {vaccination.veterinarian}
-                          </Text>
-                        </View>
-                      )}
-
-                      {vaccination.notes && (
-                        <View className="mt-2 bg-gray-50 p-3 rounded-lg">
-                          <Text className="text-gray-600 text-sm leading-5">
-                            {vaccination.notes}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
+                    </TouchableOpacity>
 
                     {index < vaccinations.length - 1 && (
                       <View className="h-px bg-gray-100" />
@@ -295,7 +298,9 @@ export default function PetDetailScreen() {
             {!vaccinationsLoading && vaccinations.length === 0 && (
               <View className="py-8 items-center">
                 <View className="bg-purple-50 w-16 h-16 rounded-full items-center justify-center mb-3">
-                  <Text className="text-3xl">💉</Text>
+                  <Text className="text-3xl">
+                    <MaterialIcons name="vaccines" size={24} color="black" />
+                  </Text>
                 </View>
                 <Text className="text-gray-900 font-semibold text-base mb-1">
                   Henüz aşı kaydı yok

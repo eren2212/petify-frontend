@@ -20,6 +20,14 @@ export default function PetsLayout() {
           title: "Hayvan Profilini Düzenleme",
         }}
       />
+      <Stack.Screen
+        name="vaccination"
+        options={{
+          headerShown: true,
+          title: "Aşı Detayı",
+          headerBackButtonDisplayMode: "minimal",
+        }}
+      />
     </Stack>
   );
 }
