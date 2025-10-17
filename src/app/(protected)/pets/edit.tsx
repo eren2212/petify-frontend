@@ -9,11 +9,16 @@ import {
 import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { usePetDetail, useUpdatePet } from "../../../hooks/useProfile";
+import {
+  usePetDetail,
+  useUpdatePet,
+  usePetImages,
+} from "../../../hooks/useProfile";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
 import PetAvatarDeleteButton from "../../../components/pet/PetAvatarDeleteButton";
+import PetImagePicker from "../../../components/pet/PetImagePicker";
 
 interface FormData {
   name: string;
@@ -28,6 +33,9 @@ export default function PetEditScreen() {
 
   // Pet detayını çek
   const { data: pet, isLoading: isPetLoading } = usePetDetail(petId);
+
+  // Pet resimlerini çek
+  const { data: petImages = [] } = usePetImages(petId);
 
   // Update mutation
   const updateMutation = useUpdatePet(petId);
@@ -131,6 +139,19 @@ export default function PetEditScreen() {
         contentContainerStyle={{ padding: 20 }}
         showsVerticalScrollIndicator={false}
       >
+        {/* Profil Resmi Değiştirme */}
+        <PetImagePicker
+          petId={petId}
+          currentImageUrl={
+            petImages.length > 0
+              ? `${process.env.EXPO_PUBLIC_API_URL}/profile/pet/image/${petImages[0].image_url}`
+              : null
+          }
+        />
+
+        {/* Pet Resmi Silme Butonu */}
+        <PetAvatarDeleteButton petId={petId} />
+
         {/* Form Kartı */}
         <View className="bg-white rounded-2xl p-6 mb-4 shadow-sm">
           <Text className="text-lg font-bold text-gray-900 mb-6">
@@ -239,9 +260,6 @@ export default function PetEditScreen() {
             )}
           </View>
         </View>
-
-        {/* Pet Resmi Silme Butonu */}
-        <PetAvatarDeleteButton petId={petId} />
 
         {/* Güncelle Butonu */}
         <TouchableOpacity

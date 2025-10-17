@@ -6,10 +6,16 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
+import { useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { usePetDetail, usePetImages } from "../../../hooks/useProfile";
+import {
+  usePetDetail,
+  usePetImages,
+  usePetVaccination,
+} from "../../../hooks/useProfile";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getPetTypeImageByName } from "../../../constants/petTypes";
+import AddVaccinationModal from "../../../components/pet/AddVaccinationModal";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000/api";
 
@@ -18,11 +24,18 @@ export default function PetDetailScreen() {
   const router = useRouter();
   const petId = Array.isArray(id) ? id[0] : id;
 
+  // Modal state
+  const [showVaccinationModal, setShowVaccinationModal] = useState(false);
+
   // Pet detayını çek
   const { data: pet, isLoading, error } = usePetDetail(petId);
 
   // Pet resimlerini çek
   const { data: petImages = [] } = usePetImages(petId);
+
+  // Pet aşılarını çek
+  const { data: vaccinations = [], isLoading: vaccinationsLoading } =
+    usePetVaccination(petId);
 
   if (isLoading) {
     return (
@@ -73,6 +86,16 @@ export default function PetDetailScreen() {
     return getPetTypeImageByName(pet.pet_type?.name_tr || pet.pet_type?.name);
   };
 
+  // Tarih formatlama
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("tr-TR", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <ScrollView
@@ -83,7 +106,7 @@ export default function PetDetailScreen() {
         {/* Pet Image & Header */}
         <View className="items-center pt-4 pb-8 px-6">
           <View
-            className="w-44 h-44 rounded-full overflow-hidden bg-white"
+            className="w-44 h-44 rounded-2xl overflow-hidden bg-white"
             style={{
               shadowColor: "#000",
               shadowOffset: { width: 0, height: 8 },
@@ -198,25 +221,91 @@ export default function PetDetailScreen() {
               elevation: 5,
             }}
           >
-            <Text className="text-xl font-bold text-gray-900 mb-5">
-              Sağlık Geçmişi
-            </Text>
-
-            {/* Vaccinations */}
-            <View className="flex-row justify-between items-center py-3.5">
-              <Text className="text-gray-500 text-base">Aşılar</Text>
-              <Text className="text-green-600 font-semibold text-base">
-                Güncel
+            <View className="flex-row justify-between items-center mb-5">
+              <Text className="text-xl font-bold text-gray-900">
+                Sağlık Geçmişi
               </Text>
+              {!vaccinationsLoading && vaccinations.length > 0 && (
+                <View className="bg-green-50 px-3 py-1.5 rounded-full">
+                  <Text className="text-green-600 font-semibold text-sm">
+                    {vaccinations.length} Aşı
+                  </Text>
+                </View>
+              )}
             </View>
 
-            <View className="h-px bg-gray-100 my-1" />
+            {/* Aşılar Loading */}
+            {vaccinationsLoading && (
+              <View className="py-8 items-center">
+                <ActivityIndicator size="small" color="#8B5CF6" />
+                <Text className="text-gray-400 mt-2 text-sm">
+                  Aşılar yükleniyor...
+                </Text>
+              </View>
+            )}
 
-            {/* Allergies */}
-            <View className="flex-row justify-between items-center py-3.5">
-              <Text className="text-gray-500 text-base">Alerjiler</Text>
-              <Text className="text-gray-900 font-semibold text-base">Yok</Text>
-            </View>
+            {/* Aşılar Listesi */}
+            {!vaccinationsLoading && vaccinations.length > 0 && (
+              <View>
+                {vaccinations.map((vaccination: any, index: number) => (
+                  <View key={vaccination.id}>
+                    <View className="py-4">
+                      <View className="flex-row justify-between items-start mb-2">
+                        <View className="flex-1">
+                          <Text className="text-gray-900 font-bold text-base mb-1">
+                            {vaccination.vaccine_name}
+                          </Text>
+                          <Text className="text-gray-500 text-sm">
+                            📅 {formatDate(vaccination.vaccination_date)}
+                          </Text>
+                        </View>
+                        <View className="bg-purple-50 px-3 py-1.5 rounded-full ml-3">
+                          <Text className="text-purple-600 font-semibold text-xs">
+                            ✓ Yapıldı
+                          </Text>
+                        </View>
+                      </View>
+
+                      {vaccination.veterinarian && (
+                        <View className="flex-row items-center mt-2">
+                          <Text className="text-gray-400 text-sm">
+                            👨‍⚕️ {vaccination.veterinarian}
+                          </Text>
+                        </View>
+                      )}
+
+                      {vaccination.notes && (
+                        <View className="mt-2 bg-gray-50 p-3 rounded-lg">
+                          <Text className="text-gray-600 text-sm leading-5">
+                            {vaccination.notes}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+
+                    {index < vaccinations.length - 1 && (
+                      <View className="h-px bg-gray-100" />
+                    )}
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {/* Boş State */}
+            {!vaccinationsLoading && vaccinations.length === 0 && (
+              <View className="py-8 items-center">
+                <View className="bg-purple-50 w-16 h-16 rounded-full items-center justify-center mb-3">
+                  <Text className="text-3xl">💉</Text>
+                </View>
+                <Text className="text-gray-900 font-semibold text-base mb-1">
+                  Henüz aşı kaydı yok
+                </Text>
+                <Text className="text-gray-400 text-sm text-center px-4">
+                  Aşağıdaki "Aşı Ekle" butonunu kullanarak ilk aşı kaydını
+                  ekleyebilirsiniz
+                </Text>
+              </View>
+            )}
           </View>
         </View>
 
@@ -247,15 +336,31 @@ export default function PetDetailScreen() {
           </View>
         </View>
 
-        <View className="flex-row justify-center items-center mt-8">
+        <View className="flex-row justify-center items-center mt-8 gap-6">
           <TouchableOpacity
             onPress={() => router.push(`/pets/edit?id=${id}`)}
-            className="bg-primary px-16 py-4 rounded-full w-11/12 shadow-lg mb-6"
+            className="bg-primary px-16 py-4 rounded-full  shadow-lg mb-6"
           >
             <Text className="text-white font-bold text-center text-base">
               Düzenle
             </Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => setShowVaccinationModal(true)}
+            className="bg-green-500 px-16 py-4 rounded-full shadow-lg mb-6"
+          >
+            <Text className="text-white font-bold text-center text-base">
+              Aşı Ekle
+            </Text>
+          </TouchableOpacity>
+
+          {/* Aşı Ekleme Modal */}
+          <AddVaccinationModal
+            visible={showVaccinationModal}
+            onClose={() => setShowVaccinationModal(false)}
+            petId={petId}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>

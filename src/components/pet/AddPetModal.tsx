@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  KeyboardAvoidingView,
   Image,
   Platform,
 } from "react-native";
@@ -180,294 +181,309 @@ export default function AddPetModal({ visible, onClose }: AddPetModalProps) {
       transparent={true}
       onRequestClose={onClose}
     >
-      <View className="flex-1 justify-end bg-black/50">
-        <View className="bg-white rounded-t-3xl h-5/6">
-          {/* Header */}
-          <View className="flex-row justify-between items-center px-6 py-4 border-b border-gray-200">
-            <Text className="text-xl font-bold text-gray-900">Hayvan Ekle</Text>
-            <TouchableOpacity onPress={onClose}>
-              <Text className="text-2xl text-gray-500">×</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Form */}
-          <ScrollView className="flex-1 px-6 py-4">
-            {/* Profil Resmi Yükleme */}
-            <View className="mb-6 items-center">
-              <TouchableOpacity
-                onPress={handlePickImage}
-                disabled={isAdding}
-                className="items-center"
-              >
-                <View className="w-32 h-32 rounded-full bg-rose-100 items-center justify-center mb-2">
-                  {petImageUri ? (
-                    <Image
-                      source={{ uri: petImageUri }}
-                      className="w-full h-full rounded-full"
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <View className="w-20 h-24 bg-white rounded-lg items-center justify-center">
-                      <Text className="text-4xl">🐾</Text>
-                    </View>
-                  )}
-                  <View className="absolute bottom-0 right-0 w-8 h-8 bg-green-500 rounded-full items-center justify-center">
-                    <Text className="text-white text-xl font-bold">+</Text>
-                  </View>
-                </View>
-                <Text className="text-sm text-gray-500">
-                  {petImageUri ? "Resim Değiştir" : "Profil Resmi Yükle"}
-                </Text>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        className="flex-1"
+        keyboardVerticalOffset={0}
+      >
+        <View className="flex-1 justify-end bg-black/50">
+          <View className="bg-white rounded-t-3xl h-5/6">
+            {/* Header */}
+            <View className="flex-row justify-between items-center px-6 py-4 border-b border-gray-200">
+              <Text className="text-xl font-bold text-gray-900">
+                Hayvan Ekle
+              </Text>
+              <TouchableOpacity onPress={onClose}>
+                <Text className="text-2xl text-gray-500">×</Text>
               </TouchableOpacity>
             </View>
 
-            {/* Pet İsmi */}
-            <View className="mb-4">
-              <Text className="text-sm text-gray-600 mb-2">Hayvan Adı</Text>
-              <TextInput
-                value={petName}
-                onChangeText={setPetName}
-                placeholder="Hayvan Adı"
-                placeholderTextColor="#9CA3AF"
-                className="border border-gray-200 rounded-xl px-4 py-3 text-gray-900 bg-white"
-              />
-            </View>
-
-            {/* Pet Türü Dropdown */}
-            <View className="mb-4">
-              <Text className="text-sm text-gray-600 mb-2">Tür</Text>
-              <TouchableOpacity
-                onPress={() => setShowPetTypeDropdown(!showPetTypeDropdown)}
-                className="border border-gray-200 rounded-xl px-4 py-3 bg-white flex-row justify-between items-center"
-              >
-                <Text
-                  className={
-                    selectedPetType ? "text-gray-900" : "text-gray-400"
-                  }
-                >
-                  {selectedPetType ? selectedPetType.name_tr : "Tür"}
-                </Text>
-                <Text className="text-gray-400">
-                  {showPetTypeDropdown ? "▲" : "▼"}
-                </Text>
-              </TouchableOpacity>
-
-              {/* Dropdown Menu */}
-              {showPetTypeDropdown && (
-                <View className="mt-2 bg-white border border-gray-200 rounded-xl">
-                  {typesLoading ? (
-                    <View className="py-4 items-center">
-                      <ActivityIndicator size="small" color="#8B5CF6" />
-                    </View>
-                  ) : (
-                    petTypes.map((type: PetType, index: number) => (
-                      <TouchableOpacity
-                        key={type.id}
-                        onPress={() => handlePetTypeSelect(type)}
-                        className={`px-4 py-3 ${
-                          index < petTypes.length - 1
-                            ? "border-b border-gray-100"
-                            : ""
-                        }`}
-                      >
-                        <Text className="text-gray-900">{type.name_tr}</Text>
-                      </TouchableOpacity>
-                    ))
-                  )}
-                </View>
-              )}
-            </View>
-
-            {/* Breed Dropdown (Sadece pet type seçildiyse göster) */}
-            {selectedPetType && (
-              <View className="mb-4">
-                <Text className="text-sm text-gray-600 mb-2">Cins</Text>
+            {/* Form */}
+            <ScrollView
+              className="flex-1 px-6 py-4"
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingBottom: 20 }}
+            >
+              {/* Profil Resmi Yükleme */}
+              <View className="mb-6 items-center">
                 <TouchableOpacity
-                  onPress={() => setShowBreedDropdown(!showBreedDropdown)}
+                  onPress={handlePickImage}
+                  disabled={isAdding}
+                  className="items-center"
+                >
+                  <View className="w-32 h-32 rounded-full bg-rose-100 items-center justify-center mb-2">
+                    {petImageUri ? (
+                      <Image
+                        source={{ uri: petImageUri }}
+                        className="w-full h-full rounded-full"
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View className="w-20 h-24 bg-white rounded-lg items-center justify-center">
+                        <Text className="text-4xl">🐾</Text>
+                      </View>
+                    )}
+                    <View className="absolute bottom-0 right-0 w-8 h-8 bg-green-500 rounded-full items-center justify-center">
+                      <Text className="text-white text-xl font-bold">+</Text>
+                    </View>
+                  </View>
+                  <Text className="text-sm text-gray-500">
+                    {petImageUri ? "Resim Değiştir" : "Profil Resmi Yükle"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Pet İsmi */}
+              <View className="mb-4">
+                <Text className="text-sm text-gray-600 mb-2">Hayvan Adı</Text>
+                <TextInput
+                  value={petName}
+                  onChangeText={setPetName}
+                  placeholder="Hayvan Adı"
+                  placeholderTextColor="#9CA3AF"
+                  className="border border-gray-200 rounded-xl px-4 py-3 text-gray-900 bg-white"
+                />
+              </View>
+
+              {/* Pet Türü Dropdown */}
+              <View className="mb-4">
+                <Text className="text-sm text-gray-600 mb-2">Tür</Text>
+                <TouchableOpacity
+                  onPress={() => setShowPetTypeDropdown(!showPetTypeDropdown)}
                   className="border border-gray-200 rounded-xl px-4 py-3 bg-white flex-row justify-between items-center"
                 >
                   <Text
                     className={
-                      selectedBreed ? "text-gray-900" : "text-gray-400"
+                      selectedPetType ? "text-gray-900" : "text-gray-400"
                     }
                   >
-                    {selectedBreed || "Cins"}
+                    {selectedPetType ? selectedPetType.name_tr : "Tür"}
                   </Text>
                   <Text className="text-gray-400">
-                    {showBreedDropdown ? "▲" : "▼"}
+                    {showPetTypeDropdown ? "▲" : "▼"}
                   </Text>
                 </TouchableOpacity>
 
-                {/* Breed Dropdown Menu */}
-                {showBreedDropdown && (
+                {/* Dropdown Menu */}
+                {showPetTypeDropdown && (
                   <View className="mt-2 bg-white border border-gray-200 rounded-xl">
-                    {availableBreeds.map((breed: string, index: number) => (
-                      <TouchableOpacity
-                        key={breed}
-                        onPress={() => handleBreedSelect(breed)}
-                        className={`px-4 py-3 ${
-                          index < availableBreeds.length - 1
-                            ? "border-b border-gray-100"
-                            : ""
-                        }`}
-                      >
-                        <Text className="text-gray-900">{breed}</Text>
-                      </TouchableOpacity>
-                    ))}
+                    {typesLoading ? (
+                      <View className="py-4 items-center">
+                        <ActivityIndicator size="small" color="#8B5CF6" />
+                      </View>
+                    ) : (
+                      petTypes.map((type: PetType, index: number) => (
+                        <TouchableOpacity
+                          key={type.id}
+                          onPress={() => handlePetTypeSelect(type)}
+                          className={`px-4 py-3 ${
+                            index < petTypes.length - 1
+                              ? "border-b border-gray-100"
+                              : ""
+                          }`}
+                        >
+                          <Text className="text-gray-900">{type.name_tr}</Text>
+                        </TouchableOpacity>
+                      ))
+                    )}
                   </View>
                 )}
+              </View>
 
-                {/* Custom Breed Input (Diğer seçildiyse göster) */}
-                {selectedBreed === "Diğer" && (
-                  <TextInput
-                    value={customBreed}
-                    onChangeText={setCustomBreed}
-                    placeholder="Cins adını yazın..."
-                    placeholderTextColor="#9CA3AF"
-                    className="mt-3 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 bg-white"
+              {/* Breed Dropdown (Sadece pet type seçildiyse göster) */}
+              {selectedPetType && (
+                <View className="mb-4">
+                  <Text className="text-sm text-gray-600 mb-2">Cins</Text>
+                  <TouchableOpacity
+                    onPress={() => setShowBreedDropdown(!showBreedDropdown)}
+                    className="border border-gray-200 rounded-xl px-4 py-3 bg-white flex-row justify-between items-center"
+                  >
+                    <Text
+                      className={
+                        selectedBreed ? "text-gray-900" : "text-gray-400"
+                      }
+                    >
+                      {selectedBreed || "Cins"}
+                    </Text>
+                    <Text className="text-gray-400">
+                      {showBreedDropdown ? "▲" : "▼"}
+                    </Text>
+                  </TouchableOpacity>
+
+                  {/* Breed Dropdown Menu */}
+                  {showBreedDropdown && (
+                    <View className="mt-2 bg-white border border-gray-200 rounded-xl">
+                      {availableBreeds.map((breed: string, index: number) => (
+                        <TouchableOpacity
+                          key={breed}
+                          onPress={() => handleBreedSelect(breed)}
+                          className={`px-4 py-3 ${
+                            index < availableBreeds.length - 1
+                              ? "border-b border-gray-100"
+                              : ""
+                          }`}
+                        >
+                          <Text className="text-gray-900">{breed}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  )}
+
+                  {/* Custom Breed Input (Diğer seçildiyse göster) */}
+                  {selectedBreed === "Diğer" && (
+                    <TextInput
+                      value={customBreed}
+                      onChangeText={setCustomBreed}
+                      placeholder="Cins adını yazın..."
+                      placeholderTextColor="#9CA3AF"
+                      className="mt-3 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 bg-white"
+                    />
+                  )}
+                </View>
+              )}
+
+              {/* Doğum Tarihi */}
+              <View className="mb-4">
+                <Text className="text-sm text-gray-600 mb-2">Doğum Tarihi</Text>
+                <TouchableOpacity
+                  onPress={() => setShowDatePicker(!showDatePicker)}
+                  className="border border-gray-200 rounded-xl px-4 py-3 bg-white flex-row justify-between items-center"
+                >
+                  <Text
+                    className={birthdate ? "text-gray-900" : "text-gray-400"}
+                  >
+                    {formatDate(birthdate)}
+                  </Text>
+                  <Text className="text-gray-400">📅</Text>
+                </TouchableOpacity>
+
+                {/* DateTimePicker */}
+                {showDatePicker && (
+                  <DateTimePicker
+                    value={birthdate || new Date()}
+                    mode="date"
+                    display={Platform.OS === "ios" ? "spinner" : "default"}
+                    onChange={handleDateChange}
+                    maximumDate={new Date()}
+                    locale="tr-TR"
+                    textColor="black"
                   />
                 )}
               </View>
-            )}
 
-            {/* Doğum Tarihi */}
-            <View className="mb-4">
-              <Text className="text-sm text-gray-600 mb-2">Doğum Tarihi</Text>
-              <TouchableOpacity
-                onPress={() => setShowDatePicker(!showDatePicker)}
-                className="border border-gray-200 rounded-xl px-4 py-3 bg-white flex-row justify-between items-center"
-              >
-                <Text className={birthdate ? "text-gray-900" : "text-gray-400"}>
-                  {formatDate(birthdate)}
-                </Text>
-                <Text className="text-gray-400">📅</Text>
-              </TouchableOpacity>
-
-              {/* DateTimePicker */}
-              {showDatePicker && (
-                <DateTimePicker
-                  value={birthdate || new Date()}
-                  mode="date"
-                  display={Platform.OS === "ios" ? "spinner" : "default"}
-                  onChange={handleDateChange}
-                  maximumDate={new Date()}
-                  locale="tr-TR"
-                  textColor="black"
-                />
-              )}
-            </View>
-
-            {/* Cinsiyet */}
-            <View className="mb-4">
-              <Text className="text-sm text-gray-600 mb-2">Cinsiyet</Text>
-              <TouchableOpacity
-                onPress={() => setShowGenderDropdown(!showGenderDropdown)}
-                className="border border-gray-200 rounded-xl px-4 py-3 bg-white flex-row justify-between items-center"
-              >
-                <Text
-                  className={
-                    gender !== "unknown" ? "text-gray-900" : "text-gray-400"
-                  }
+              {/* Cinsiyet */}
+              <View className="mb-4">
+                <Text className="text-sm text-gray-600 mb-2">Cinsiyet</Text>
+                <TouchableOpacity
+                  onPress={() => setShowGenderDropdown(!showGenderDropdown)}
+                  className="border border-gray-200 rounded-xl px-4 py-3 bg-white flex-row justify-between items-center"
                 >
-                  {getGenderLabel()}
+                  <Text
+                    className={
+                      gender !== "unknown" ? "text-gray-900" : "text-gray-400"
+                    }
+                  >
+                    {getGenderLabel()}
+                  </Text>
+                  <Text className="text-gray-400">
+                    {showGenderDropdown ? "▲" : "▼"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Gender Dropdown Menu (Açık olduğunda) */}
+              {showGenderDropdown && (
+                <View className="mb-4 bg-white border border-gray-200 rounded-xl">
+                  {genderOptions.map((option, index: number) => (
+                    <TouchableOpacity
+                      key={option.value}
+                      onPress={() =>
+                        handleGenderSelect(
+                          option.value as "male" | "female" | "unknown"
+                        )
+                      }
+                      className={`px-4 py-3 ${
+                        index < genderOptions.length - 1
+                          ? "border-b border-gray-100"
+                          : ""
+                      }`}
+                    >
+                      <Text className="text-gray-900">{option.label}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+
+              {/* Renk ve Kilo (Yan Yana) */}
+              <View className="flex-row gap-3 mb-4">
+                {/* Renk */}
+                <View className="flex-1">
+                  <Text className="text-sm text-gray-600 mb-2">Renk</Text>
+                  <TextInput
+                    value={color}
+                    onChangeText={setColor}
+                    placeholder="örn: Kahverengi"
+                    placeholderTextColor="#9CA3AF"
+                    className="border border-gray-200 rounded-xl px-4 py-3 text-gray-900 bg-white"
+                  />
+                </View>
+
+                {/* Kilo */}
+                <View className="flex-1">
+                  <Text className="text-sm text-gray-600 mb-2">Kilo (kg)</Text>
+                  <TextInput
+                    value={weight}
+                    onChangeText={setWeight}
+                    placeholder="örn: 5.5"
+                    placeholderTextColor="#9CA3AF"
+                    keyboardType="decimal-pad"
+                    className="border border-gray-200 rounded-xl px-4 py-3 text-gray-900 bg-white"
+                  />
+                </View>
+              </View>
+
+              {/* Notlar */}
+              <View className="mb-6">
+                <Text className="text-sm text-gray-600 mb-2">
+                  Notlar (örn: beslenme ihtiyaçları, sağlık geçmişi)
                 </Text>
-                <Text className="text-gray-400">
-                  {showGenderDropdown ? "▲" : "▼"}
-                </Text>
+                <TextInput
+                  value={description}
+                  onChangeText={setDescription}
+                  placeholder="Notlar (örn: beslenme ihtiyaçları, sağlık geçmişi)"
+                  placeholderTextColor="#9CA3AF"
+                  multiline
+                  numberOfLines={4}
+                  textAlignVertical="top"
+                  className="border border-gray-200 rounded-xl px-4 py-3 text-gray-900 bg-white"
+                />
+              </View>
+            </ScrollView>
+
+            {/* Submit Button */}
+            <View className="px-6 py-4 border-t border-gray-200">
+              <TouchableOpacity
+                onPress={handleSubmit}
+                disabled={isAdding || !selectedPetType || !petName.trim()}
+                className={`py-4 rounded-full ${
+                  isAdding || !selectedPetType || !petName.trim()
+                    ? "bg-gray-300"
+                    : "bg-text"
+                }`}
+              >
+                {isAdding ? (
+                  <ActivityIndicator color="white" />
+                ) : (
+                  <Text className="text-white font-bold text-center text-base">
+                    Hayvan Ekle
+                  </Text>
+                )}
               </TouchableOpacity>
             </View>
-
-            {/* Gender Dropdown Menu (Açık olduğunda) */}
-            {showGenderDropdown && (
-              <View className="mb-4 bg-white border border-gray-200 rounded-xl">
-                {genderOptions.map((option, index: number) => (
-                  <TouchableOpacity
-                    key={option.value}
-                    onPress={() =>
-                      handleGenderSelect(
-                        option.value as "male" | "female" | "unknown"
-                      )
-                    }
-                    className={`px-4 py-3 ${
-                      index < genderOptions.length - 1
-                        ? "border-b border-gray-100"
-                        : ""
-                    }`}
-                  >
-                    <Text className="text-gray-900">{option.label}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-
-            {/* Renk ve Kilo (Yan Yana) */}
-            <View className="flex-row gap-3 mb-4">
-              {/* Renk */}
-              <View className="flex-1">
-                <Text className="text-sm text-gray-600 mb-2">Renk</Text>
-                <TextInput
-                  value={color}
-                  onChangeText={setColor}
-                  placeholder="örn: Kahverengi"
-                  placeholderTextColor="#9CA3AF"
-                  className="border border-gray-200 rounded-xl px-4 py-3 text-gray-900 bg-white"
-                />
-              </View>
-
-              {/* Kilo */}
-              <View className="flex-1">
-                <Text className="text-sm text-gray-600 mb-2">Kilo (kg)</Text>
-                <TextInput
-                  value={weight}
-                  onChangeText={setWeight}
-                  placeholder="örn: 5.5"
-                  placeholderTextColor="#9CA3AF"
-                  keyboardType="decimal-pad"
-                  className="border border-gray-200 rounded-xl px-4 py-3 text-gray-900 bg-white"
-                />
-              </View>
-            </View>
-
-            {/* Notlar */}
-            <View className="mb-6">
-              <Text className="text-sm text-gray-600 mb-2">
-                Notlar (örn: beslenme ihtiyaçları, sağlık geçmişi)
-              </Text>
-              <TextInput
-                value={description}
-                onChangeText={setDescription}
-                placeholder="Notlar (örn: beslenme ihtiyaçları, sağlık geçmişi)"
-                placeholderTextColor="#9CA3AF"
-                multiline
-                numberOfLines={4}
-                textAlignVertical="top"
-                className="border border-gray-200 rounded-xl px-4 py-3 text-gray-900 bg-white"
-              />
-            </View>
-          </ScrollView>
-
-          {/* Submit Button */}
-          <View className="px-6 py-4 border-t border-gray-200">
-            <TouchableOpacity
-              onPress={handleSubmit}
-              disabled={isAdding || !selectedPetType || !petName.trim()}
-              className={`py-4 rounded-full ${
-                isAdding || !selectedPetType || !petName.trim()
-                  ? "bg-gray-300"
-                  : "bg-text"
-              }`}
-            >
-              {isAdding ? (
-                <ActivityIndicator color="white" />
-              ) : (
-                <Text className="text-white font-bold text-center text-base">
-                  Hayvan Ekle
-                </Text>
-              )}
-            </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

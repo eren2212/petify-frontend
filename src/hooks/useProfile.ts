@@ -221,3 +221,46 @@ export function useDeletePetImage(petId: string) {
     },
   });
 }
+
+/**
+ * Aşı bilgisi ekleme
+ */
+export function useAddVaccination() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: petApi.addVaccination,
+    onSuccess: () => {
+      // Pet listesini yenile
+      queryClient.invalidateQueries({ queryKey: ["pets", "myPets"] });
+      // Aşılar listesini yenile (tüm petId'ler için)
+      queryClient.invalidateQueries({ queryKey: ["pets", "vaccination"] });
+      console.log("✅ Pet Vaccination added successfully");
+    },
+    onError: (error: any) => {
+      console.error("❌ Pet Vaccination add failed:", error);
+    },
+  });
+}
+
+/**
+ * Pet aşı bilgilerini getir
+ */
+export function usePetVaccination(petId: string) {
+  return useQuery({
+    queryKey: ["pets", "vaccination", petId],
+    queryFn: async () => {
+      const response = await petApi.getVaccination(petId);
+      return response.data.vaccinations || [];
+    },
+    enabled: !!petId, // petId varsa query çalışsın
+    staleTime: 1000 * 60 * 5, // 5 dakika
+    // 401 hatası için retry yapma (token geçersiz)
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+  });
+}
