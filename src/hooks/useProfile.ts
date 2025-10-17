@@ -264,3 +264,25 @@ export function usePetVaccination(petId: string) {
     },
   });
 }
+
+/**
+ * Tek bir aşının detayını getir
+ */
+export function useVaccinationDetail(vaccinationId: string) {
+  return useQuery({
+    queryKey: ["vaccination", "detail", vaccinationId],
+    queryFn: async () => {
+      const response = await petApi.getVaccinationDetail(vaccinationId);
+      return response.data.vaccination;
+    },
+    enabled: !!vaccinationId, // vaccinationId varsa query çalışsın
+    staleTime: 1000 * 60 * 5, // 5 dakika
+    // 401 hatası için retry yapma (token geçersiz)
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+  });
+}
