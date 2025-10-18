@@ -286,3 +286,22 @@ export function useVaccinationDetail(vaccinationId: string) {
     },
   });
 }
+
+/**
+ * Kayıp hayvan ilanı ekleme
+ */
+export function useAddLostPet() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: petApi.addLostPet,
+    onSuccess: () => {
+      // Lost pet listings listesini yenile (sonra eklenecek)
+      queryClient.invalidateQueries({ queryKey: ["lostPets"] });
+      console.log("✅ Lost pet listing added successfully");
+    },
+    onError: (error: any) => {
+      console.error("❌ Lost pet listing add failed:", error);
+    },
+  });
+}
