@@ -17,6 +17,7 @@ import { getPopularBreeds } from "../../constants/petBreeds";
 import { PetType } from "../../types/type";
 import { pickImageFromLibrary } from "../../utils/imagePicker";
 import { petApi } from "../../lib/api";
+import { Ionicons } from "@expo/vector-icons";
 
 interface AddPetModalProps {
   visible: boolean;
@@ -355,7 +356,10 @@ export default function AddPetModal({ visible, onClose }: AddPetModalProps) {
                   >
                     {formatDate(birthdate)}
                   </Text>
-                  <Text className="text-gray-400">📅</Text>
+                  <Text className="text-gray-400">
+                    {" "}
+                    <Ionicons name="calendar" size={24} color="#8B5CF6" />
+                  </Text>
                 </TouchableOpacity>
 
                 {/* DateTimePicker */}

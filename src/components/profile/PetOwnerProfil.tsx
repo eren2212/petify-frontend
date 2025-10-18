@@ -18,6 +18,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Pet } from "../../types/type";
 import { getPetTypeImageByName } from "../../constants/petTypes";
+import { MaterialIcons } from "@expo/vector-icons";
+import { COLORS } from "@/styles/theme/color";
 
 export default function ProfileScreen() {
   const { signOut } = useAuthStore();
@@ -60,10 +62,29 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView className="flex-1">
+      {/* Logout Button - Sağ Üst Köşe */}
+
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ alignItems: "center", paddingVertical: 32 }}
       >
+        <View
+          className="absolute top-4 right-5 z-10"
+          style={{
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+            elevation: 3,
+          }}
+        >
+          <Pressable
+            onPress={() => signOut()}
+            className="bg-white w-12 h-12 rounded-full items-center justify-center"
+          >
+            <MaterialIcons name="logout" size={24} color={COLORS.primary} />
+          </Pressable>
+        </View>
         {/* Avatar */}
         <View className="mb-6">
           <AvatarPicker
@@ -152,14 +173,6 @@ export default function ProfileScreen() {
         )}
 
         {/* Çıkış Butonu */}
-        <Pressable
-          onPress={() => signOut()}
-          className="bg-red-500 px-16 py-4 rounded-full w-11/12 shadow-lg active:bg-red-600 mt-4"
-        >
-          <Text className="text-white font-bold text-center text-base">
-            Çıkış Yap
-          </Text>
-        </Pressable>
       </ScrollView>
 
       {/* Add Pet Modal */}
