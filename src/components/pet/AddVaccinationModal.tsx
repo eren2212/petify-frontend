@@ -13,6 +13,7 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useAddVaccination } from "../../hooks/useProfile";
 import Toast from "react-native-toast-message";
+import { Ionicons } from "@expo/vector-icons";
 
 interface AddVaccinationModalProps {
   visible: boolean;
@@ -176,7 +177,10 @@ export default function AddVaccinationModal({
                   >
                     {formatDate(vaccinationDate)}
                   </Text>
-                  <Text className="text-gray-400">📅</Text>
+                  <Text className="text-gray-400">
+                    {" "}
+                    <Ionicons name="calendar" size={24} color="#8B5CF6" />
+                  </Text>
                 </TouchableOpacity>
 
                 {showVaccinationDatePicker && (
@@ -208,7 +212,10 @@ export default function AddVaccinationModal({
                   >
                     {formatDate(nextDueDate)}
                   </Text>
-                  <Text className="text-gray-400">📅</Text>
+                  <Text className="text-gray-400">
+                    {" "}
+                    <Ionicons name="calendar" size={24} color="#8B5CF6" />
+                  </Text>
                 </TouchableOpacity>
 
                 {showNextDueDatePicker && (
@@ -217,7 +224,7 @@ export default function AddVaccinationModal({
                     mode="date"
                     display={Platform.OS === "ios" ? "spinner" : "default"}
                     onChange={handleNextDueDateChange}
-                    minimumDate={new Date()}
+                    minimumDate={vaccinationDate || new Date()}
                     locale="tr-TR"
                     textColor="black"
                   />
