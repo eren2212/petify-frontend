@@ -39,7 +39,7 @@ export default function ListingsScreen() {
               <Ionicons name="search" size={32} color={COLORS.primary} />
             </View>
             <Text className="text-gray-900 font-bold text-base text-center">
-              Add Lost Pet
+              Kaybolmuş Hayvan İlanı
             </Text>
           </TouchableOpacity>
 
@@ -64,7 +64,7 @@ export default function ListingsScreen() {
               <Ionicons name="heart" size={32} color="#EF4444" />
             </View>
             <Text className="text-gray-900 font-bold text-base text-center">
-              Adopt a Pet
+              Sahiplendirme Hayvan İlanı
             </Text>
           </TouchableOpacity>
         </View>

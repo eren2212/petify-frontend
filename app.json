@@ -14,22 +14,40 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "config": {
+        "googleMapsApiKey": "process.env.IOS_GOOGLE_MAPS_API_KEY"
+      },
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Bu uygulama kayıp hayvan ilanlarında konum bilgisi almak için konum iznine ihtiyaç duyar.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Bu uygulama kayıp hayvan ilanlarında konum bilgisi almak için konum iznine ihtiyaç duyar."
+      }
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+      "config": {
+        "googleMaps": {
+          "apiKey": "process.env.ANDORID_GOOGLE_MAPS_API_KEY"
+        },
+        "package": "com.eren1247.petfiy",
+        "adaptiveIcon": {
+          "foregroundImage": "./assets/adaptive-icon.png",
+          "backgroundColor": "#ffffff"
+        },
+        "edgeToEdgeEnabled": true,
+        "predictiveBackGestureEnabled": false
       },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
-    },
-    "web": {
-      "favicon": "./assets/favicon.png",
-      "bundler": "metro"
-    },
-    "plugins": [
-      "expo-router"
-    ]
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
+      "web": {
+        "favicon": "./assets/favicon.png",
+        "bundler": "metro"
+      },
+      "plugins": ["expo-router"],
+      "extra": {
+        "router": {},
+        "eas": {
+          "projectId": "87f0b95e-49e2-490a-9a8d-8dc550dbba2b"
+        }
+      }
+    }
   }
 }

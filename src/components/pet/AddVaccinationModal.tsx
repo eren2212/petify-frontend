@@ -101,12 +101,30 @@ export default function AddVaccinationModal({
     setShowVaccinationDatePicker(Platform.OS === "ios");
     if (selectedDate) {
       setVaccinationDate(selectedDate);
+      // Eğer sonraki aşı tarihi seçilmişse ve yeni aşı tarihinden önceyse sıfırla
+      if (nextDueDate && selectedDate >= nextDueDate) {
+        setNextDueDate(null);
+        Toast.show({
+          type: "info",
+          text1: "Sonraki aşı tarihi sıfırlandı. Lütfen yeni bir tarih seçin.",
+          bottomOffset: 40,
+        });
+      }
     }
   };
 
   const handleNextDueDateChange = (event: any, selectedDate?: Date) => {
     setShowNextDueDatePicker(Platform.OS === "ios");
     if (selectedDate) {
+      // Eğer aşı tarihi seçilmişse ve seçilen tarih aşı tarihinden önceyse uyarı ver
+      if (vaccinationDate && selectedDate <= vaccinationDate) {
+        Toast.show({
+          type: "error",
+          text1: "Sonraki aşı tarihi, aşı tarihinden sonra olmalıdır!",
+          bottomOffset: 40,
+        });
+        return;
+      }
       setNextDueDate(selectedDate);
     }
   };
@@ -220,11 +238,17 @@ export default function AddVaccinationModal({
 
                 {showNextDueDatePicker && (
                   <DateTimePicker
-                    value={nextDueDate || new Date()}
+                    value={nextDueDate || vaccinationDate || new Date()}
                     mode="date"
                     display={Platform.OS === "ios" ? "spinner" : "default"}
                     onChange={handleNextDueDateChange}
-                    minimumDate={vaccinationDate || new Date()}
+                    minimumDate={
+                      vaccinationDate
+                        ? new Date(
+                            vaccinationDate.getTime() + 24 * 60 * 60 * 1000
+                          )
+                        : new Date()
+                    }
                     locale="tr-TR"
                     textColor="black"
                   />

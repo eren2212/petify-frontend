@@ -17,6 +17,7 @@ import Toast from "react-native-toast-message";
 import { useAddLostPet, usePetTypes } from "../../hooks/useProfile";
 import { getPopularBreeds } from "../../constants/petBreeds";
 import { PetType } from "../../types/type";
+import MapLocationPicker from "../map/MapLocationPicker";
 
 interface AddLostPetModalProps {
   visible: boolean;
@@ -51,6 +52,7 @@ export default function AddLostPetModal({
   const [lastSeenLocation, setLastSeenLocation] = useState<string>("");
   const [latitude, setLatitude] = useState<string>("");
   const [longitude, setLongitude] = useState<string>("");
+  const [showMapPicker, setShowMapPicker] = useState(false);
 
   // Form state - Contact Information
   const [contactPhone, setContactPhone] = useState<string>("");
@@ -125,6 +127,14 @@ export default function AddLostPetModal({
   const handleBreedSelect = (breed: string) => {
     setSelectedBreed(breed);
     setShowBreedDropdown(false);
+  };
+
+  // Handle map location selection
+  const handleLocationSelect = (lat: number, lng: number, address: string) => {
+    setLatitude(lat.toString());
+    setLongitude(lng.toString());
+    // lastSeenLocation'ı değiştirme, kullanıcı manuel yazsın
+    setShowMapPicker(false);
   };
 
   // Submit handler
@@ -410,6 +420,7 @@ export default function AddLostPetModal({
                       onChange={handleBirthdateChange}
                       maximumDate={new Date()}
                       locale="tr-TR"
+                      textColor="black"
                     />
                   )}
                 </View>
@@ -528,6 +539,7 @@ export default function AddLostPetModal({
                       onChange={handleLostDateChange}
                       maximumDate={new Date()}
                       locale="tr-TR"
+                      textColor="black"
                     />
                   )}
                 </View>
@@ -598,34 +610,28 @@ export default function AddLostPetModal({
                   />
                 </View>
 
-                {/* Coordinates */}
-                <View className="flex-row gap-3">
-                  <View className="flex-1">
-                    <Text className="text-sm font-medium text-gray-700 mb-2">
-                      Enlem *
-                    </Text>
-                    <TextInput
-                      className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-900"
-                      placeholder="41.0082"
-                      placeholderTextColor="#9CA3AF"
-                      value={latitude}
-                      onChangeText={setLatitude}
-                      keyboardType="numeric"
-                    />
-                  </View>
-                  <View className="flex-1">
-                    <Text className="text-sm font-medium text-gray-700 mb-2">
-                      Boylam *
-                    </Text>
-                    <TextInput
-                      className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-900"
-                      placeholder="28.9784"
-                      placeholderTextColor="#9CA3AF"
-                      value={longitude}
-                      onChangeText={setLongitude}
-                      keyboardType="numeric"
-                    />
-                  </View>
+                {/* Map Location Picker */}
+                <View className="mb-4">
+                  <Text className="text-sm font-medium text-gray-700 mb-2">
+                    Konum Seç *
+                  </Text>
+                  <TouchableOpacity
+                    className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 flex-row justify-between items-center"
+                    onPress={() => setShowMapPicker(true)}
+                  >
+                    <View className="flex-1">
+                      {latitude && longitude ? (
+                        <Text className="text-gray-900 text-base">
+                          Haritadan konum başarıyla seçildi
+                        </Text>
+                      ) : (
+                        <Text className="text-gray-500 text-base">
+                          Haritadan konum seçin
+                        </Text>
+                      )}
+                    </View>
+                    <Ionicons name="map" size={20} color={COLORS.primary} />
+                  </TouchableOpacity>
                 </View>
               </View>
 
@@ -737,6 +743,16 @@ export default function AddLostPetModal({
           </View>
         </View>
       </KeyboardAvoidingView>
+
+      {/* Map Location Picker Modal */}
+      <MapLocationPicker
+        visible={showMapPicker}
+        onClose={() => setShowMapPicker(false)}
+        onLocationSelect={handleLocationSelect}
+        initialLatitude={latitude ? parseFloat(latitude) : 41.0082}
+        initialLongitude={longitude ? parseFloat(longitude) : 28.9784}
+        initialAddress={lastSeenLocation || "İstanbul, Türkiye"}
+      />
     </Modal>
   );
 }
