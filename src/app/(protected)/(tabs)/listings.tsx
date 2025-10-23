@@ -9,7 +9,7 @@ export default function ListingsScreen() {
   const [showAddLostPetModal, setShowAddLostPetModal] = useState(false);
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 ">
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
