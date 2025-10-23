@@ -152,7 +152,7 @@ export default function AddVaccinationModal({
             <View className="flex-row justify-between items-center px-6 py-4 border-b border-gray-200">
               <Text className="text-xl font-bold text-gray-900">Aşı Ekle</Text>
               <TouchableOpacity onPress={onClose}>
-                <Text className="text-2xl text-gray-500">×</Text>
+                <Ionicons name="close" size={28} color="#6B7280" />
               </TouchableOpacity>
             </View>
 
