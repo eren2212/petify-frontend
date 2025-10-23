@@ -441,4 +441,16 @@ export const petApi = {
       throw error;
     }
   },
+
+  // Kayıp hayvan ilanı ekle
+  addLostPet: async (lostPetData: any) => {
+    try {
+      const { data } = await instance.post("/pet/lost", lostPetData);
+      console.log("✅ Lost pet listing added:", data);
+      return data;
+    } catch (error: any) {
+      console.log("Add Lost Pet Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
 };
