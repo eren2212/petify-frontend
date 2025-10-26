@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -17,6 +18,8 @@ import Toast from "react-native-toast-message";
 import { useAddLostPet, usePetTypes } from "../../hooks/useProfile";
 import { getPopularBreeds } from "../../constants/petBreeds";
 import { PetType } from "../../types/type";
+import { pickImageFromLibrary } from "../../utils/imagePicker";
+import { petApi } from "../../lib/api";
 import MapLocationPicker from "../map/MapLocationPicker";
 
 interface AddLostPetModalProps {
@@ -62,6 +65,9 @@ export default function AddLostPetModal({
   const [rewardAmount, setRewardAmount] = useState<string>("");
   const [rewardDescription, setRewardDescription] = useState<string>("");
 
+  // Form state - Pet Image
+  const [petImageUri, setPetImageUri] = useState<string | null>(null);
+
   // Date picker states
   const [showBirthdatePicker, setShowBirthdatePicker] = useState(false);
   const [showLostDatePicker, setShowLostDatePicker] = useState(false);
@@ -95,6 +101,7 @@ export default function AddLostPetModal({
     setContactEmail("");
     setRewardAmount("");
     setRewardDescription("");
+    setPetImageUri(null);
   };
 
   // Date change handlers
@@ -135,6 +142,14 @@ export default function AddLostPetModal({
     setLongitude(lng.toString());
     // lastSeenLocation'ı değiştirme, kullanıcı manuel yazsın
     setShowMapPicker(false);
+  };
+
+  // Resim seçme fonksiyonu
+  const handlePickImage = async () => {
+    const imageUri = await pickImageFromLibrary([1, 1]); // Kare format
+    if (imageUri) {
+      setPetImageUri(imageUri);
+    }
   };
 
   // Submit handler
@@ -185,6 +200,16 @@ export default function AddLostPetModal({
       return;
     }
 
+    // Fotoğraf zorunlu
+    if (!petImageUri) {
+      Toast.show({
+        type: "error",
+        text1: "Lütfen hayvanın fotoğrafını ekleyin!",
+        bottomOffset: 40,
+      });
+      return;
+    }
+
     // Cins belirleme: Eğer "Diğer" seçildiyse custom breed kullan
     const finalBreed = selectedBreed === "Diğer" ? customBreed : selectedBreed;
 
@@ -212,12 +237,32 @@ export default function AddLostPetModal({
     };
 
     addLostPet(lostPetData, {
-      onSuccess: () => {
-        Toast.show({
-          type: "success",
-          text1: "Kayıp hayvan ilanı başarıyla oluşturuldu!",
-          bottomOffset: 40,
-        });
+      onSuccess: async (response: any) => {
+        console.log("✅ Lost pet listing başarıyla eklendi!");
+
+        // Adım 2: Fotoğrafı yükle
+        if (petImageUri && response?.data?.listing?.id) {
+          const listingId = response.data.listing.id;
+
+          try {
+            await petApi.uploadLostPetImage(listingId, petImageUri);
+            console.log("✅ Lost pet resmi başarıyla yüklendi!");
+            Toast.show({
+              type: "success",
+              text1: "Kayıp hayvan ilanı ve fotoğrafı başarıyla kaydedildi!",
+              bottomOffset: 40,
+            });
+          } catch (imageError: any) {
+            console.error("❌ Resim yükleme hatası:", imageError);
+            Toast.show({
+              type: "warning",
+              text1: "İlan oluşturuldu ancak resim yüklenemedi",
+              text2: "Resmi daha sonra ekleyebilirsiniz",
+              bottomOffset: 40,
+            });
+          }
+        }
+
         resetForm();
         onClose();
       },
@@ -562,31 +607,48 @@ export default function AddLostPetModal({
               {/* Photos Section */}
               <View className="py-6 border-t border-gray-200">
                 <Text className="text-lg font-bold text-gray-900 mb-4">
-                  Fotoğraflar
+                  Fotoğraf (Zorunlu)
                 </Text>
 
                 <TouchableOpacity
                   className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-8 items-center"
-                  onPress={() => {
-                    Toast.show({
-                      type: "info",
-                      text1: "Fotoğraf yükleme özelliği yakında eklenecek",
-                      bottomOffset: 40,
-                    });
-                  }}
+                  onPress={handlePickImage}
+                  disabled={isAdding}
                 >
-                  <MaterialCommunityIcons
-                    name="camera-plus"
-                    size={48}
-                    color="#9CA3AF"
-                  />
-                  <Text className="text-gray-500 font-medium mt-3 text-base">
-                    Add Photos
-                  </Text>
-                  <Text className="text-gray-400 text-sm mt-1 text-center">
-                    Upload photos of the pet to help with identification or
-                    adoption.
-                  </Text>
+                  {petImageUri ? (
+                    <View className="w-full items-center">
+                      <Image
+                        source={{ uri: petImageUri }}
+                        className="w-64 h-64 rounded-xl mb-3"
+                        resizeMode="cover"
+                      />
+                      <View className="absolute top-2 right-2 bg-white rounded-full p-2">
+                        <Ionicons
+                          name="checkmark-circle"
+                          size={24}
+                          color="#10B981"
+                        />
+                      </View>
+                      <Text className="text-green-600 font-medium text-base">
+                        Fotoğraf Seçildi (Değiştirmek için tıklayın)
+                      </Text>
+                    </View>
+                  ) : (
+                    <>
+                      <MaterialCommunityIcons
+                        name="camera-plus"
+                        size={48}
+                        color="#9CA3AF"
+                      />
+                      <Text className="text-gray-500 font-medium mt-3 text-base">
+                        Fotoğraf Ekle
+                      </Text>
+                      <Text className="text-gray-400 text-sm mt-1 text-center">
+                        Evcil hayvanınızın fotoğrafını yükleyerek kimlik tespiti
+                        veya bulma işlemlerine yardımcı olun.
+                      </Text>
+                    </>
+                  )}
                 </TouchableOpacity>
               </View>
 
@@ -720,7 +782,9 @@ export default function AddLostPetModal({
             {/* Submit Button */}
             <View className="p-6 border-t border-gray-200">
               <TouchableOpacity
-                className="bg-primary rounded-full py-4 items-center"
+                className={`rounded-full py-4 items-center ${
+                  !petImageUri || isAdding ? "bg-gray-300" : "bg-primary"
+                }`}
                 style={{
                   shadowColor: COLORS.primary,
                   shadowOffset: { width: 0, height: 4 },
@@ -729,7 +793,7 @@ export default function AddLostPetModal({
                   elevation: 5,
                 }}
                 onPress={handleSubmit}
-                disabled={isAdding}
+                disabled={!petImageUri || isAdding}
               >
                 {isAdding ? (
                   <ActivityIndicator color="white" />
