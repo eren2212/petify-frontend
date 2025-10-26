@@ -16,17 +16,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     // İlk yüklemede auth durumunu kontrol et
     initialize();
-
-    // App state değişikliklerini dinle (background'dan döndüğünde kontrol et)
-    const subscription = AppState.addEventListener("change", (nextAppState) => {
-      if (nextAppState === "active") {
-        initialize();
-      }
-    });
-
-    return () => {
-      subscription.remove();
-    };
   }, []);
 
   // Auth state değiştiğinde otomatik yönlendirme yap

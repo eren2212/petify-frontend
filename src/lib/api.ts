@@ -453,4 +453,37 @@ export const petApi = {
       throw error;
     }
   },
+
+  // Kayıp hayvan resmi yükle
+  uploadLostPetImage: async (listingId: string, imageUri: string) => {
+    try {
+      const formData = new FormData();
+      const filename = imageUri.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename || "");
+      const type = match ? `image/${match[1]}` : "image/jpeg";
+
+      formData.append("lostpets", {
+        uri: imageUri,
+        name: filename || "lost-pet.jpg",
+        type,
+      } as any);
+
+      formData.append("petId", listingId);
+
+      const { data } = await instance.post("/pet/lost/image", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("✅ Lost pet image uploaded:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Lost Pet Image Upload Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
 };
