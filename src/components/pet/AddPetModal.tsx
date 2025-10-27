@@ -195,7 +195,7 @@ export default function AddPetModal({ visible, onClose }: AddPetModalProps) {
                 Hayvan Ekle
               </Text>
               <TouchableOpacity onPress={onClose}>
-                <Text className="text-2xl text-gray-500">×</Text>
+                <Ionicons name="close" size={28} color="#6B7280" />
               </TouchableOpacity>
             </View>
 

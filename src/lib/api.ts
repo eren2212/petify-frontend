@@ -51,12 +51,12 @@ instance.interceptors.response.use(
       const { useAuthStore } = await import("../stores/authStore");
       useAuthStore.getState().reset();
 
-      // Signin sayfasına yönlendir
-      try {
-        router.replace("/(auth)/signin");
-      } catch (routerError) {
-        console.error("Router yönlendirme hatası:", routerError);
-      }
+      // // Signin sayfasına yönlendir
+      // try {
+      //   router.replace("/(auth)/signin");
+      // } catch (routerError) {
+      //   console.error("Router yönlendirme hatası:", routerError);
+      // }
     }
     return Promise.reject(error);
   }
