@@ -19,26 +19,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   // Auth state değiştiğinde otomatik yönlendirme yap
-  useEffect(() => {
-    if (isLoading) return;
+  // useEffect(() => {
+  //   if (isLoading) return;
 
-    const inAuthGroup = segments[0] === "(auth)";
-    const inProtectedGroup = segments[0] === "(protected)";
+  //   const inAuthGroup = segments[0] === "(auth)";
+  //   const inProtectedGroup = segments[0] === "(protected)";
 
-    console.log("Current segments:", segments);
-    console.log("isAuthenticated:", isAuthenticated);
+  //   console.log("Current segments:", segments);
+  //   console.log("isAuthenticated:", isAuthenticated);
 
-    if (!isAuthenticated && inProtectedGroup) {
-      // Authenticated değilse ve protected sayfadaysa, login'e yönlendir
-      console.log("Redirecting to signin...");
-      router.replace("/(auth)/signin");
-    } else if (isAuthenticated && inAuthGroup) {
-      // Authenticated ise ve auth sayfasındaysa, ana sayfaya yönlendir
-      // Role-based routing TanStack Query ile user profile yüklendikten sonra yapılacak
-      console.log("✅ Redirecting to protected area...");
-      router.replace("/(protected)/(tabs)");
-    }
-  }, [isAuthenticated, segments, isLoading]);
+  //   if (!isAuthenticated && inProtectedGroup) {
+  //     // Authenticated değilse ve protected sayfadaysa, login'e yönlendir
+  //     console.log("Redirecting to signin...");
+  //     router.replace("/(auth)/signin");
+  //   } else if (isAuthenticated && inAuthGroup) {
+  //     // Authenticated ise ve auth sayfasındaysa, ana sayfaya yönlendir
+  //     // Role-based routing TanStack Query ile user profile yüklendikten sonra yapılacak
+  //     console.log("✅ Redirecting to protected area...");
+  //     router.replace("/(protected)/(tabs)");
+  //   }
+  // }, [isAuthenticated, segments, isLoading]);
 
   if (isLoading) {
     return (

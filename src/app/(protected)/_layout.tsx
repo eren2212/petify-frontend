@@ -6,7 +6,7 @@ export default function ProtectedLayout() {
   const { isAuthenticated } = useAuthStore();
 
   if (!isAuthenticated) {
-    return <Redirect href="/(auth)/signin" />;
+    return <Redirect href="/(auth)/index" />;
   }
 
   return (
