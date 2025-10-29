@@ -4,9 +4,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "@/styles/theme/color";
 import AddLostPetModal from "../../../components/pet/AddLostPetModal";
+import LostPetsListings from "@/components/listings/LostPetsListings";
+import AdoptionPetsListings from "@/components/listings/AdoptionPetsListings";
 
 export default function ListingsScreen() {
   const [showAddLostPetModal, setShowAddLostPetModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<"lost" | "adoption">("lost");
 
   return (
     <SafeAreaView className="flex-1 ">
@@ -16,7 +19,9 @@ export default function ListingsScreen() {
         contentContainerStyle={{ paddingVertical: 24, paddingHorizontal: 20 }}
       >
         {/* Header */}
-        <Text className="text-3xl font-bold text-gray-900 mb-8">İlanlar</Text>
+        <Text className="text-3xl font-bold text-gray-900 mb-8 text-center font-sans ">
+          Hayvan İlanları
+        </Text>
 
         {/* Action Cards */}
         <View className="flex-row gap-4 mb-6">
@@ -69,13 +74,44 @@ export default function ListingsScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* TODO: İlanlar listesi buraya gelecek */}
-        <View className="py-20 items-center">
-          <Ionicons name="list" size={64} color="#D1D5DB" />
-          <Text className="text-gray-400 mt-4 text-base">
-            Henüz ilan bulunmuyor
-          </Text>
+        {/* Kategori Seçimi */}
+        <View className="flex-row gap-4 mb-6 justify-around items-start">
+          <TouchableOpacity
+            className={`p-4 rounded-3xl items-center justify-center w-2/5 ${
+              activeTab === "lost"
+                ? "bg-primary"
+                : "bg-white border border-primary"
+            }`}
+            onPress={() => setActiveTab("lost")}
+          >
+            <Text
+              className={`text-center flex-1 font-bold ${
+                activeTab === "lost" ? "text-white" : "text-primary"
+              }`}
+            >
+              Kayıp
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className={`p-4 rounded-3xl items-center justify-center w-2/5 ${
+              activeTab === "adoption"
+                ? "bg-primary"
+                : "bg-white border border-primary"
+            }`}
+            onPress={() => setActiveTab("adoption")}
+          >
+            <Text
+              className={`text-center flex-1 font-bold ${
+                activeTab === "adoption" ? "text-white" : "text-primary"
+              }`}
+            >
+              Yuva Bekleyen
+            </Text>
+          </TouchableOpacity>
         </View>
+
+        {/* Liste Render */}
+        {activeTab === "lost" ? <LostPetsListings /> : <AdoptionPetsListings />}
       </ScrollView>
 
       {/* Add Lost Pet Modal */}

@@ -18,6 +18,7 @@ import { PetType } from "../../types/type";
 import { pickImageFromLibrary } from "../../utils/imagePicker";
 import { petApi } from "../../lib/api";
 import { Ionicons } from "@expo/vector-icons";
+import { COLORS } from "../../styles/theme/color";
 
 interface AddPetModalProps {
   visible: boolean;
@@ -358,7 +359,11 @@ export default function AddPetModal({ visible, onClose }: AddPetModalProps) {
                   </Text>
                   <Text className="text-gray-400">
                     {" "}
-                    <Ionicons name="calendar" size={24} color="#8B5CF6" />
+                    <Ionicons
+                      name="calendar"
+                      size={24}
+                      color={COLORS.primary}
+                    />
                   </Text>
                 </TouchableOpacity>
 

@@ -51,12 +51,12 @@ instance.interceptors.response.use(
       const { useAuthStore } = await import("../stores/authStore");
       useAuthStore.getState().reset();
 
-      // // Signin sayfasına yönlendir
-      // try {
-      //   router.replace("/(auth)/signin");
-      // } catch (routerError) {
-      //   console.error("Router yönlendirme hatası:", routerError);
-      // }
+      // Signin sayfasına yönlendir
+      try {
+        router.replace("/(auth)/signin");
+      } catch (routerError) {
+        console.error("Router yönlendirme hatası:", routerError);
+      }
     }
     return Promise.reject(error);
   }
@@ -481,6 +481,23 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Lost Pet Image Upload Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Yakındaki kayıp hayvanları getir
+  getNearbyLostPets: async (latitude: number, longitude: number) => {
+    try {
+      const { data } = await instance.get(
+        `/pet/lost/nearby?latitude=${latitude}&longitude=${longitude}`
+      );
+      console.log("✅ Nearby lost pets fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Nearby Lost Pets Error:",
         error.response?.data || error.message
       );
       throw error;

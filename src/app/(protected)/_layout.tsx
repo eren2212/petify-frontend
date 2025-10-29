@@ -6,7 +6,7 @@ export default function ProtectedLayout() {
   const { isAuthenticated } = useAuthStore();
 
   if (!isAuthenticated) {
-    return <Redirect href="/(auth)/index" />;
+    return <Redirect href="/index" />;
   }
 
   return (
@@ -14,6 +14,13 @@ export default function ProtectedLayout() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen
         name="pets"
+        options={{
+          headerShown: false,
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
+        name="lostpets"
         options={{
           headerShown: false,
           presentation: "modal",

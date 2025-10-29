@@ -296,12 +296,36 @@ export function useAddLostPet() {
   return useMutation({
     mutationFn: petApi.addLostPet,
     onSuccess: () => {
-      // Lost pet listings listesini yenile (sonra eklenecek)
-      queryClient.invalidateQueries({ queryKey: ["lostPets"] });
+      // Lost pet listings listesini yenile
+      queryClient.invalidateQueries({ queryKey: ["lostPets", "nearby"] });
       console.log("✅ Lost pet listing added successfully");
     },
     onError: (error: any) => {
       console.error("❌ Lost pet listing add failed:", error);
+    },
+  });
+}
+
+/**
+ * Yakındaki kayıp hayvanları getir
+ */
+export function useNearbyLostPets(latitude: number, longitude: number) {
+  return useQuery({
+    queryKey: ["lostPets", "nearby", latitude, longitude],
+    queryFn: async () => {
+      const response = await petApi.getNearbyLostPets(latitude, longitude);
+      // Backend response: { code: 200, data: { data: [...], message: "...", total_count: 2 } }
+      // İçteki data array'ini döndür
+      return response.data?.data || [];
+    },
+    enabled: !!latitude && !!longitude, // latitude ve longitude varsa query çalışsın
+    staleTime: 1000 * 60 * 5, // 5 dakika
+    // 401 hatası için retry yapma (token geçersiz)
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
     },
   });
 }
