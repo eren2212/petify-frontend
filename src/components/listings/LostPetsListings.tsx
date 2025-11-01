@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNearbyLostPets } from "../../hooks/useProfile";
+import { useAppStore } from "../../stores";
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000/api";
 
@@ -23,13 +24,14 @@ interface LostPet {
 }
 
 export default function LostPetsListings() {
-  // Örnek koordinatlar - gerçek uygulamada kullanıcının konumu alınmalı
-  const latitude = 38.009085; // Konya örnek
-  const longitude = 32.520991;
+  // Zustand store'dan dinamik konumu al
+  const { latitude, longitude, isLocationLoading } = useAppStore();
 
+  // Konum yüklenene kadar veya konum yoksa hook'u çalıştırma
+  // useNearbyLostPets hook'u zaten enabled kontrolü yapıyor (!!latitude && !!longitude)
   const { data: lostPets = [], isLoading } = useNearbyLostPets(
-    latitude,
-    longitude
+    latitude || 0,
+    longitude || 0
   );
 
   const renderPetCard = ({ item }: { item: LostPet }) => {
@@ -113,11 +115,26 @@ export default function LostPetsListings() {
     );
   };
 
-  if (isLoading) {
+  // Konum yükleniyor veya veriler yükleniyor
+  if (isLocationLoading || isLoading) {
     return (
       <View className="items-center justify-center py-20">
         <ActivityIndicator size="large" color="#8B5CF6" />
-        <Text className="text-gray-400 mt-4">Yükleniyor...</Text>
+        <Text className="text-gray-400 mt-4">
+          {isLocationLoading ? "Konum alınıyor..." : "Yükleniyor..."}
+        </Text>
+      </View>
+    );
+  }
+
+  // Konum yüklenemediyse veya konum yoksa
+  if (latitude === null || longitude === null) {
+    return (
+      <View className="items-center justify-center py-20">
+        <Ionicons name="location-outline" size={64} color="#D1D5DB" />
+        <Text className="text-gray-400 mt-4 text-base">
+          Konum bilgisi alınamadı
+        </Text>
       </View>
     );
   }
