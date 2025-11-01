@@ -257,3 +257,45 @@ export function useNearbyLostPets(latitude: number, longitude: number) {
     },
   });
 }
+
+/**
+ * Kayıp hayvan ilanı detayını getir
+ */
+export function useLostPetDetail(lostPetId: string) {
+  return useQuery({
+    queryKey: ["lostPets", "detail", lostPetId],
+    queryFn: async () => {
+      const response = await petApi.getLostPetDetail(lostPetId);
+      // Backend response.data.listing döndürüyor
+      return response.data.listing;
+    },
+    enabled: !!lostPetId, // lostPetId varsa query çalışsın
+    staleTime: 1000 * 60 * 5, // 5 dakika
+    // 401 hatası için retry yapma (token geçersiz)
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+  });
+}
+
+export function useLostPetImages(lostPetId: string) {
+  return useQuery({
+    queryKey: ["lostPets", "images", lostPetId],
+    queryFn: async () => {
+      const response = await petApi.getLostPetImages(lostPetId);
+      return response.data.images || [];
+    },
+    enabled: !!lostPetId, // lostPetId varsa query çalışsın
+    staleTime: 1000 * 60 * 5, // 5 dakika
+    // 401 hatası için retry yapma (token geçersiz)
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+  });
+}
