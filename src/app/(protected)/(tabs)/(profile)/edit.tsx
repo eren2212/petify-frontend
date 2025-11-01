@@ -43,7 +43,6 @@ export default function Edit() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <BackHeader title="Profili Düzenle" />
       {renderEditForm()}
     </SafeAreaView>
   );
