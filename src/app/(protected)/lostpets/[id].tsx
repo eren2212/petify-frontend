@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Linking,
   Alert,
+  Platform,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useLostPetDetail } from "../../../hooks/usePet";
@@ -14,7 +15,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { getPetTypeImageByName } from "../../../constants/petTypes";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { COLORS } from "@/styles/theme/color";
-import MapView, { Circle, Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, {
+  Callout,
+  Circle,
+  Marker,
+  PROVIDER_GOOGLE,
+} from "react-native-maps";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000/api";
 
@@ -116,6 +122,31 @@ export default function LostPetDetailScreen() {
     }
   };
 
+  const openMaps = (lat: number, lng: number, label: string) => {
+    // Cihazın platformunu (iOS veya Android) kontrol et
+    const platform = Platform.OS;
+
+    let url = "";
+
+    if (platform === "ios") {
+      // Apple Haritalar için URL şeması
+      // saddr (source address) boş bırakılırsa, mevcut konumu kullanır.
+      url = `maps://?daddr=${lat},${lng}&label=${label}`;
+    } else {
+      // Android (Google Haritalar) için URL şeması
+      // 'q' parametresi hedefi belirler. Navigasyonu başlatır.
+      url = `google.navigation:q=${lat}+${lng}`;
+
+      // Alternatif olarak, sadece konumu göstermek için:
+      // url = `geo:${lat},${lng}?q=${lat},${lng}(${label})`;
+    }
+
+    // Oluşturulan URL'yi açmayı dene
+    Linking.openURL(url).catch((err) =>
+      console.error("Harita uygulaması açılamadı:", err)
+    );
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <ScrollView
@@ -124,7 +155,7 @@ export default function LostPetDetailScreen() {
         contentContainerStyle={{ paddingBottom: 32 }}
       >
         {/* Header - KAYIP Badge */}
-        <View className="bg-red-500 px-6 py-4 rounded-full items-center justify-center mx-2 ">
+        <View className="bg-red-500 px-6 py-4 rounded-full items-center justify-center mx-2">
           <View className="flex-row items-center justify-center">
             <Ionicons name="alert-circle" size={24} color="white" />
             <Text className="text-white text-lg font-bold ml-2">KAYIP</Text>
@@ -134,7 +165,7 @@ export default function LostPetDetailScreen() {
         {/* Pet Image & Header */}
         <View className="items-center pt-6 pb-8 px-6">
           <View
-            className="w-48 h-48 rounded-2xl overflow-hidden bg-white border-2 border-gray-200"
+            className="w-80 h-80 rounded-2xl overflow-hidden bg-white border-2 border-gray-200"
             style={{
               shadowColor: "#000",
               shadowOffset: { width: 0, height: 8 },
@@ -154,7 +185,7 @@ export default function LostPetDetailScreen() {
           </View>
 
           {/* İsim */}
-          <Text className="text-4xl font-bold text-gray-900 mt-6 tracking-tight">
+          <Text className="text-2xl font-bold text-gray-900 mt-6 tracking-tight">
             {lostPet.pet_name}
           </Text>
 
@@ -216,23 +247,6 @@ export default function LostPetDetailScreen() {
                 {lostPet.last_seen_location || "Belirtilmemiş"}
               </Text>
             </View>
-
-            {/* Koordinatlar varsa göster */}
-            {/* {lostPet.last_seen_latitude && lostPet.last_seen_longitude && (
-              <>
-                <View className="h-px bg-gray-100 my-1" />
-                <View className="flex-row justify-between items-center py-3.5">
-                  <View className="flex-row items-center flex-1">
-                    <Ionicons name="map-outline" size={20} color="#6B7280" />
-                    <Text className="text-gray-500 text-base ml-2">Konum</Text>
-                  </View>
-                  <Text className="text-gray-900 font-semibold text-sm">
-                    {lostPet.last_seen_latitude.toFixed(4)},{" "}
-                    {lostPet.last_seen_longitude.toFixed(4)}
-                  </Text>
-                </View>
-              </>
-            )} */}
           </View>
         </View>
 
@@ -349,7 +363,7 @@ export default function LostPetDetailScreen() {
         <MapView
           style={{
             width: "90%",
-            height: 200,
+            height: 350,
             borderRadius: 12,
             alignSelf: "center",
             marginBottom: 24,
@@ -383,11 +397,28 @@ export default function LostPetDetailScreen() {
               latitude: lostPet.last_seen_latitude,
               longitude: lostPet.last_seen_longitude,
             }}
-            radius={1000} // <-- 1 kilometre = 1000 metre
+            radius={500} // <-- 1 kilometre = 1000 metre
             strokeColor="rgba(239, 83, 80, 0.8)"
             strokeWidth={2}
             fillColor="rgba(239, 83, 80, 0.2)"
           />
+
+          <Callout>
+            <View className=" rounded-3xl p-3 ml-2 mt-2">
+              <TouchableOpacity
+                className="bg-white p-4 rounded-full items-center justify-center w-full"
+                onPress={() =>
+                  openMaps(
+                    lostPet.last_seen_latitude,
+                    lostPet.last_seen_longitude,
+                    lostPet.last_seen_location
+                  )
+                }
+              >
+                <Ionicons name="trail-sign" size={24} color={COLORS.primary} />
+              </TouchableOpacity>
+            </View>
+          </Callout>
         </MapView>
 
         {/* Contact Info Section */}
@@ -418,16 +449,16 @@ export default function LostPetDetailScreen() {
 
             <View className="flex-col items-center justify-between gap-2 mt-4">
               <TouchableOpacity
-                className="bg-red-500  p-4 rounded-full items-start justify-center w-full"
+                className="bg-text  p-4 rounded-full items-center justify-center w-full"
                 onPress={handlePhonePress}
               >
-                <Text className="text-white text-base text-center font-bold">
-                  Telefon : {lostPet.contact_phone}
+                <Text className="text-white text-base text-center font-bold ">
+                  Tel : {lostPet.contact_phone}
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity className="bg-red-500 p-4 rounded-full items-start justify-center w-full">
-                <Text className="text-white text-base text-center font-bold">
-                  E-posta : {lostPet.contact_email}
+              <TouchableOpacity className="bg-text p-4 rounded-full items-center justify-center w-full">
+                <Text className="text-white text-base text-center font-bold ">
+                  Mesaj Gönder
                 </Text>
               </TouchableOpacity>
             </View>
