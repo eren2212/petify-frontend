@@ -1,5 +1,5 @@
 import { TouchableOpacity, Text, ActivityIndicator, Alert } from "react-native";
-import { useDeletePetImage, usePetImages } from "../../hooks/useProfile";
+import { useDeletePetImage, usePetImages } from "../../hooks/usePet";
 import { Feather } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
 

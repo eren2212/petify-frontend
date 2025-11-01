@@ -12,7 +12,7 @@ import {
   usePetDetail,
   usePetImages,
   usePetVaccination,
-} from "../../../hooks/useProfile";
+} from "../../../hooks/usePet";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getPetTypeImageByName } from "../../../constants/petTypes";
 import AddVaccinationModal from "../../../components/pet/AddVaccinationModal";

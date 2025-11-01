@@ -15,7 +15,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { COLORS } from "../../styles/theme/color";
 import Toast from "react-native-toast-message";
-import { useAddLostPet, usePetTypes } from "../../hooks/useProfile";
+import { useAddLostPet, usePetTypes } from "../../hooks/usePet";
 import { getPopularBreeds } from "../../constants/petBreeds";
 import { PetType } from "../../types/type";
 import { pickImageFromLibrary } from "../../utils/imagePicker";

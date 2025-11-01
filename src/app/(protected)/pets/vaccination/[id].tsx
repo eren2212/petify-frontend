@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useVaccinationDetail } from "../../../../hooks/useProfile";
+import { useVaccinationDetail } from "../../../../hooks/usePet";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialCommunityIcons, Entypo } from "@expo/vector-icons";
 

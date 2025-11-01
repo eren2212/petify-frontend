@@ -5,7 +5,7 @@
 export * from "./useAuth";
 
 // User profile hooks
-export * from "./useProfile";
+export * from "./usePet";
 
 // Products hooks (sonradan eklenecek)
 // export * from './useProducts';

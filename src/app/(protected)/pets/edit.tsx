@@ -15,7 +15,7 @@ import {
   usePetDetail,
   useUpdatePet,
   usePetImages,
-} from "../../../hooks/useProfile";
+} from "../../../hooks/usePet";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
