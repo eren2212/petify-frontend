@@ -503,4 +503,32 @@ export const petApi = {
       throw error;
     }
   },
+
+  getLostPetDetail: async (lostPetId: string) => {
+    try {
+      const { data } = await instance.get(`/lostpet/detail/${lostPetId}`);
+      console.log("✅ Lost pet detail fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Lost Pet Detail Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  getLostPetImages: async (lostPetId: string) => {
+    try {
+      const { data } = await instance.get(`/lostpet/image/${lostPetId}`);
+      console.log("✅ Lost pet images fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Lost Pet Images Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
 };

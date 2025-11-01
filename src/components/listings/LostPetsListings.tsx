@@ -9,6 +9,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useNearbyLostPets } from "../../hooks/usePet";
 import { useAppStore } from "../../stores";
+import { useRouter } from "expo-router";
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000/api";
 
@@ -24,6 +25,8 @@ interface LostPet {
 }
 
 export default function LostPetsListings() {
+  const router = useRouter();
+
   // Zustand store'dan dinamik konumu al
   const { latitude, longitude, isLocationLoading } = useAppStore();
 
@@ -40,6 +43,7 @@ export default function LostPetsListings() {
       : null;
     return (
       <TouchableOpacity
+        onPress={() => router.push(`/(protected)/lostpets/${item.id}`)}
         className="bg-white rounded-2xl overflow-hidden mb-4 shadow-sm"
         style={{
           flex: 1,
