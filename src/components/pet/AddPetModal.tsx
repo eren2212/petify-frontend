@@ -12,7 +12,7 @@ import {
   Platform,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { usePetTypes, useAddPet } from "../../hooks/useProfile";
+import { usePetTypes, useAddPet } from "../../hooks/usePet";
 import { getPopularBreeds } from "../../constants/petBreeds";
 import { PetType } from "../../types/type";
 import { pickImageFromLibrary } from "../../utils/imagePicker";

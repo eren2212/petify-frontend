@@ -11,7 +11,7 @@ import {
 import { useState } from "react";
 import { useAuthStore } from "../../stores/authStore";
 import { useCurrentUser, getActiveRole } from "../../hooks/useAuth";
-import { useMyPets } from "../../hooks/useProfile";
+import { useMyPets } from "../../hooks/usePet";
 import AvatarPicker from "../AvatarPicker";
 import AddPetModal from "../pet/AddPetModal";
 import { SafeAreaView } from "react-native-safe-area-context";

@@ -11,7 +11,7 @@ import {
   Platform,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useAddVaccination } from "../../hooks/useProfile";
+import { useAddVaccination } from "../../hooks/usePet";
 import Toast from "react-native-toast-message";
 import { Ionicons } from "@expo/vector-icons";
 

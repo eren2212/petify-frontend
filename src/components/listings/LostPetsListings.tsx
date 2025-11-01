@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useNearbyLostPets } from "../../hooks/useProfile";
+import { useNearbyLostPets } from "../../hooks/usePet";
 import { useAppStore } from "../../stores";
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000/api";
