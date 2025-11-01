@@ -13,8 +13,9 @@ export default function ProfileLayout() {
       <Stack.Screen
         name="edit"
         options={{
-          // Edit sayfası modal gibi açılsın istersen
-          presentation: "formSheet",
+          headerShown: true,
+          title: "Profili Düzenle",
+          presentation: "modal",
         }}
       />
     </Stack>

@@ -50,4 +50,4 @@ export const THEMES = {
 };
 
 // 👇 buradan aktif temayı değiştirebilirsin
-export const COLORS = THEMES.nature;
+export const COLORS = THEMES.paw;

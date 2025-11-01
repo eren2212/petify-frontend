@@ -2,7 +2,8 @@ import React, { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { useRouter, useSegments } from "expo-router";
 import { AppState } from "react-native";
-import { useAuthStore } from "../stores";
+import { useAuthStore, useAppStore } from "../stores";
+import { getCurrentLocation } from "../utils/location";
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -12,10 +13,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Zustand store'dan auth state'i al
   const { isAuthenticated, isLoading, initialize } = useAuthStore();
+  const { setLocation, setLocationLoading, setLocationError } = useAppStore();
 
   useEffect(() => {
     // İlk yüklemede auth durumunu kontrol et
     initialize();
+  }, []);
+
+  useEffect(() => {
+    // Uygulama başladığında konumu al
+    const fetchLocation = async () => {
+      setLocationLoading(true);
+      setLocationError(null);
+
+      const location = await getCurrentLocation();
+
+      if (location) {
+        setLocation(location.latitude, location.longitude);
+      } else {
+        setLocationError("Konum alınamadı");
+      }
+
+      setLocationLoading(false);
+    };
+
+    fetchLocation();
   }, []);
 
   // Auth state değiştiğinde otomatik yönlendirme yap
