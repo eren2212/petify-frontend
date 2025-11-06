@@ -299,3 +299,21 @@ export function useLostPetImages(lostPetId: string) {
     },
   });
 }
+
+export function useMyLostPetListings() {
+  return useQuery({
+    queryKey: ["lostPets", "myLostPetListings"],
+    queryFn: async () => {
+      const response = await petApi.getMyLostPetListings();
+      return response.data?.listings || [];
+    },
+    staleTime: 1000 * 60 * 5, // 5 dakika
+    // 401 hatası için retry yapma (token geçersiz)
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+  });
+}

@@ -7,9 +7,10 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useNearbyLostPets } from "../../hooks/usePet";
+import { useNearbyLostPets, useMyLostPetListings } from "../../hooks/usePet";
 import { useAppStore } from "../../stores";
 import { useRouter } from "expo-router";
+import { useMemo } from "react";
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000/api";
 
@@ -22,20 +23,48 @@ interface LostPet {
   last_seen_location: string;
   distance?: number;
   image_url?: string;
+  profile_images?: Array<{ id: string; image_url: string }>;
 }
 
-export default function LostPetsListings() {
+interface LostPetsListingsProps {
+  mode?: "nearby" | "my-listings";
+}
+
+export default function LostPetsListings({
+  mode = "nearby",
+}: LostPetsListingsProps) {
   const router = useRouter();
 
-  // Zustand store'dan dinamik konumu al
+  // Zustand store'dan dinamik konumu al (sadece nearby mode için gerekli)
   const { latitude, longitude, isLocationLoading } = useAppStore();
 
-  // Konum yüklenene kadar veya konum yoksa hook'u çalıştırma
-  // useNearbyLostPets hook'u zaten enabled kontrolü yapıyor (!!latitude && !!longitude)
-  const { data: lostPets = [], isLoading } = useNearbyLostPets(
-    latitude || 0,
-    longitude || 0
-  );
+  // Mode'a göre farklı hook'ları kullan
+  // Not: Her iki hook'u da çağırıyoruz ama React Query'nin enabled özelliği
+  // sayesinde gereksiz çağrılar yapılmaz
+  const { data: nearbyPets = [], isLoading: isLoadingNearby } =
+    useNearbyLostPets(
+      mode === "nearby" ? latitude || 0 : 0,
+      mode === "nearby" ? longitude || 0 : 0
+    );
+
+  const { data: myListings = [], isLoading: isLoadingMyListings } =
+    useMyLostPetListings();
+
+  // Mode'a göre veriyi normalize et
+  const lostPets = useMemo(() => {
+    if (mode === "my-listings") {
+      // my-listings formatını normalize et (profile_images -> image_url)
+      return myListings.map((listing: any) => ({
+        ...listing,
+        image_url:
+          listing.profile_images?.[0]?.image_url || listing.image_url || null,
+      }));
+    }
+    // nearby mode zaten doğru formatta
+    return nearbyPets;
+  }, [mode, nearbyPets, myListings]);
+
+  const isLoading = mode === "nearby" ? isLoadingNearby : isLoadingMyListings;
 
   const renderPetCard = ({ item }: { item: LostPet }) => {
     const imageUrl = item.image_url
@@ -74,7 +103,7 @@ export default function LostPetsListings() {
             </View>
           </View>
 
-          {item.distance && (
+          {mode === "nearby" && item.distance && (
             <View className="absolute top-2 right-2">
               <View className="bg-white px-2 py-1 rounded-full">
                 <Text className="text-gray-700 text-xs font-semibold">
@@ -120,19 +149,21 @@ export default function LostPetsListings() {
   };
 
   // Konum yükleniyor veya veriler yükleniyor
-  if (isLocationLoading || isLoading) {
+  if ((mode === "nearby" && isLocationLoading) || isLoading) {
     return (
       <View className="items-center justify-center py-20">
         <ActivityIndicator size="large" color="#8B5CF6" />
         <Text className="text-gray-400 mt-4">
-          {isLocationLoading ? "Konum alınıyor..." : "Yükleniyor..."}
+          {mode === "nearby" && isLocationLoading
+            ? "Konum alınıyor..."
+            : "Yükleniyor..."}
         </Text>
       </View>
     );
   }
 
-  // Konum yüklenemediyse veya konum yoksa
-  if (latitude === null || longitude === null) {
+  // Konum kontrolü sadece nearby mode için
+  if (mode === "nearby" && (latitude === null || longitude === null)) {
     return (
       <View className="items-center justify-center py-20">
         <Ionicons name="location-outline" size={64} color="#D1D5DB" />
@@ -148,7 +179,9 @@ export default function LostPetsListings() {
       <View className="items-center justify-center py-20">
         <Ionicons name="search-outline" size={64} color="#D1D5DB" />
         <Text className="text-gray-400 mt-4 text-base">
-          Kaybolan hayvan ilanı bulunmuyor
+          {mode === "my-listings"
+            ? "Henüz kayıp hayvan ilanınız bulunmuyor"
+            : "Kaybolan hayvan ilanı bulunmuyor"}
         </Text>
       </View>
     );
