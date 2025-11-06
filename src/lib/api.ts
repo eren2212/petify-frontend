@@ -531,4 +531,18 @@ export const petApi = {
       throw error;
     }
   },
+
+  getMyLostPetListings: async () => {
+    try {
+      const { data } = await instance.get("/lostpet/my/listings");
+      console.log("✅ My lost pet listings fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get My Lost Pet Listings Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
 };

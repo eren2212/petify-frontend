@@ -20,6 +20,7 @@ import { Pet } from "../../types/type";
 import { getPetTypeImageByName } from "../../constants/petTypes";
 import { MaterialIcons } from "@expo/vector-icons";
 import { COLORS } from "@/styles/theme/color";
+import LostPetListings from "../listings/LostPetsListings";
 
 export default function ProfileScreen() {
   const { signOut } = useAuthStore();
@@ -172,7 +173,12 @@ export default function ProfileScreen() {
           </View>
         )}
 
-        {/* Çıkış Butonu */}
+        {/* My Lost Pet Liste */}
+        <View className="w-full px-6 mt-4 mb-4">
+          <View className="flex-row justify-center items-center">
+            <LostPetListings mode="my-listings" />
+          </View>
+        </View>
       </ScrollView>
 
       {/* Add Pet Modal */}

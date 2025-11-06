@@ -111,7 +111,11 @@ export default function ListingsScreen() {
         </View>
 
         {/* Liste Render */}
-        {activeTab === "lost" ? <LostPetsListings /> : <AdoptionPetsListings />}
+        {activeTab === "lost" ? (
+          <LostPetsListings mode="nearby" />
+        ) : (
+          <AdoptionPetsListings />
+        )}
       </ScrollView>
 
       {/* Add Lost Pet Modal */}
