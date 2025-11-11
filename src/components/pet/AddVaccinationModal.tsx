@@ -14,7 +14,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useAddVaccination } from "../../hooks/usePet";
 import Toast from "react-native-toast-message";
 import { Ionicons } from "@expo/vector-icons";
-
+import { COLORS } from "../../styles/theme/color";
 interface AddVaccinationModalProps {
   visible: boolean;
   onClose: () => void;
@@ -197,7 +197,11 @@ export default function AddVaccinationModal({
                   </Text>
                   <Text className="text-gray-400">
                     {" "}
-                    <Ionicons name="calendar" size={24} color="#8B5CF6" />
+                    <Ionicons
+                      name="calendar"
+                      size={24}
+                      color={COLORS.primary}
+                    />
                   </Text>
                 </TouchableOpacity>
 
@@ -232,7 +236,11 @@ export default function AddVaccinationModal({
                   </Text>
                   <Text className="text-gray-400">
                     {" "}
-                    <Ionicons name="calendar" size={24} color="#8B5CF6" />
+                    <Ionicons
+                      name="calendar"
+                      size={24}
+                      color={COLORS.primary}
+                    />
                   </Text>
                 </TouchableOpacity>
 
