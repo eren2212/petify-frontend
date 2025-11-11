@@ -30,8 +30,16 @@ export default function Index() {
       <StatusBar style="light" />
       {/* Gradient Background */}
       <LinearGradient
-        colors={[`${COLORS.primary}`, `${COLORS.textLight}`]}
-        className="absolute inset-0"
+        colors={[COLORS.primary, "#2980B9"]} // Gradient efekti için farklı tonlar
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+        }}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
       />
 
       {/* Ana içerik */}
