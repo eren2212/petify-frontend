@@ -93,20 +93,16 @@ export default function ProfileScreen() {
             className="w-36 h-36"
           />
         </View>
-
         {/* İsim */}
         <Text className="text-2xl font-bold text-gray-900 mb-2">
           {user?.profile?.full_name || "Kullanıcı"}
         </Text>
-
         {/* Rol */}
         <Text className="text-base text-gray-500 mb-1">
           {getRoleLabel(activeRole?.role_type)}
         </Text>
-
         {/* E-posta */}
         <Text className="text-sm text-gray-400 mb-8">{user?.email || "-"}</Text>
-
         {/* Profili Düzenle Butonu */}
         <TouchableOpacity
           onPress={() => router.push("/edit")}
@@ -116,7 +112,6 @@ export default function ProfileScreen() {
             Profili Düzenle
           </Text>
         </TouchableOpacity>
-
         {/* My Pets Başlık */}
         <View className="w-full px-6 mt-4 mb-4">
           <View className="flex-row justify-between items-center">
@@ -129,7 +124,6 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
         </View>
-
         {/* My Pets Liste */}
         {petsLoading ? (
           <ActivityIndicator size="small" color="#8B5CF6" />
@@ -175,6 +169,9 @@ export default function ProfileScreen() {
 
         {/* My Lost Pet Liste */}
         <View className="w-full px-6 mt-4 mb-4">
+          <Text className="text-xl font-bold text-gray-900">
+            Kayıp Hayvanlarım
+          </Text>
           <View className="flex-row justify-center items-center">
             <LostPetListings mode="my-listings" />
           </View>
