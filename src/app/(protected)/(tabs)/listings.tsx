@@ -4,11 +4,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "@/styles/theme/color";
 import AddLostPetModal from "../../../components/pet/AddLostPetModal";
+import AddAdoptionPetModal from "../../../components/pet/AddAdoptionPetModal";
 import LostPetsListings from "@/components/listings/LostPetsListings";
 import AdoptionPetsListings from "@/components/listings/AdoptionPetsListings";
 
 export default function ListingsScreen() {
   const [showAddLostPetModal, setShowAddLostPetModal] = useState(false);
+  const [showAddAdoptionPetModal, setShowAddAdoptionPetModal] = useState(false);
   const [activeTab, setActiveTab] = useState<"lost" | "adoption">("lost");
 
   return (
@@ -58,9 +60,7 @@ export default function ListingsScreen() {
               shadowRadius: 12,
               elevation: 5,
             }}
-            onPress={() => {
-              // TODO: Adopt a Pet modal
-            }}
+            onPress={() => setShowAddAdoptionPetModal(true)}
           >
             <View
               className="w-16 h-16 rounded-full items-center justify-center mb-4"
@@ -122,6 +122,12 @@ export default function ListingsScreen() {
       <AddLostPetModal
         visible={showAddLostPetModal}
         onClose={() => setShowAddLostPetModal(false)}
+      />
+
+      {/* Add Adoption Pet Modal */}
+      <AddAdoptionPetModal
+        visible={showAddAdoptionPetModal}
+        onClose={() => setShowAddAdoptionPetModal(false)}
       />
     </SafeAreaView>
   );

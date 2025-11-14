@@ -545,4 +545,95 @@ export const petApi = {
       throw error;
     }
   },
+
+  // Sahiplendirme ilanı ekle
+  addAdoptionPet: async (adoptionPetData: any) => {
+    try {
+      const { data } = await instance.post("/adoptionpet/add", adoptionPetData);
+      console.log("✅ Adoption pet listing added:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Add Adoption Pet Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Sahiplendirme hayvanı resmi yükle
+  uploadAdoptionPetImage: async (listingId: string, imageUri: string) => {
+    try {
+      const formData = new FormData();
+      const filename = imageUri.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename || "");
+      const type = match ? `image/${match[1]}` : "image/jpeg";
+
+      formData.append("adoptionpets", {
+        uri: imageUri,
+        name: filename || "adoption-pet.jpg",
+        type,
+      } as any);
+
+      formData.append("petId", listingId);
+
+      const { data } = await instance.post("/adoptionpet/image", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("✅ Adoption pet image uploaded:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Adoption Pet Image Upload Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Yakındaki sahiplendirme ilanlarını getir
+  getNearbyAdoptionPets: async (
+    latitude: number,
+    longitude: number,
+    radiusInMeters?: number
+  ) => {
+    try {
+      let url = `/adoptionpet/nearby?latitude=${latitude}&longitude=${longitude}`;
+
+      // Eğer radius belirtilmişse query'ye ekle
+      if (radiusInMeters) {
+        url += `&dynamicRadiusInMeters=${radiusInMeters}`;
+      }
+
+      const { data } = await instance.get(url);
+      console.log("✅ Nearby adoption pets fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Nearby Adoption Pets Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Sahiplendirme ilanı detayını getir
+  getAdoptionPetDetail: async (adoptionPetId: string) => {
+    try {
+      const { data } = await instance.get(
+        `/adoptionpet/detail/${adoptionPetId}`
+      );
+      console.log("✅ Adoption pet detail fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Adoption Pet Detail Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
 };

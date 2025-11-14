@@ -76,12 +76,9 @@ export default function Home() {
         <View className="p-6">
           <Text className="text-3xl font-bold text-text mb-8">Ana Sayfa</Text>
 
-          <TouchableOpacity
-            onPress={handleLogout}
-            className="bg-red-500 rounded-xl p-5 mb-4"
-          >
+          <TouchableOpacity className="bg-red-500 rounded-xl p-5 mb-4">
             <Text className="text-white text-center text-base font-semibold">
-              Çıkış Yap
+              Petify Uygulamasına Hoşgeldiniz
             </Text>
           </TouchableOpacity>
         </View>

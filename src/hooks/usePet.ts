@@ -317,3 +317,77 @@ export function useMyLostPetListings() {
     },
   });
 }
+
+/**
+ * Sahiplendirme ilanı ekleme
+ */
+export function useAddAdoptionPet() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: petApi.addAdoptionPet,
+    onSuccess: () => {
+      // Adoption pet listings listesini yenile
+      queryClient.invalidateQueries({ queryKey: ["adoptionPets", "nearby"] });
+      console.log("✅ Adoption pet listing added successfully");
+    },
+    onError: (error: any) => {
+      console.error("❌ Adoption pet listing add failed:", error);
+    },
+  });
+}
+
+/**
+ * Yakındaki sahiplendirme ilanlarını getir
+ */
+export function useNearbyAdoptionPets(
+  latitude: number,
+  longitude: number,
+  radiusInMeters?: number
+) {
+  return useQuery({
+    queryKey: ["adoptionPets", "nearby", latitude, longitude, radiusInMeters],
+    queryFn: async () => {
+      const response = await petApi.getNearbyAdoptionPets(
+        latitude,
+        longitude,
+        radiusInMeters
+      );
+      // Backend response: { code: 200, data: { data: [...], message: "...", total_count: 2 } }
+      // İçteki data array'ini döndür
+      return response.data?.data || [];
+    },
+    enabled: !!latitude && !!longitude, // latitude ve longitude varsa query çalışsın
+    staleTime: 1000 * 60 * 5, // 5 dakika
+    // 401 hatası için retry yapma (token geçersiz)
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+  });
+}
+
+/**
+ * Sahiplendirme ilanı detayını getir
+ */
+export function useAdoptionPetDetail(adoptionPetId: string) {
+  return useQuery({
+    queryKey: ["adoptionPets", "detail", adoptionPetId],
+    queryFn: async () => {
+      const response = await petApi.getAdoptionPetDetail(adoptionPetId);
+      // Backend response.data.listing döndürüyor
+      return response.data.listing;
+    },
+    enabled: !!adoptionPetId, // adoptionPetId varsa query çalışsın
+    staleTime: 1000 * 60 * 5, // 5 dakika
+    // 401 hatası için retry yapma (token geçersiz)
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+  });
+}
