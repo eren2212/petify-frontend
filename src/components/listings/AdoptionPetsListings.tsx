@@ -63,10 +63,7 @@ export default function AdoptionPetsListings() {
 
     return (
       <TouchableOpacity
-        onPress={() => {
-          // TODO: Adoption pet detail sayfası oluşturulacak
-          console.log("Adoption pet detail:", item.id);
-        }}
+        onPress={() => router.push(`/(protected)/adoptionpets/${item.id}`)}
         className="bg-white rounded-2xl overflow-hidden mb-4 shadow-sm"
         style={{
           flex: 1,
@@ -92,7 +89,7 @@ export default function AdoptionPetsListings() {
           )}
 
           <View className="absolute top-2 left-2">
-            <View className="bg-red-500 px-2 py-1 rounded-full">
+            <View className="bg-primary/80 px-2 py-1 rounded-full">
               <Text className="text-white text-xs font-bold">
                 {item.adoption_fee === 0 ? "ÜCRETSİZ" : "YUVA ARIYOR"}
               </Text>

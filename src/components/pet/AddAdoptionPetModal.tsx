@@ -546,16 +546,14 @@ export default function AddAdoptionPetModal({
                     <TouchableOpacity
                       className={`flex-1 py-3 rounded-xl border ${
                         gender === "male"
-                          ? "bg-purple-50 border-purple-500"
+                          ? "bg-primary/10 border-primary"
                           : "bg-gray-50 border-gray-200"
                       }`}
                       onPress={() => setGender("male")}
                     >
                       <Text
                         className={`text-center font-semibold ${
-                          gender === "male"
-                            ? "text-purple-600"
-                            : "text-gray-600"
+                          gender === "male" ? "text-primary" : "text-gray-600"
                         }`}
                       >
                         Erkek
@@ -564,16 +562,14 @@ export default function AddAdoptionPetModal({
                     <TouchableOpacity
                       className={`flex-1 py-3 rounded-xl border ${
                         gender === "female"
-                          ? "bg-purple-50 border-purple-500"
+                          ? "bg-primary/10 border-primary"
                           : "bg-gray-50 border-gray-200"
                       }`}
                       onPress={() => setGender("female")}
                     >
                       <Text
                         className={`text-center font-semibold ${
-                          gender === "female"
-                            ? "text-purple-600"
-                            : "text-gray-600"
+                          gender === "female" ? "text-primary" : "text-gray-600"
                         }`}
                       >
                         Dişi
@@ -582,7 +578,7 @@ export default function AddAdoptionPetModal({
                     <TouchableOpacity
                       className={`flex-1 py-3 rounded-xl border ${
                         gender === "unknown"
-                          ? "bg-purple-50 border-purple-500"
+                          ? "bg-primary/10 border-primary"
                           : "bg-gray-50 border-gray-200"
                       }`}
                       onPress={() => setGender("unknown")}
@@ -590,7 +586,7 @@ export default function AddAdoptionPetModal({
                       <Text
                         className={`text-center font-semibold ${
                           gender === "unknown"
-                            ? "text-purple-600"
+                            ? "text-primary"
                             : "text-gray-600"
                         }`}
                       >

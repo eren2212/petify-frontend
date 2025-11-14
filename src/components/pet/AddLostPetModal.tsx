@@ -473,22 +473,20 @@ export default function AddLostPetModal({
                 {/* Gender */}
                 <View className="mb-4">
                   <Text className="text-sm font-medium text-gray-700 mb-2">
-                    Cinsiyet
+                    Cinsiyet *
                   </Text>
                   <View className="flex-row gap-3">
                     <TouchableOpacity
                       className={`flex-1 py-3 rounded-xl border ${
                         gender === "male"
-                          ? "bg-purple-50 border-purple-500"
+                          ? "bg-primary/10 border-primary"
                           : "bg-gray-50 border-gray-200"
                       }`}
                       onPress={() => setGender("male")}
                     >
                       <Text
                         className={`text-center font-semibold ${
-                          gender === "male"
-                            ? "text-purple-600"
-                            : "text-gray-600"
+                          gender === "male" ? "text-primary" : "text-gray-600"
                         }`}
                       >
                         Erkek
@@ -497,19 +495,35 @@ export default function AddLostPetModal({
                     <TouchableOpacity
                       className={`flex-1 py-3 rounded-xl border ${
                         gender === "female"
-                          ? "bg-purple-50 border-purple-500"
+                          ? "bg-primary/10 border-primary"
                           : "bg-gray-50 border-gray-200"
                       }`}
                       onPress={() => setGender("female")}
                     >
                       <Text
                         className={`text-center font-semibold ${
-                          gender === "female"
-                            ? "text-purple-600"
-                            : "text-gray-600"
+                          gender === "female" ? "text-primary" : "text-gray-600"
                         }`}
                       >
                         Dişi
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      className={`flex-1 py-3 rounded-xl border ${
+                        gender === "unknown"
+                          ? "bg-primary/10 border-primary"
+                          : "bg-gray-50 border-gray-200"
+                      }`}
+                      onPress={() => setGender("unknown")}
+                    >
+                      <Text
+                        className={`text-center font-semibold ${
+                          gender === "unknown"
+                            ? "text-primary"
+                            : "text-gray-600"
+                        }`}
+                      >
+                        Bilinmiyor
                       </Text>
                     </TouchableOpacity>
                   </View>

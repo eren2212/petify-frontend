@@ -64,7 +64,52 @@ export default function LostPetDetailScreen() {
       year: "numeric",
     });
   };
+  const getGenderIcon = (gender?: string) => {
+    switch (gender?.toLowerCase()) {
+      case "male":
+        return "male";
+      case "female":
+        return "female";
+      default:
+        return "help-circle-outline";
+    }
+  };
+  // Cinsiyet label
+  const getGenderLabel = (gender?: string) => {
+    const genderMap: Record<string, string> = {
+      male: "Erkek",
+      female: "Dişi",
+      unknown: "Bilinmiyor",
+    };
+    return genderMap[gender?.toLowerCase() || ""] || "Belirtilmemiş";
+  };
 
+  const calculateAge = (birthdate: string) => {
+    const birth = new Date(birthdate);
+    const today = new Date();
+
+    const diffTime = today.getTime() - birth.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 3600 * 24));
+
+    const diffMonths =
+      (today.getFullYear() - birth.getFullYear()) * 12 +
+      (today.getMonth() - birth.getMonth());
+
+    const diffYears = Math.floor(diffMonths / 12);
+
+    // 1 aydan küçük → günlük
+    if (diffMonths < 1) {
+      return `${diffDays} günlük`;
+    }
+
+    // 1 ay - 11 ay arası → aylık
+    if (diffMonths < 12) {
+      return `${diffMonths} aylık`;
+    }
+
+    // 12 ay ve üzeri → yaş
+    return `${diffYears} yaş`;
+  };
   // Resim kaynağını belirle
   const getImageSource = () => {
     // Backend image endpoint'i kullan
@@ -292,6 +337,25 @@ export default function LostPetDetailScreen() {
               </>
             )}
 
+            {lostPet.gender && (
+              <>
+                <View className="flex-row justify-between items-center py-3.5">
+                  <Text className="text-gray-500 text-base">Cinsiyet</Text>
+                  <View className="flex-row items-center">
+                    <Ionicons
+                      name={getGenderIcon(lostPet.gender)}
+                      size={18}
+                      color={lostPet.gender === "male" ? "#3B82F6" : "#EC4899"}
+                    />
+                    <Text className="text-gray-900 font-semibold text-base ml-2">
+                      {getGenderLabel(lostPet.gender)}
+                    </Text>
+                  </View>
+                </View>
+                <View className="h-px bg-gray-100 my-1" />
+              </>
+            )}
+
             {/* Color */}
             {lostPet.color && (
               <>
@@ -323,7 +387,7 @@ export default function LostPetDetailScreen() {
               <View className="flex-row justify-between items-center py-3.5">
                 <Text className="text-gray-500 text-base">Doğum Tarihi</Text>
                 <Text className="text-gray-900 font-semibold text-base">
-                  {formatDate(lostPet.birthdate)}
+                  {calculateAge(lostPet.birthdate)}
                 </Text>
               </View>
             )}

@@ -98,7 +98,7 @@ export default function LostPetsListings({
           )}
 
           <View className="absolute top-2 left-2">
-            <View className="bg-red-500 px-2 py-1 rounded-full">
+            <View className="bg-red-500/80 px-2 py-1 rounded-full">
               <Text className="text-white text-xs font-bold">KAYIP</Text>
             </View>
           </View>
