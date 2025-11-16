@@ -636,4 +636,79 @@ export const petApi = {
       throw error;
     }
   },
+
+  // Kullanıcının sahiplendirme ilanlarını getir
+  getMyAdoptionPetListings: async () => {
+    try {
+      const { data } = await instance.get("/adoptionpet/my/listings");
+      console.log("✅ My adoption pet listings fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get My Adoption Pet Listings Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Sahiplendirme ilanını sahiplendirildi olarak işaretle
+  markAdoptionPetAsAdopted: async (adoptionPetId: string) => {
+    try {
+      const { data } = await instance.put(`/adoptionpet/${adoptionPetId}`);
+      console.log("✅ Adoption pet marked as adopted:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Mark Adoption Pet As Adopted Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Sahiplendirme ilanını sil
+  deleteAdoptionPet: async (adoptionPetId: string) => {
+    try {
+      const { data } = await instance.delete(`/adoptionpet/${adoptionPetId}`);
+      console.log("✅ Adoption pet deleted:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Delete Adoption Pet Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Kayıp hayvan ilanını bulundu olarak işaretle
+  markLostPetAsFound: async (lostPetId: string) => {
+    try {
+      const { data } = await instance.put(`/lostpet/${lostPetId}`);
+      console.log("✅ Lost pet marked as found:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Mark Lost Pet As Found Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Kayıp hayvan ilanını sil
+  deleteLostPet: async (lostPetId: string) => {
+    try {
+      const { data } = await instance.delete(`/lostpet/${lostPetId}`);
+      console.log("✅ Lost pet deleted:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Delete Lost Pet Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
 };

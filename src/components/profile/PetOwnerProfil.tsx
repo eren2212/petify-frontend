@@ -21,6 +21,7 @@ import { getPetTypeImageByName } from "../../constants/petTypes";
 import { MaterialIcons } from "@expo/vector-icons";
 import { COLORS } from "@/styles/theme/color";
 import LostPetListings from "../listings/LostPetsListings";
+import AdoptionPetsListings from "../listings/AdoptionPetsListings";
 
 export default function ProfileScreen() {
   const { signOut } = useAuthStore();
@@ -37,6 +38,9 @@ export default function ProfileScreen() {
 
   // Modal state
   const [isAddPetModalVisible, setIsAddPetModalVisible] = useState(false);
+
+  // İlanlarım için hangi kategoriyi gösterdiğimizi takip eden state
+  const [listingsTab, setListingsTab] = useState<"lost" | "adoption">("lost");
 
   if (isLoading) {
     return (
@@ -167,13 +171,56 @@ export default function ProfileScreen() {
           </View>
         )}
 
-        {/* My Lost Pet Liste */}
-        <View className="w-full px-6 mt-4 mb-4">
-          <Text className="text-xl font-bold text-gray-900">
-            Kayıp Hayvanlarım
+        {/* İlanlarım - Tabbed Section */}
+        <View className="w-full px-6 mt-6 mb-4">
+          <Text className="text-xl font-bold text-gray-900 mb-4">
+            İlanlarım
           </Text>
+
+          {/* Tab Buttons */}
+          <View className="flex-row gap-3 mb-4">
+            <TouchableOpacity
+              onPress={() => setListingsTab("lost")}
+              className={`flex-1 py-3 rounded-xl border-2 ${
+                listingsTab === "lost"
+                  ? "border-red-500 bg-red-50"
+                  : "border-gray-300 bg-white"
+              }`}
+            >
+              <Text
+                className={`text-center font-semibold ${
+                  listingsTab === "lost" ? "text-red-500" : "text-gray-600"
+                }`}
+              >
+                Kayıp Hayvanlar
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setListingsTab("adoption")}
+              className={`flex-1 py-3 rounded-xl border-2 ${
+                listingsTab === "adoption"
+                  ? "border-primary bg-primary/10"
+                  : "border-gray-300 bg-white"
+              }`}
+            >
+              <Text
+                className={`text-center font-semibold ${
+                  listingsTab === "adoption" ? "text-primary" : "text-gray-600"
+                }`}
+              >
+                Sahiplendirme
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* İlgili Listing Component */}
           <View className="flex-row justify-center items-center">
-            <LostPetListings mode="my-listings" />
+            {listingsTab === "lost" ? (
+              <LostPetListings mode="my-listings" />
+            ) : (
+              <AdoptionPetsListings mode="my-listings" />
+            )}
           </View>
         </View>
       </ScrollView>

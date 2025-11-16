@@ -391,3 +391,100 @@ export function useAdoptionPetDetail(adoptionPetId: string) {
     },
   });
 }
+
+/**
+ * Kullanıcının sahiplendirme ilanlarını getir
+ */
+export function useMyAdoptionPetListings() {
+  return useQuery({
+    queryKey: ["adoptionPets", "myAdoptionPetListings"],
+    queryFn: async () => {
+      const response = await petApi.getMyAdoptionPetListings();
+      return response.data?.listings || [];
+    },
+    staleTime: 1000 * 60 * 5, // 5 dakika
+    // 401 hatası için retry yapma (token geçersiz)
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+  });
+}
+
+/**
+ * Sahiplendirme ilanını sahiplendirildi olarak işaretle
+ */
+export function useMarkAdoptionPetAsAdopted() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: petApi.markAdoptionPetAsAdopted,
+    onSuccess: () => {
+      // Listing'leri yenile
+      queryClient.invalidateQueries({ queryKey: ["adoptionPets"] });
+      console.log("✅ Adoption pet marked as adopted successfully");
+    },
+    onError: (error: any) => {
+      console.error("❌ Mark adoption pet as adopted failed:", error);
+    },
+  });
+}
+
+/**
+ * Sahiplendirme ilanını sil
+ */
+export function useDeleteAdoptionPet() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: petApi.deleteAdoptionPet,
+    onSuccess: () => {
+      // Listing'leri yenile
+      queryClient.invalidateQueries({ queryKey: ["adoptionPets"] });
+      console.log("✅ Adoption pet deleted successfully");
+    },
+    onError: (error: any) => {
+      console.error("❌ Delete adoption pet failed:", error);
+    },
+  });
+}
+
+/**
+ * Kayıp hayvan ilanını bulundu olarak işaretle
+ */
+export function useMarkLostPetAsFound() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: petApi.markLostPetAsFound,
+    onSuccess: () => {
+      // Listing'leri yenile
+      queryClient.invalidateQueries({ queryKey: ["lostPets"] });
+      console.log("✅ Lost pet marked as found successfully");
+    },
+    onError: (error: any) => {
+      console.error("❌ Mark lost pet as found failed:", error);
+    },
+  });
+}
+
+/**
+ * Kayıp hayvan ilanını sil
+ */
+export function useDeleteLostPet() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: petApi.deleteLostPet,
+    onSuccess: () => {
+      // Listing'leri yenile
+      queryClient.invalidateQueries({ queryKey: ["lostPets"] });
+      console.log("✅ Lost pet deleted successfully");
+    },
+    onError: (error: any) => {
+      console.error("❌ Delete lost pet failed:", error);
+    },
+  });
+}

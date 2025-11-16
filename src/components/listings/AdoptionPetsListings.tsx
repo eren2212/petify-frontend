@@ -7,9 +7,12 @@ import {
   ActivityIndicator,
   ScrollView,
 } from "react-native";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { useNearbyAdoptionPets } from "../../hooks/usePet";
+import {
+  useNearbyAdoptionPets,
+  useMyAdoptionPetListings,
+} from "../../hooks/usePet";
 import { useAppStore } from "../../stores";
 import { useRouter } from "expo-router";
 import { COLORS } from "../../styles/theme/color";
@@ -26,10 +29,16 @@ interface AdoptionPet {
   distance?: number;
   image_url?: string;
   gender?: string;
+  status: string;
   is_vaccinated?: boolean;
   is_neutered?: boolean;
   good_with_kids?: boolean;
   good_with_pets?: boolean;
+  profile_images?: Array<{ id: string; image_url: string }>;
+}
+
+interface AdoptionPetsListingsProps {
+  mode?: "nearby" | "my-listings";
 }
 
 // Km seçenekleri
@@ -41,20 +50,43 @@ const DISTANCE_OPTIONS = [
   { label: "50 km", value: 50000 },
 ];
 
-export default function AdoptionPetsListings() {
+export default function AdoptionPetsListings({
+  mode = "nearby",
+}: AdoptionPetsListingsProps) {
   const router = useRouter();
 
-  // Zustand store'dan dinamik konumu al
+  // Zustand store'dan dinamik konumu al (sadece nearby mode için gerekli)
   const { latitude, longitude, isLocationLoading } = useAppStore();
 
   // Seçili mesafe (default 5km = 5000 metre)
   const [selectedRadius, setSelectedRadius] = useState<number>(5000);
 
-  const { data: adoptionPets = [], isLoading } = useNearbyAdoptionPets(
-    latitude || 0,
-    longitude || 0,
-    selectedRadius
-  );
+  // Mode'a göre farklı hook'ları kullan
+  const { data: nearbyPets = [], isLoading: isLoadingNearby } =
+    useNearbyAdoptionPets(
+      mode === "nearby" ? latitude || 0 : 0,
+      mode === "nearby" ? longitude || 0 : 0,
+      selectedRadius
+    );
+
+  const { data: myListings = [], isLoading: isLoadingMyListings } =
+    useMyAdoptionPetListings();
+
+  // Mode'a göre veriyi normalize et
+  const adoptionPets = useMemo(() => {
+    if (mode === "my-listings") {
+      // my-listings formatını normalize et (profile_images -> image_url)
+      return myListings.map((listing: any) => ({
+        ...listing,
+        image_url:
+          listing.profile_images?.[0]?.image_url || listing.image_url || null,
+      }));
+    }
+    // nearby mode zaten doğru formatta
+    return nearbyPets;
+  }, [mode, nearbyPets, myListings]);
+
+  const isLoading = mode === "nearby" ? isLoadingNearby : isLoadingMyListings;
 
   const renderPetCard = ({ item }: { item: AdoptionPet }) => {
     const imageUrl = item.image_url
@@ -63,7 +95,12 @@ export default function AdoptionPetsListings() {
 
     return (
       <TouchableOpacity
-        onPress={() => router.push(`/(protected)/adoptionpets/${item.id}`)}
+        onPress={() =>
+          router.push({
+            pathname: `/(protected)/adoptionpets/${item.id}`,
+            params: { source: mode === "my-listings" ? "profile" : "listings" },
+          })
+        }
         className="bg-white rounded-2xl overflow-hidden mb-4 shadow-sm"
         style={{
           flex: 1,
@@ -89,14 +126,18 @@ export default function AdoptionPetsListings() {
           )}
 
           <View className="absolute top-2 left-2">
-            <View className="bg-primary/80 px-2 py-1 rounded-full">
+            <View className="bg-green-500/80 px-2 py-1 rounded-full">
               <Text className="text-white text-xs font-bold">
-                {item.adoption_fee === 0 ? "ÜCRETSİZ" : "YUVA ARIYOR"}
+                {item.status !== "passive"
+                  ? item.adoption_fee === 0
+                    ? "ÜCRETSİZ"
+                    : "YUVA ARIYOR"
+                  : "SAHİPLENDİRİLDİ"}
               </Text>
             </View>
           </View>
 
-          {item.distance && (
+          {mode === "nearby" && item.distance && (
             <View className="absolute top-2 right-2">
               <View className="bg-white px-2 py-1 rounded-full">
                 <Text className="text-gray-700 text-xs font-semibold">
@@ -160,20 +201,65 @@ export default function AdoptionPetsListings() {
     );
   };
 
+  // Mesafe seçici komponenti - renderDistanceSelector fonksiyonu olarak
+  const renderDistanceSelector = () => {
+    if (mode !== "nearby") return null;
+
+    return (
+      <View className="mb-4">
+        <Text className="text-sm font-medium text-gray-700 mb-2 px-4">
+          Arama Yarıçapı
+        </Text>
+
+        <View className="flex-row gap-2 justify-center items-center">
+          {DISTANCE_OPTIONS.map((option) => (
+            <TouchableOpacity
+              key={option.value}
+              onPress={() => setSelectedRadius(option.value)}
+              className={`px-4 py-2 rounded-full border ${
+                selectedRadius === option.value
+                  ? "border-primary"
+                  : "border-gray-300"
+              }`}
+              style={{
+                backgroundColor:
+                  selectedRadius === option.value
+                    ? COLORS.primary + "20"
+                    : "#F9FAFB",
+              }}
+            >
+              <Text
+                className={`text-sm font-semibold ${
+                  selectedRadius === option.value
+                    ? "text-primary"
+                    : "text-gray-600"
+                }`}
+              >
+                {option.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+    );
+  };
+
   // Konum yükleniyor veya veriler yükleniyor
-  if (isLocationLoading || isLoading) {
+  if ((mode === "nearby" && isLocationLoading) || isLoading) {
     return (
       <View className="items-center justify-center py-20">
         <ActivityIndicator size="large" color="#8B5CF6" />
         <Text className="text-gray-400 mt-4">
-          {isLocationLoading ? "Konum alınıyor..." : "Yükleniyor..."}
+          {mode === "nearby" && isLocationLoading
+            ? "Konum alınıyor..."
+            : "Yükleniyor..."}
         </Text>
       </View>
     );
   }
 
-  // Konum kontrolü
-  if (latitude === null || longitude === null) {
+  // Konum kontrolü sadece nearby mode için
+  if (mode === "nearby" && (latitude === null || longitude === null)) {
     return (
       <View className="items-center justify-center py-20">
         <Ionicons name="location-outline" size={64} color="#D1D5DB" />
@@ -184,74 +270,44 @@ export default function AdoptionPetsListings() {
     );
   }
 
-  return (
-    <View>
-      {/* Mesafe Seçici */}
-      <View className="mb-4">
-        <Text className="text-sm font-medium text-gray-700 mb-2 px-4">
-          Arama Yarıçapı
-        </Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 16 }}
-        >
-          <View className="flex-row gap-2">
-            {DISTANCE_OPTIONS.map((option) => (
-              <TouchableOpacity
-                key={option.value}
-                onPress={() => setSelectedRadius(option.value)}
-                className={`px-4 py-2 rounded-full border ${
-                  selectedRadius === option.value
-                    ? "border-primary"
-                    : "border-gray-300"
-                }`}
-                style={{
-                  backgroundColor:
-                    selectedRadius === option.value
-                      ? COLORS.primary + "20"
-                      : "#F9FAFB",
-                }}
-              >
-                <Text
-                  className={`text-sm font-semibold ${
-                    selectedRadius === option.value
-                      ? "text-primary"
-                      : "text-gray-600"
-                  }`}
-                >
-                  {option.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </ScrollView>
-      </View>
-
-      {/* İlan Listesi veya Empty State */}
-      {adoptionPets.length === 0 ? (
+  // Empty state kontrolü
+  if (adoptionPets.length === 0) {
+    return (
+      <>
+        {renderDistanceSelector()}
+        {/* Empty state kontrolü */}
         <View className="items-center justify-center py-20">
           <Ionicons name="heart-outline" size={64} color="#D1D5DB" />
           <Text className="text-gray-400 mt-4 text-base text-center px-6">
-            {selectedRadius / 1000} km yarıçapında sahiplendirme ilanı
-            bulunmuyor
+            {mode === "my-listings"
+              ? "Henüz sahiplendirme ilanınız bulunmuyor"
+              : `${selectedRadius / 1000} km yarıçapında sahiplendirme ilanı bulunmuyor`}
           </Text>
-          <Text className="text-gray-400 mt-2 text-sm text-center px-6">
-            Daha geniş bir alan için farklı bir yarıçap seçebilirsiniz
-          </Text>
+          {mode === "nearby" && (
+            <Text className="text-gray-400 mt-2 text-sm text-center px-6">
+              Daha geniş bir alan için farklı bir yarıçap seçebilirsiniz
+            </Text>
+          )}
         </View>
-      ) : (
-        <FlatList
-          data={adoptionPets}
-          renderItem={renderPetCard}
-          keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 10 }}
-          numColumns={2}
-          columnWrapperStyle={{ gap: 8 }}
-          scrollEnabled={false}
-        />
-      )}
-    </View>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {/* Mesafe Seçici - Sadece nearby mode için */}
+      {renderDistanceSelector()}
+      {/* İlan Listesi */}
+      <FlatList
+        data={adoptionPets}
+        renderItem={renderPetCard}
+        keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 10 }}
+        numColumns={2}
+        columnWrapperStyle={{ gap: 8 }}
+        scrollEnabled={false}
+      />
+    </>
   );
 }

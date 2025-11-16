@@ -20,6 +20,7 @@ interface LostPet {
   breed?: string;
   pet_type?: { name_tr: string; name: string };
   lost_date: string;
+  status: string;
   last_seen_location: string;
   distance?: number;
   image_url?: string;
@@ -72,7 +73,12 @@ export default function LostPetsListings({
       : null;
     return (
       <TouchableOpacity
-        onPress={() => router.push(`/(protected)/lostpets/${item.id}`)}
+        onPress={() =>
+          router.push({
+            pathname: `/(protected)/lostpets/${item.id}`,
+            params: { source: mode === "my-listings" ? "profile" : "listings" },
+          })
+        }
         className="bg-white rounded-2xl overflow-hidden mb-4 shadow-sm"
         style={{
           flex: 1,
@@ -98,8 +104,14 @@ export default function LostPetsListings({
           )}
 
           <View className="absolute top-2 left-2">
-            <View className="bg-red-500/80 px-2 py-1 rounded-full">
-              <Text className="text-white text-xs font-bold">KAYIP</Text>
+            <View
+              className={`px-2 py-1 rounded-full ${
+                item.status === "found" ? "bg-green-500/80" : "bg-red-500/80"
+              }`}
+            >
+              <Text className="text-white text-xs font-bold">
+                {item.status === "found" ? "BULUNDU" : "KAYIP"}
+              </Text>
             </View>
           </View>
 

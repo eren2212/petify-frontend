@@ -9,8 +9,12 @@ import {
   Alert,
   Platform,
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
-import { useAdoptionPetDetail } from "../../../hooks/usePet";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import {
+  useAdoptionPetDetail,
+  useMarkAdoptionPetAsAdopted,
+  useDeleteAdoptionPet,
+} from "../../../hooks/usePet";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getPetTypeImageByName } from "../../../constants/petTypes";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
@@ -25,8 +29,10 @@ import MapView, {
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000/api";
 
 export default function AdoptionPetDetailScreen() {
-  const { id } = useLocalSearchParams();
+  const { id, source } = useLocalSearchParams();
   const adoptionPetId = Array.isArray(id) ? id[0] : id;
+  const sourceParam = Array.isArray(source) ? source[0] : source;
+  const router = useRouter();
 
   // Adoption pet detayını çek
   const {
@@ -34,6 +40,13 @@ export default function AdoptionPetDetailScreen() {
     isLoading,
     error,
   } = useAdoptionPetDetail(adoptionPetId || "");
+
+  // Mutations
+  const markAsAdoptedMutation = useMarkAdoptionPetAsAdopted();
+  const deleteMutation = useDeleteAdoptionPet();
+
+  // Profil sayfasından mı gelindi?
+  const isFromProfile = sourceParam === "profile";
 
   if (isLoading) {
     return (
@@ -163,8 +176,70 @@ export default function AdoptionPetDetailScreen() {
     );
   };
 
-  // TODO: İlerisi için - Kendi ilanımsa gösterilecek
-  // const isMyListing = adoptionPet.user_id === currentUserId;
+  // Sahiplendirildi olarak işaretle
+  const handleMarkAsAdopted = () => {
+    Alert.alert(
+      "Sahiplendirildi mi?",
+      "Bu hayvan yuva buldu mu?",
+      [
+        {
+          text: "İptal",
+          style: "cancel",
+        },
+        {
+          text: "Evet, Sahiplendirildi",
+          style: "default",
+          onPress: async () => {
+            try {
+              await markAsAdoptedMutation.mutateAsync(adoptionPetId);
+              Alert.alert(
+                "Başarılı!",
+                "Hayvan sahiplendirildi olarak işaretlendi."
+              );
+              router.back();
+            } catch (error: any) {
+              Alert.alert(
+                "Hata",
+                error?.response?.data?.message || "İşlem başarısız oldu"
+              );
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  // İlanı sil
+  const handleDelete = () => {
+    Alert.alert(
+      "İlanı Sil",
+      "Bu ilanı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+      [
+        {
+          text: "İptal",
+          style: "cancel",
+        },
+        {
+          text: "Sil",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteMutation.mutateAsync(adoptionPetId);
+              Alert.alert("Başarılı!", "İlan başarıyla silindi.");
+              router.back();
+            } catch (error: any) {
+              Alert.alert(
+                "Hata",
+                error?.response?.data?.message || "İşlem başarısız oldu"
+              );
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
@@ -176,13 +251,17 @@ export default function AdoptionPetDetailScreen() {
         {/* Header - YUVA ARIYOR Badge */}
         <View
           className={`px-6 py-4 rounded-full items-center justify-center mx-2 ${
-            adoptionPet.adoption_fee === 0 ? "bg-red-500" : "bg-primary"
+            adoptionPet.adoption_fee === 0 ? "bg-red-500" : "bg-green-500"
           }`}
         >
           <View className="flex-row items-center justify-center">
             <Ionicons name="heart" size={24} color="white" />
             <Text className="text-white text-lg font-bold ml-2">
-              {adoptionPet.adoption_fee === 0 ? "ÜCRETSİZ" : "YUVA ARIYOR"}
+              {adoptionPet.status !== "passive"
+                ? adoptionPet.adoption_fee === 0
+                  ? "ÜCRETSİZ"
+                  : "YUVA ARIYOR"
+                : "SAHİPLENDİRİLDİ"}
             </Text>
           </View>
         </View>
@@ -261,8 +340,8 @@ export default function AdoptionPetDetailScreen() {
           </View>
         </View>
 
-        {/* TODO: Kendi ilanımsa gösterilecek butonlar */}
-        {/* {isMyListing && (
+        {/* Profil sayfasından gelindiyse gösterilecek butonlar */}
+        {isFromProfile && (
           <View className="px-5 mb-6">
             <View className="flex-row gap-3">
               <TouchableOpacity
@@ -274,15 +353,27 @@ export default function AdoptionPetDetailScreen() {
                   shadowRadius: 8,
                   elevation: 5,
                 }}
-                onPress={() => {
-                  // TODO: Bulundu işlemi
-                }}
+                onPress={handleMarkAsAdopted}
+                disabled={
+                  markAsAdoptedMutation.isPending ||
+                  adoptionPet.status === "passive"
+                }
               >
                 <View className="flex-row items-center">
-                  <Ionicons name="checkmark-circle" size={20} color="white" />
-                  <Text className="text-white font-bold text-base ml-2">
-                    Sahiplendirildi
-                  </Text>
+                  {markAsAdoptedMutation.isPending ? (
+                    <ActivityIndicator size="small" color="white" />
+                  ) : (
+                    <>
+                      <Ionicons
+                        name="checkmark-circle"
+                        size={20}
+                        color="white"
+                      />
+                      <Text className="text-white font-bold text-base ml-2">
+                        Sahiplendirildi
+                      </Text>
+                    </>
+                  )}
                 </View>
               </TouchableOpacity>
 
@@ -295,15 +386,18 @@ export default function AdoptionPetDetailScreen() {
                   shadowRadius: 8,
                   elevation: 5,
                 }}
-                onPress={() => {
-                  // TODO: Silme işlemi
-                }}
+                onPress={handleDelete}
+                disabled={deleteMutation.isPending}
               >
-                <Ionicons name="trash-outline" size={20} color="white" />
+                {deleteMutation.isPending ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Ionicons name="trash-outline" size={20} color="white" />
+                )}
               </TouchableOpacity>
             </View>
           </View>
-        )} */}
+        )}
 
         {/* Pet Details Section */}
         <View className="px-5 mb-6">

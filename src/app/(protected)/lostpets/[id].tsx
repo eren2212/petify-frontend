@@ -9,8 +9,12 @@ import {
   Alert,
   Platform,
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
-import { useLostPetDetail } from "../../../hooks/usePet";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import {
+  useLostPetDetail,
+  useMarkLostPetAsFound,
+  useDeleteLostPet,
+} from "../../../hooks/usePet";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getPetTypeImageByName } from "../../../constants/petTypes";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
@@ -25,11 +29,20 @@ import MapView, {
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000/api";
 
 export default function LostPetDetailScreen() {
-  const { id } = useLocalSearchParams();
+  const { id, source } = useLocalSearchParams();
   const lostPetId = Array.isArray(id) ? id[0] : id;
+  const sourceParam = Array.isArray(source) ? source[0] : source;
+  const router = useRouter();
 
   // Lost pet detayını çek
   const { data: lostPet, isLoading, error } = useLostPetDetail(lostPetId || "");
+
+  // Mutations
+  const markAsFoundMutation = useMarkLostPetAsFound();
+  const deleteMutation = useDeleteLostPet();
+
+  // Profil sayfasından mı gelindi?
+  const isFromProfile = sourceParam === "profile";
 
   if (isLoading) {
     return (
@@ -192,6 +205,68 @@ export default function LostPetDetailScreen() {
     );
   };
 
+  // Bulundu olarak işaretle
+  const handleMarkAsFound = () => {
+    Alert.alert(
+      "Bulundu mu?",
+      "Bu kayıp hayvan bulundu mu?",
+      [
+        {
+          text: "İptal",
+          style: "cancel",
+        },
+        {
+          text: "Evet, Bulundu",
+          style: "default",
+          onPress: async () => {
+            try {
+              await markAsFoundMutation.mutateAsync(lostPetId);
+              Alert.alert("Başarılı!", "Hayvan bulundu olarak işaretlendi.");
+              router.back();
+            } catch (error: any) {
+              Alert.alert(
+                "Hata",
+                error?.response?.data?.message || "İşlem başarısız oldu"
+              );
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  // İlanı sil
+  const handleDelete = () => {
+    Alert.alert(
+      "İlanı Sil",
+      "Bu ilanı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+      [
+        {
+          text: "İptal",
+          style: "cancel",
+        },
+        {
+          text: "Sil",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteMutation.mutateAsync(lostPetId);
+              Alert.alert("Başarılı!", "İlan başarıyla silindi.");
+              router.back();
+            } catch (error: any) {
+              Alert.alert(
+                "Hata",
+                error?.response?.data?.message || "İşlem başarısız oldu"
+              );
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <ScrollView
@@ -200,10 +275,16 @@ export default function LostPetDetailScreen() {
         contentContainerStyle={{ paddingBottom: 32 }}
       >
         {/* Header - KAYIP Badge */}
-        <View className="bg-red-500 px-6 py-4 rounded-full items-center justify-center mx-2">
+        <View
+          className={`px-6 py-4 rounded-full items-center justify-center mx-2 ${
+            lostPet.status === "found" ? "bg-green-500" : "bg-red-500"
+          }`}
+        >
           <View className="flex-row items-center justify-center">
             <Ionicons name="alert-circle" size={24} color="white" />
-            <Text className="text-white text-lg font-bold ml-2">KAYIP</Text>
+            <Text className="text-white text-lg font-bold ml-2">
+              {lostPet.status === "found" ? "BULUNDU" : "KAYIP"}
+            </Text>
           </View>
         </View>
 
@@ -239,6 +320,64 @@ export default function LostPetDetailScreen() {
             {lostPet.breed && `${lostPet.breed}`}
           </Text>
         </View>
+
+        {/* Profil sayfasından gelindiyse gösterilecek butonlar */}
+        {isFromProfile && (
+          <View className="px-5 mb-6">
+            <View className="flex-row gap-3">
+              <TouchableOpacity
+                className="flex-1 bg-green-500 py-4 rounded-full items-center justify-center"
+                style={{
+                  shadowColor: "#10B981",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 5,
+                }}
+                onPress={handleMarkAsFound}
+                disabled={
+                  markAsFoundMutation.isPending || lostPet.status === "found"
+                }
+              >
+                <View className="flex-row items-center">
+                  {markAsFoundMutation.isPending ? (
+                    <ActivityIndicator size="small" color="white" />
+                  ) : (
+                    <>
+                      <Ionicons
+                        name="checkmark-circle"
+                        size={20}
+                        color="white"
+                      />
+                      <Text className="text-white font-bold text-base ml-2">
+                        Bulundu
+                      </Text>
+                    </>
+                  )}
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="bg-red-500 py-4 px-6 rounded-full items-center justify-center"
+                style={{
+                  shadowColor: "#EF4444",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 5,
+                }}
+                onPress={handleDelete}
+                disabled={deleteMutation.isPending}
+              >
+                {deleteMutation.isPending ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Ionicons name="trash-outline" size={20} color="white" />
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
 
         {/* Lost Information Section */}
         <View className="px-5 mb-6">

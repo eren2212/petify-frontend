@@ -114,7 +114,7 @@ export default function ListingsScreen() {
         {activeTab === "lost" ? (
           <LostPetsListings mode="nearby" />
         ) : (
-          <AdoptionPetsListings />
+          <AdoptionPetsListings mode="nearby" />
         )}
       </ScrollView>
 
