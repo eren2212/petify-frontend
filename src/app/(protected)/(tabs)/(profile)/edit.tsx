@@ -10,6 +10,7 @@ import VeterinerEdit from "../../../../components/profile/VeterinerEdit";
 import PetSitterEdit from "../../../../components/profile/PetSitterEdit";
 import PetOtelEdit from "../../../../components/profile/PetOtelEdit";
 import PetShopEdit from "../../../../components/profile/PetShopEdit";
+import PetShopEditProfile from "@/components/profile/PetShopEditProfile";
 
 export default function Edit() {
   const { data: user, isLoading } = useCurrentUser();
@@ -35,7 +36,7 @@ export default function Edit() {
       case "pet_hotel":
         return <PetOtelEdit user={user} />;
       case "pet_shop":
-        return <PetShopEdit user={user} />;
+        return <PetShopEditProfile user={user} />;
       default:
         return <PetOwnerEdit user={user} />; // Fallback
     }

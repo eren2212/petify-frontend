@@ -712,3 +712,99 @@ export const petApi = {
     }
   },
 };
+
+// Pet Shop API
+export const petShopApi = {
+  // Pet Shop profili oluştur
+  createProfile: async (profileData: any) => {
+    try {
+      const { data } = await instance.post("/petshop/add/profile", profileData);
+      console.log("✅ Pet shop profile created:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Create Pet Shop Profile Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  updatePetShopProfile: async (profileData: any) => {
+    try {
+      const { data } = await instance.put("/petshop/profile", profileData);
+      console.log("✅ Pet shop profile updated:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Update Pet Shop Profile Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  // Pet Shop profilini getir
+  getProfile: async () => {
+    try {
+      const { data } = await instance.get("/petshop/profile");
+      console.log("✅ Pet shop profile fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Pet Shop Profile Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Pet Shop logo yükle
+  uploadLogo: async (imageUri: string) => {
+    try {
+      const formData = new FormData();
+      const filename = imageUri.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename || "");
+      const type = match ? `image/${match[1]}` : "image/jpeg";
+
+      formData.append("petshopprofile", {
+        uri: imageUri,
+        name: filename || "petshop-logo.jpg",
+        type,
+      } as any);
+
+      const { data } = await instance.post(
+        "/petshop/add/profile/image",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log("✅ Pet shop logo uploaded:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Pet Shop Logo Upload Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Pet Shop logo sil
+  deleteLogo: async () => {
+    try {
+      const { data } = await instance.delete("/petshop/profile/logo");
+      console.log("✅ Pet shop logo deleted:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Delete Pet Shop Logo Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+};
