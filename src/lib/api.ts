@@ -808,3 +808,220 @@ export const petShopApi = {
     }
   },
 };
+
+// Product API
+export const productApi = {
+  // Ürün kategorilerini getir
+  getCategories: async () => {
+    try {
+      const { data } = await instance.get("/products/categories");
+      console.log("✅ Product categories fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Product Categories Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Yeni ürün ekle
+  addProduct: async (productData: any) => {
+    try {
+      const { data } = await instance.post("/products/add", productData);
+      console.log("✅ Product added:", data);
+      return data;
+    } catch (error: any) {
+      console.log("Add Product Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+
+  // Ürün güncelle
+  updateProduct: async (id: string, productData: any) => {
+    try {
+      const { data } = await instance.put(`/products/${id}`, productData);
+      console.log("✅ Product updated:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Update Product Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Ürün stok güncelle
+  updateProductStock: async (id: string, stock_quantity: number) => {
+    try {
+      const { data } = await instance.patch(`/products/${id}/stock-update`, {
+        stock_quantity,
+      });
+      console.log("✅ Product stock updated:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Update Product Stock Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Ürün durumu güncelle
+  updateProductStatus: async (id: string, status: boolean) => {
+    try {
+      const { data } = await instance.patch(`/products/${id}/status`, {
+        status,
+      });
+      console.log("✅ Product status updated:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Update Product Status Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Ürün sil
+  deleteProduct: async (id: string) => {
+    try {
+      const { data } = await instance.delete(`/products/${id}`);
+      console.log("✅ Product deleted:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Delete Product Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Pet shop'un ürünlerini getir
+  getMyProducts: async (page: number = 1, limit: number = 10) => {
+    try {
+      const { data } = await instance.get("/products", {
+        params: { page, limit },
+      });
+      console.log("✅ My products fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get My Products Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Tüm ürünleri getir
+  getAllProducts: async (page: number = 1, limit: number = 10) => {
+    try {
+      const { data } = await instance.get("/products/all", {
+        params: { page, limit },
+      });
+      console.log("✅ All products fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get All Products Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Kategoriye göre ürünleri getir
+  getProductsByCategory: async (
+    categoryName: string,
+    page: number = 1,
+    limit: number = 10
+  ) => {
+    try {
+      const { data } = await instance.get(
+        `/products/category/${categoryName}`,
+        {
+          params: { page, limit },
+        }
+      );
+      console.log("✅ Products by category fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Products By Category Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Ürün detayını getir
+  getProductById: async (id: string) => {
+    try {
+      const { data } = await instance.get(`/products/${id}`);
+      console.log("✅ Product detail fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Product By ID Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Ürün resmi yükle
+  uploadProductImage: async (productId: string, imageUri: string) => {
+    try {
+      const formData = new FormData();
+      const filename = imageUri.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename || "");
+      const type = match ? `image/${match[1]}` : "image/jpeg";
+
+      formData.append("products", {
+        uri: imageUri,
+        name: filename || "product.jpg",
+        type,
+      } as any);
+
+      const { data } = await instance.post(
+        `/products/image/${productId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log("✅ Product image uploaded:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Product Image Upload Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Ürün resmini getir
+  getProductImage: async (filename: string) => {
+    try {
+      const { data } = await instance.get(`/products/image/${filename}`);
+      console.log("✅ Product image fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Product Image Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+};

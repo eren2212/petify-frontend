@@ -9,7 +9,6 @@ import PetOwnerEdit from "../../../../components/profile/PetOwnerEdit";
 import VeterinerEdit from "../../../../components/profile/VeterinerEdit";
 import PetSitterEdit from "../../../../components/profile/PetSitterEdit";
 import PetOtelEdit from "../../../../components/profile/PetOtelEdit";
-import PetShopEdit from "../../../../components/profile/PetShopEdit";
 import PetShopEditProfile from "@/components/profile/PetShopEditProfile";
 
 export default function Edit() {
