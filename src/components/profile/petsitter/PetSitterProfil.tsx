@@ -10,25 +10,29 @@ import {
   Platform,
 } from "react-native";
 import { useState } from "react";
-import { useAuthStore } from "../../stores/authStore";
-import { useCurrentUser, getActiveRole } from "../../hooks/useAuth";
+import { useAuthStore } from "../../../stores/authStore";
+import { useCurrentUser, getActiveRole } from "../../../hooks/useAuth";
 import {
   usePetShopProfile,
   useCreatePetShopProfile,
   useUploadPetShopLogo,
   useDeletePetShopLogo,
-} from "../../hooks/useProfile";
+  usePetSitterProfile,
+  useCreatePetSitterProfile,
+  useUploadPetSitterLogo,
+  useDeletePetSitterLogo,
+} from "../../../hooks/useProfile";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { MaterialIcons, Ionicons, FontAwesome } from "@expo/vector-icons";
 import { COLORS } from "@/styles/theme/color";
-import AddPetShopProfileModal, {
-  PetShopProfileData,
-} from "./AddPetShopProfileModal";
-import PetShopLogoPicker from "./PetShopLogoPicker";
+import AddPetSitterProfileModal, {
+  PetSitterProfileData,
+} from "@/components/profile/petsitter/AddPetSitterProfileModal";
+import PetSitterLogoPicker from "@/components/profile/petsitter/PetSitterLogoPicker";
 import MapView, { Callout, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
-export default function PetShopProfil() {
+export default function PetSitterProfil() {
   const { signOut } = useAuthStore();
   const router = useRouter();
 
@@ -36,45 +40,33 @@ export default function PetShopProfil() {
   const { data: user, isLoading: userLoading } = useCurrentUser();
 
   // Pet Shop profilini al
-  const { data: petShopProfileResponse, isLoading: profileLoading } =
-    usePetShopProfile();
+  const { data: petSitterProfileResponse, isLoading: profileLoading } =
+    usePetSitterProfile();
 
   // Aktif rolü al
   const activeRole = getActiveRole(user);
 
   // Mutations
-  const createProfileMutation = useCreatePetShopProfile();
-  const uploadLogoMutation = useUploadPetShopLogo();
-  const deleteLogoMutation = useDeletePetShopLogo();
+  const createProfileMutation = useCreatePetSitterProfile();
+  const uploadLogoMutation = useUploadPetSitterLogo();
+  const deleteLogoMutation = useDeletePetSitterLogo();
 
   // Modal state
   const [isAddProfileModalVisible, setIsAddProfileModalVisible] =
     useState(false);
 
   // Pet shop profile data
-  const petShopProfile = petShopProfileResponse?.data?.petShopProfile;
+  const petSitterProfile = petSitterProfileResponse?.data?.petSitterProfile;
 
   // Logo URL oluştur
   const getLogoUrl = () => {
-    if (!petShopProfile?.logo_url) return null;
-    return `${process.env.EXPO_PUBLIC_API_URL}/petshop/profile/logo/${petShopProfile.logo_url}`;
+    if (!petSitterProfile?.profile_image_url) return null;
+    return `${process.env.EXPO_PUBLIC_API_URL}/petsitter/profile/image/${petSitterProfile.profile_image_url}`;
   };
 
-  const openMaps = (lat: number, lng: number, label: string) => {
-    const platform = Platform.OS;
-    let url = "";
-    if (platform === "ios") {
-      url = `maps://?daddr=${lat},${lng}&label=${label}`;
-    } else {
-      url = `google.navigation:q=${lat}+${lng}`;
-    }
-    Linking.openURL(url).catch((err) =>
-      console.error("Harita uygulaması açılamadı:", err)
-    );
-  };
   // Profil oluşturma handler
   const handleCreateProfile = async (
-    profileData: PetShopProfileData,
+    profileData: PetSitterProfileData,
     logoUri: string | null
   ) => {
     try {
@@ -87,7 +79,7 @@ export default function PetShopProfil() {
           await uploadLogoMutation.mutateAsync(logoUri);
           Alert.alert(
             "Başarılı",
-            "Pet shop profili ve logo başarıyla oluşturuldu!"
+            "Pet sitter profili ve logo başarıyla oluşturuldu!"
           );
         } catch (logoError) {
           Alert.alert(
@@ -96,7 +88,7 @@ export default function PetShopProfil() {
           );
         }
       } else {
-        Alert.alert("Başarılı", "Pet shop profili başarıyla oluşturuldu!");
+        Alert.alert("Başarılı", "Pet sitter profili başarıyla oluşturuldu!");
       }
 
       setIsAddProfileModalVisible(false);
@@ -134,17 +126,6 @@ export default function PetShopProfil() {
   const handleCallPhone = (phoneNumber: string) => {
     Linking.openURL(`tel:${phoneNumber}`);
   };
-
-  // Email gönderme
-  const handleSendEmail = (email: string) => {
-    Linking.openURL(`mailto:${email}`);
-  };
-
-  // Website açma
-  const handleOpenWebsite = (url: string) => {
-    Linking.openURL(url);
-  };
-
   // Instagram açma
   const handleOpenInstagram = (url: string) => {
     Linking.openURL(url);
@@ -160,7 +141,7 @@ export default function PetShopProfil() {
   }
 
   // Eğer profil yoksa, profil oluşturma ekranını göster
-  if (!petShopProfile) {
+  if (!petSitterProfile) {
     return (
       <SafeAreaView className="flex-1 bg-background">
         {/* Logout Button */}
@@ -185,14 +166,14 @@ export default function PetShopProfil() {
         {/* Content */}
         <View className="flex-1 justify-center items-center px-6">
           <View className="w-32 h-32 bg-orange-100 rounded-full items-center justify-center mb-6">
-            <Ionicons name="storefront" size={64} color={COLORS.primary} />
+            <Ionicons name="person" size={64} color={COLORS.primary} />
           </View>
 
           <Text className="text-2xl font-bold text-gray-900 mb-2 text-center">
-            Pet Shop Profili Oluştur
+            Pet Siter Profili Oluştur
           </Text>
           <Text className="text-base text-gray-500 mb-8 text-center">
-            Mağazanızın bilgilerini ekleyerek müşterilerinize ulaşın
+            Pet siterinizin bilgilerini ekleyerek müşterilerinize ulaşın
           </Text>
 
           <TouchableOpacity
@@ -206,7 +187,7 @@ export default function PetShopProfil() {
         </View>
 
         {/* Add Profile Modal */}
-        <AddPetShopProfileModal
+        <AddPetSitterProfileModal
           visible={isAddProfileModalVisible}
           onClose={() => setIsAddProfileModalVisible(false)}
           onSubmit={handleCreateProfile}
@@ -244,8 +225,8 @@ export default function PetShopProfil() {
         </View>
         {/* Logo - Tıklanabilir Logo Picker */}
         <View className="mb-4 relative">
-          <PetShopLogoPicker
-            currentLogoUrl={petShopProfile.logo_url}
+          <PetSitterLogoPicker
+            currentLogoUrl={petSitterProfile.profile_image_url}
             className="w-36 h-36"
           />
 
@@ -269,7 +250,7 @@ export default function PetShopProfil() {
 
         {/* Mağaza Adı */}
         <Text className="text-2xl font-bold text-gray-900 mb-2">
-          {petShopProfile.shop_name}
+          {petSitterProfile.display_name}
         </Text>
 
         {/* E-posta */}
@@ -286,14 +267,14 @@ export default function PetShopProfil() {
         </TouchableOpacity>
 
         {/* About Section */}
-        {petShopProfile.description && (
+        {petSitterProfile.bio && (
           <View className="w-full px-6 mb-6">
             <View className="bg-white rounded-2xl p-6 shadow-sm">
               <Text className="text-lg font-bold text-gray-900 mb-3">
                 Hakkında
               </Text>
               <Text className="text-base text-gray-600 leading-6">
-                {petShopProfile.description}
+                {petSitterProfile.bio}
               </Text>
             </View>
           </View>
@@ -303,50 +284,12 @@ export default function PetShopProfil() {
         <View className="w-full px-6 mb-6">
           <View className="bg-white rounded-2xl p-6 shadow-sm">
             <Text className="text-lg font-bold text-gray-900 mb-4">
-              Mağaza Bilgileri
+              Pet Siter Bilgileri
             </Text>
-
-            {/* Çalışma Saatleri */}
-            <View className="mb-4">
-              <View className="flex-row items-center mb-2">
-                <Ionicons name="time" size={20} color={COLORS.primary} />
-                <Text className="text-sm font-semibold text-gray-700 ml-2">
-                  Çalışma Saatleri
-                </Text>
-              </View>
-              {petShopProfile.working_hours?.map(
-                (wh: { day: string; hours: string }, index: number) => (
-                  <View
-                    key={index}
-                    className="flex-row justify-between py-2 border-b border-gray-100"
-                  >
-                    <Text className="text-sm text-gray-600">{wh.day}</Text>
-                    <Text className="text-sm text-gray-900 font-medium">
-                      {wh.hours}
-                    </Text>
-                  </View>
-                )
-              )}
-            </View>
-
-            {/* Adres */}
-            <View className="mb-4">
-              <View className="flex-row items-start mb-2">
-                <Ionicons name="location" size={20} color={COLORS.primary} />
-                <View className="flex-1 ml-2">
-                  <Text className="text-sm font-semibold text-gray-700 mb-1">
-                    Adres
-                  </Text>
-                  <Text className="text-sm text-gray-600">
-                    {petShopProfile.address}
-                  </Text>
-                </View>
-              </View>
-            </View>
 
             {/* Telefon */}
             <TouchableOpacity
-              onPress={() => handleCallPhone(petShopProfile.phone_number)}
+              onPress={() => handleCallPhone(petSitterProfile.phone_number)}
               className="mb-4"
             >
               <View className="flex-row items-center">
@@ -356,33 +299,15 @@ export default function PetShopProfil() {
                 </Text>
               </View>
               <Text className="text-sm text-blue-600 ml-7">
-                {petShopProfile.phone_number}
+                {petSitterProfile.phone_number}
               </Text>
             </TouchableOpacity>
 
-            {/* Website */}
-            {petShopProfile.website_url && (
-              <TouchableOpacity
-                onPress={() => handleOpenWebsite(petShopProfile.website_url)}
-                className="mb-4"
-              >
-                <View className="flex-row items-center">
-                  <Ionicons name="globe" size={20} color={COLORS.primary} />
-                  <Text className="text-sm font-semibold text-gray-700 ml-2">
-                    Website
-                  </Text>
-                </View>
-                <Text className="text-sm text-blue-600 ml-7" numberOfLines={1}>
-                  {petShopProfile.website_url}
-                </Text>
-              </TouchableOpacity>
-            )}
-
             {/* Instagram */}
-            {petShopProfile.instagram_url && (
+            {petSitterProfile.instagram_url && (
               <TouchableOpacity
                 onPress={() =>
-                  handleOpenInstagram(petShopProfile.instagram_url)
+                  handleOpenInstagram(petSitterProfile.instagram_url)
                 }
               >
                 <View className="flex-row items-center">
@@ -396,84 +321,12 @@ export default function PetShopProfil() {
                   </Text>
                 </View>
                 <Text className="text-sm text-blue-600 ml-7" numberOfLines={1}>
-                  {petShopProfile.instagram_url}
+                  {petSitterProfile.instagram_url}
                 </Text>
               </TouchableOpacity>
             )}
           </View>
         </View>
-
-        {/* Map */}
-        {petShopProfile.latitude && petShopProfile.longitude && (
-          <View className="w-full px-6 mb-6">
-            <View className="bg-white rounded-2xl p-6 shadow-sm">
-              <Text className="text-lg font-bold text-gray-900 mb-4">
-                Konumumuz
-              </Text>
-              <MapView
-                style={{
-                  width: "100%",
-                  height: 350,
-                  borderRadius: 12,
-                  borderWidth: 1,
-                  borderColor: COLORS.border,
-                  alignSelf: "center",
-                  marginBottom: 24,
-                  shadowOpacity: 0.1,
-                  shadowRadius: 4,
-                  elevation: 3,
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                }}
-                initialRegion={{
-                  latitude: petShopProfile.latitude,
-                  longitude: petShopProfile.longitude,
-                  latitudeDelta: 0.01,
-                  longitudeDelta: 0.01,
-                }}
-                provider={PROVIDER_GOOGLE}
-              >
-                <Marker
-                  coordinate={{
-                    latitude: petShopProfile.latitude,
-                    longitude: petShopProfile.longitude,
-                  }}
-                  title={petShopProfile.shop_name}
-                  description={petShopProfile.address}
-                >
-                  <View className="bg-orange-100 rounded-full p-3 items-center justify-center">
-                    <Ionicons
-                      name="storefront"
-                      size={24}
-                      color={COLORS.primary}
-                    />
-                  </View>
-                </Marker>
-
-                <Callout>
-                  <View className=" rounded-3xl p-3 ml-2 mt-2">
-                    <TouchableOpacity
-                      className="bg-white p-4 rounded-full items-center justify-center w-full"
-                      onPress={() =>
-                        openMaps(
-                          petShopProfile.latitude,
-                          petShopProfile.longitude,
-                          petShopProfile.address
-                        )
-                      }
-                    >
-                      <Ionicons
-                        name="trail-sign"
-                        size={24}
-                        color={COLORS.primary}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </Callout>
-              </MapView>
-            </View>
-          </View>
-        )}
       </ScrollView>
     </SafeAreaView>
   );

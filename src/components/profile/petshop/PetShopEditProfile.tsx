@@ -9,15 +9,15 @@ import {
 } from "react-native";
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { profileApi, petShopApi } from "../../lib/api";
+import { profileApi, petShopApi } from "@/lib/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { User } from "../../hooks/useAuth";
-import AvatarDeleteButton from "../AvatarDeleteButton";
+import { User } from "@/hooks/useAuth";
+import AvatarDeleteButton from "@/components/AvatarDeleteButton";
 import { Feather, AntDesign, Ionicons } from "@expo/vector-icons";
-import { usePetShopProfile } from "../../hooks/useProfile";
-import { COLORS } from "../../styles/theme/color";
-import MapLocationPicker from "../map/MapLocationPicker";
+import { usePetShopProfile } from "@/hooks/useProfile";
+import { COLORS } from "@/styles/theme/color";
+import MapLocationPicker from "@/components/map/MapLocationPicker";
 
 interface PetShopEditProfileProps {
   user: User | null | undefined;

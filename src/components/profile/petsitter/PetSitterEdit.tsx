@@ -9,24 +9,23 @@ import {
 } from "react-native";
 import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { profileApi } from "../../lib/api";
+import { profileApi } from "../../../lib/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { User } from "../../hooks/useAuth";
-import AvatarDeleteButton from "../AvatarDeleteButton";
+import { User } from "@/hooks/useAuth";
+import AvatarDeleteButton from "@/components/AvatarDeleteButton";
 import { Feather, AntDesign } from "@expo/vector-icons";
 
-interface VeterinerEditProps {
+interface PetSitterEditProps {
   user: User | null | undefined;
 }
 
 interface FormData {
   full_name: string;
   phone_number: string;
-  clinic_name: string;
 }
 
-export default function VeterinerEdit({ user }: VeterinerEditProps) {
+export default function PetSitterEdit({ user }: PetSitterEditProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -39,7 +38,6 @@ export default function VeterinerEdit({ user }: VeterinerEditProps) {
     defaultValues: {
       full_name: "",
       phone_number: "",
-      clinic_name: "",
     },
   });
 
@@ -48,7 +46,6 @@ export default function VeterinerEdit({ user }: VeterinerEditProps) {
       reset({
         full_name: user.profile.full_name || "",
         phone_number: user.profile.phone_number || "",
-        clinic_name: "", // TODO: Backend'den geldiğinde ekle
       });
     }
   }, [user, reset]);
@@ -87,7 +84,7 @@ export default function VeterinerEdit({ user }: VeterinerEditProps) {
   });
 
   const onSubmit = (data: FormData) => {
-    const updateData: any = {};
+    const updateData: { full_name?: string; phone_number?: string } = {};
 
     if (data.full_name.trim()) {
       updateData.full_name = data.full_name.trim();
@@ -95,10 +92,6 @@ export default function VeterinerEdit({ user }: VeterinerEditProps) {
 
     if (data.phone_number.trim()) {
       updateData.phone_number = data.phone_number.trim();
-    }
-
-    if (data.clinic_name.trim()) {
-      updateData.clinic_name = data.clinic_name.trim();
     }
 
     updateMutation.mutate(updateData);
@@ -113,7 +106,7 @@ export default function VeterinerEdit({ user }: VeterinerEditProps) {
       {/* Kullanıcı Bilgileri Kartı */}
       <View className="bg-white rounded-2xl p-6 mb-4 shadow-sm">
         <Text className="text-lg font-bold text-gray-900 mb-6">
-          Veteriner Profil Bilgileri
+          Bakıcı Profil Bilgileri
         </Text>
 
         {/* İsim Soyisim */}
@@ -155,7 +148,7 @@ export default function VeterinerEdit({ user }: VeterinerEditProps) {
         </View>
 
         {/* Telefon Numarası */}
-        <View className="mb-5">
+        <View className="mb-2">
           <Text className="text-sm font-medium text-gray-700 mb-2">
             Telefon Numarası
           </Text>
@@ -189,39 +182,6 @@ export default function VeterinerEdit({ user }: VeterinerEditProps) {
           {errors.phone_number && (
             <Text className="text-red-500 text-xs mt-1">
               {errors.phone_number.message}
-            </Text>
-          )}
-        </View>
-
-        {/* Klinik Adı - Veteriner'e Özel */}
-        <View className="mb-2">
-          <Text className="text-sm font-medium text-gray-700 mb-2">
-            Klinik Adı
-          </Text>
-          <Controller
-            control={control}
-            name="clinic_name"
-            rules={{
-              minLength: {
-                value: 2,
-                message: "En az 2 karakter olmalıdır",
-              },
-            }}
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                value={value}
-                onChangeText={onChange}
-                placeholder="Klinik adını girin"
-                className={`bg-gray-50 border ${
-                  errors.clinic_name ? "border-red-500" : "border-gray-200"
-                } rounded-xl px-4 py-3.5 text-gray-900 text-base`}
-                placeholderTextColor="#9CA3AF"
-              />
-            )}
-          />
-          {errors.clinic_name && (
-            <Text className="text-red-500 text-xs mt-1">
-              {errors.clinic_name.message}
             </Text>
           )}
         </View>

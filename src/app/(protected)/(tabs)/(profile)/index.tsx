@@ -3,10 +3,10 @@ import { useCurrentUser, getActiveRole } from "../../../../hooks/useAuth";
 
 // Rol bazlı profil component'lerini import et
 import PetOwnerProfil from "../../../../components/profile/PetOwnerProfil";
-import PetShopProfil from "../../../../components/profile/PetShopProfil";
+import PetShopProfil from "../../../../components/profile/petshop/PetShopProfil";
 // TODO: Diğer rol component'leri eklenecek
 // import VeterinerProfil from "../../../../components/profile/VeterinerProfil";
-// import PetSitterProfil from "../../../../components/profile/PetSitterProfil";
+import PetSitterProfil from "@/components/profile/petsitter/PetSitterProfil";
 // import PetOtelProfil from "../../../../components/profile/PetOtelProfil";
 
 export default function ProfileScreen() {
@@ -31,8 +31,8 @@ export default function ProfileScreen() {
       // TODO: Diğer roller için component'ler eklenecek
       // case "pet_clinic":
       //   return <VeterinerProfil />;
-      // case "pet_sitter":
-      //   return <PetSitterProfil />;
+      case "pet_sitter":
+        return <PetSitterProfil />;
       // case "pet_hotel":
       //   return <PetOtelProfil />;
       default:

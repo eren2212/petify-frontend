@@ -13,9 +13,9 @@ import {
   Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { COLORS } from "../../styles/theme/color";
-import MapLocationPicker from "../map/MapLocationPicker";
-import { pickImageFromLibrary } from "../../utils/imagePicker";
+import { COLORS } from "@/styles/theme/color";
+import MapLocationPicker from "@/components/map/MapLocationPicker";
+import { pickImageFromLibrary } from "@/utils/imagePicker";
 
 interface AddPetShopProfileModalProps {
   visible: boolean;
@@ -477,4 +477,3 @@ export default function AddPetShopProfileModal({
     </>
   );
 }
-

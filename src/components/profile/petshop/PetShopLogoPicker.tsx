@@ -1,9 +1,9 @@
 import { TouchableOpacity, Alert, ActivityIndicator, View } from "react-native";
 import { Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { COLORS } from "../../styles/theme/color";
-import { pickImageFromLibrary } from "../../utils/imagePicker";
-import { useUploadPetShopLogo } from "../../hooks/useProfile";
+import { COLORS } from "../../../styles/theme/color";
+import { pickImageFromLibrary } from "@/utils/imagePicker";
+import { useUploadPetShopLogo } from "@/hooks/useProfile";
 
 interface PetShopLogoPickerProps {
   currentLogoUrl?: string | null;
@@ -91,4 +91,3 @@ export default function PetShopLogoPicker({
     </TouchableOpacity>
   );
 }
-

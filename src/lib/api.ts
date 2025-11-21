@@ -1032,3 +1032,101 @@ export const productApi = {
     }
   },
 };
+
+export const petSitterApi = {
+  // Pet Sitter profili oluştur
+  createProfile: async (profileData: any) => {
+    try {
+      const { data } = await instance.post(
+        "/petsitter/add/profile",
+        profileData
+      );
+      console.log("✅ Pet sitter profile created:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Create Pet Sitter Profile Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  updatePetSitterProfile: async (profileData: any) => {
+    try {
+      const { data } = await instance.put("/petsitter/profile", profileData);
+      console.log("✅ Pet sitter profile updated:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Update Pet Sitter Profile Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  // Pet Shop profilini getir
+  getProfile: async () => {
+    try {
+      const { data } = await instance.get("/petsitter/profile");
+      console.log("✅ Pet sitter profile fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Pet Sitter Profile Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Pet Shop logo yükle
+  uploadLogo: async (imageUri: string) => {
+    try {
+      const formData = new FormData();
+      const filename = imageUri.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename || "");
+      const type = match ? `image/${match[1]}` : "image/jpeg";
+
+      formData.append("petsitterprofile", {
+        uri: imageUri,
+        name: filename || "petsitter-logo.jpg",
+        type,
+      } as any);
+
+      const { data } = await instance.post(
+        "/petsitter/add/profile/image",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log("✅ Pet sitter logo uploaded:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Pet Sitter Logo Upload Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Pet Shop logo sil
+  deleteLogo: async () => {
+    try {
+      const { data } = await instance.delete("/petsitter/profile/image");
+      console.log("✅ Pet sitter logo deleted:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Delete Pet Sitter Logo Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+};
