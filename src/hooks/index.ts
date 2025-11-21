@@ -7,8 +7,11 @@ export * from "./useAuth";
 // User profile hooks
 export * from "./usePet";
 
-// Products hooks (sonradan eklenecek)
-// export * from './useProducts';
+// Profile hooks
+export * from "./useProfile";
+
+// Products hooks
+export * from "./useProduct";
 
 // Doctors hooks (sonradan eklenecek)
 // export * from './useDoctors';

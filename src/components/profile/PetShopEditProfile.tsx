@@ -238,7 +238,7 @@ export default function PetShopEditProfile({ user }: PetShopEditProfileProps) {
 
       await updatePetShopMutation.mutateAsync(petShopUpdateData);
 
-      Alert.alert("Başarılı", "Profil bilgileriniz güncellendi", [
+      Alert.alert("Başarılı", "Mağaza bilgileriniz güncellendi", [
         {
           text: "Tamam",
           onPress: () => router.back(),
@@ -247,7 +247,8 @@ export default function PetShopEditProfile({ user }: PetShopEditProfileProps) {
     } catch (error: any) {
       Alert.alert(
         "Hata",
-        error.response?.data?.message || "Profil güncellenirken bir hata oluştu"
+        error.response?.data?.message ||
+          "Mağaza bilgileri güncellenirken bir hata oluştu"
       );
     }
   };
