@@ -15,17 +15,27 @@ import { router } from "expo-router";
 import AddProductModal from "../../../components/product/AddProductModal";
 import UpdateStockModal from "../../../components/product/UpdateStockModal";
 import { COLORS } from "../../../styles/theme/color";
-import { useMyProducts, useDeleteProduct } from "../../../hooks";
+import {
+  useMyProducts,
+  useDeleteProduct,
+  useProductCategories,
+} from "../../../hooks";
 import Toast from "react-native-toast-message";
 
 interface Product {
   id: string;
   name: string;
   price: number;
-  is_active: boolean;
   stock_quantity: number;
   image_url?: string;
   description?: string;
+  is_active: boolean;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  name_tr: string;
 }
 
 export default function Products() {
@@ -33,7 +43,22 @@ export default function Products() {
   const [showStockModal, setShowStockModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  const { data, isLoading, refetch, isRefetching } = useMyProducts(1, 100);
+  // Filters
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
+    undefined
+  );
+  const [selectedStatus, setSelectedStatus] = useState<boolean | undefined>(
+    undefined
+  );
+
+  // Fetch data with filters
+  const { data, isLoading, refetch, isRefetching } = useMyProducts(
+    1,
+    100,
+    selectedCategory,
+    selectedStatus
+  );
+  const { data: categories = [] } = useProductCategories();
   const { mutate: deleteProduct, isPending: isDeleting } = useDeleteProduct();
 
   const products = data?.products || [];
@@ -90,6 +115,24 @@ export default function Products() {
     return "text-green-600";
   };
 
+  // Handle category filter
+  const handleCategoryFilter = (categoryId: string) => {
+    if (selectedCategory === categoryId) {
+      setSelectedCategory(undefined); // Deselect
+    } else {
+      setSelectedCategory(categoryId);
+    }
+  };
+
+  // Handle status filter
+  const handleStatusFilter = (status: boolean | undefined) => {
+    if (selectedStatus === status) {
+      setSelectedStatus(undefined); // Deselect
+    } else {
+      setSelectedStatus(status);
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-background">
       <View className="flex-1">
@@ -113,6 +156,124 @@ export default function Products() {
           </TouchableOpacity>
         </View>
 
+        {/* Filters Section */}
+        <View className="px-6 py-4 border-b border-gray-200">
+          {/* Category Filters - Horizontal Scroll */}
+          <View className="mb-3">
+            <Text className="text-sm font-semibold text-gray-700 mb-2">
+              Kategoriler
+            </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              className="flex-row gap-2"
+            >
+              {/* All Categories Button */}
+              <TouchableOpacity
+                onPress={() => setSelectedCategory(undefined)}
+                className={`px-4 py-2 rounded-full border ${
+                  selectedCategory === undefined
+                    ? "bg-primary border-primary"
+                    : "bg-white border-gray-300"
+                }`}
+              >
+                <Text
+                  className={`text-sm font-semibold ${
+                    selectedCategory === undefined
+                      ? "text-white"
+                      : "text-gray-700"
+                  }`}
+                >
+                  Tümü
+                </Text>
+              </TouchableOpacity>
+
+              {categories.map((category: Category) => (
+                <TouchableOpacity
+                  key={category.id}
+                  onPress={() => handleCategoryFilter(category.id)}
+                  className={`px-4 py-2 rounded-full border ${
+                    selectedCategory === category.id
+                      ? "bg-primary border-primary"
+                      : "bg-white border-gray-300"
+                  }`}
+                >
+                  <Text
+                    className={`text-sm font-semibold ${
+                      selectedCategory === category.id
+                        ? "text-white"
+                        : "text-gray-700"
+                    }`}
+                  >
+                    {category.name_tr}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+
+          {/* Status Filters */}
+          <View>
+            <Text className="text-sm font-semibold text-gray-700 mb-2">
+              Durum
+            </Text>
+            <View className="flex-row gap-2">
+              <TouchableOpacity
+                onPress={() => handleStatusFilter(undefined)}
+                className={`px-4 py-2 rounded-full border ${
+                  selectedStatus === undefined
+                    ? "bg-primary border-primary"
+                    : "bg-white border-gray-300"
+                }`}
+              >
+                <Text
+                  className={`text-sm font-semibold ${
+                    selectedStatus === undefined
+                      ? "text-white"
+                      : "text-gray-700"
+                  }`}
+                >
+                  Tümü
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => handleStatusFilter(true)}
+                className={`px-4 py-2 rounded-full border ${
+                  selectedStatus === true
+                    ? "bg-green-500 border-green-500"
+                    : "bg-white border-gray-300"
+                }`}
+              >
+                <Text
+                  className={`text-sm font-semibold ${
+                    selectedStatus === true ? "text-white" : "text-gray-700"
+                  }`}
+                >
+                  Aktif
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => handleStatusFilter(false)}
+                className={`px-4 py-2 rounded-full border ${
+                  selectedStatus === false
+                    ? "bg-red-500 border-red-500"
+                    : "bg-white border-gray-300"
+                }`}
+              >
+                <Text
+                  className={`text-sm font-semibold ${
+                    selectedStatus === false ? "text-white" : "text-gray-700"
+                  }`}
+                >
+                  Pasif
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+
         {/* Products List */}
         {isLoading ? (
           <View className="flex-1 items-center justify-center">
@@ -123,10 +284,14 @@ export default function Products() {
           <View className="flex-1 items-center justify-center px-6">
             <Ionicons name="cube-outline" size={80} color="#D1D5DB" />
             <Text className="text-gray-900 font-bold text-xl mt-4">
-              Henüz ürün yok
+              {selectedCategory || selectedStatus !== undefined
+                ? "Filtre kriterlerine uygun ürün bulunamadı"
+                : "Henüz ürün yok"}
             </Text>
             <Text className="text-gray-500 text-center mt-2">
-              Sağ üstteki + butonuna basarak ilk ürününüzü ekleyin
+              {selectedCategory || selectedStatus !== undefined
+                ? "Farklı filtreler deneyebilirsiniz"
+                : "Sağ üstteki + butonuna basarak ilk ürününüzü ekleyin"}
             </Text>
           </View>
         ) : (
@@ -143,7 +308,7 @@ export default function Products() {
           >
             <View className="px-6 py-4">
               <Text className="text-lg font-bold text-gray-900 mb-4">
-                Ürünleri Yönet
+                Ürünleri Yönet ({products.length})
               </Text>
 
               {products.map((product: Product) => (
@@ -160,14 +325,20 @@ export default function Products() {
                   }}
                   disabled={isDeleting}
                 >
-                  <View className="flex-row items-center justify-between absolute top-1 right-2">
-                    <View className="flex-row items-center bg-gray-100 rounded-full px-2 py-1 w-20 justify-center">
-                      <Text
-                        className={`font-bold text-xs  text-gray-900 ${product.is_active ? "text-green-600" : "text-red-600"}`}
-                      >
-                        {product.is_active ? "Aktif" : "Pasif"}
-                      </Text>
-                    </View>
+                  <View className="absolute top-1 right-2">
+                    {product.is_active ? (
+                      <View className="bg-green-100 px-2 py-0.5 rounded absolute top-1 right-2">
+                        <Text className="text-green-600 text-xs font-bold">
+                          Aktif
+                        </Text>
+                      </View>
+                    ) : (
+                      <View className="bg-red-100 px-2 py-0.5 rounded absolute top-1 right-2">
+                        <Text className="text-red-600 text-xs font-bold">
+                          Pasif
+                        </Text>
+                      </View>
+                    )}
                   </View>
                   {/* Product Image */}
                   <View className="w-16 h-16 rounded-xl bg-gray-100 overflow-hidden mr-4">
@@ -189,15 +360,16 @@ export default function Products() {
                       </View>
                     )}
                   </View>
-
                   {/* Product Info */}
                   <View className="flex-1">
-                    <Text
-                      className="text-base font-bold text-gray-900"
-                      numberOfLines={1}
-                    >
-                      {product.name}
-                    </Text>
+                    <View className="flex-row items-center gap-2 mb-1">
+                      <Text
+                        className="text-base font-bold text-gray-900"
+                        numberOfLines={1}
+                      >
+                        {product.name}
+                      </Text>
+                    </View>
                     <Text
                       className={`text-sm font-semibold ${getStockColor(product.stock_quantity)}`}
                     >
@@ -207,7 +379,6 @@ export default function Products() {
                       ₺{product.price.toFixed(2)}
                     </Text>
                   </View>
-
                   {/* Action Buttons */}
                   <View className="flex-row gap-2">
                     {/* Edit Stock Button */}

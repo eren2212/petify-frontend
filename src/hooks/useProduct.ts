@@ -18,11 +18,21 @@ export function useProductCategories() {
 /**
  * Pet shop'un ürünlerini getir
  */
-export function useMyProducts(page = 1, limit = 10) {
+export function useMyProducts(
+  page = 1,
+  limit = 10,
+  categoryId?: string,
+  status?: boolean
+) {
   return useQuery({
-    queryKey: ["products", "my-products", page, limit],
+    queryKey: ["products", "my-products", page, limit, categoryId, status],
     queryFn: async () => {
-      const response = await productApi.getMyProducts(page, limit);
+      const response = await productApi.getMyProducts(
+        page,
+        limit,
+        categoryId,
+        status
+      );
       return response.data;
     },
   });

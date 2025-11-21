@@ -903,11 +903,18 @@ export const productApi = {
   },
 
   // Pet shop'un ürünlerini getir
-  getMyProducts: async (page: number = 1, limit: number = 10) => {
+  getMyProducts: async (
+    page: number = 1,
+    limit: number = 10,
+    categoryId?: string,
+    status?: boolean
+  ) => {
     try {
-      const { data } = await instance.get("/products", {
-        params: { page, limit },
-      });
+      const params: any = { page, limit };
+      if (categoryId) params.categoryId = categoryId;
+      if (status !== undefined) params.status = status;
+
+      const { data } = await instance.get("/products", { params });
       console.log("✅ My products fetched:", data);
       return data;
     } catch (error: any) {
