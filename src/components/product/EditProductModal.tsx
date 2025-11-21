@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   View,
@@ -9,19 +9,21 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-  Image,
 } from "react-native";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../../styles/theme/color";
 import Toast from "react-native-toast-message";
-import { pickImageFromLibrary } from "../../utils/imagePicker";
-import { useAddProduct, useProductCategories, usePetTypes } from "../../hooks";
-import { productApi } from "../../lib/api";
+import {
+  useUpdateProduct,
+  useProductCategories,
+  usePetTypes,
+} from "../../hooks";
 import { PetType } from "../../types/type";
 
-interface AddProductModalProps {
+interface EditProductModalProps {
   visible: boolean;
   onClose: () => void;
+  product: any;
 }
 
 interface Category {
@@ -31,11 +33,12 @@ interface Category {
   display_order: number;
 }
 
-export default function AddProductModal({
+export default function EditProductModal({
   visible,
   onClose,
-}: AddProductModalProps) {
-  const { mutate: addProduct, isPending: isAdding } = useAddProduct();
+  product,
+}: EditProductModalProps) {
+  const { mutate: updateProduct, isPending } = useUpdateProduct();
   const { data: categories = [], isLoading: categoriesLoading } =
     useProductCategories();
   const { data: petTypes = [], isLoading: petTypesLoading } = usePetTypes();
@@ -63,22 +66,28 @@ export default function AddProductModal({
     { value: "senior", label: "Yaşlı (Senior)" },
   ];
 
-  // Form state - Product Image
-  const [productImageUri, setProductImageUri] = useState<string | null>(null);
+  // Initialize form with product data
+  useEffect(() => {
+    if (product && visible) {
+      setProductName(product.name || "");
+      setDescription(product.description || "");
+      setPrice(product.price?.toString() || "");
+      setWeight(product.weight_kg?.toString() || "");
+      setAgeGroup(product.age_group || "");
+      setStockQuantity(product.stock_quantity?.toString() || "");
+      setLowStockThreshold(product.low_stock_threshold?.toString() || "");
 
-  // Form reset
-  const resetForm = () => {
-    setProductName("");
-    setSelectedCategory(null);
-    setSelectedPetType(null);
-    setDescription("");
-    setPrice("");
-    setWeight("");
-    setAgeGroup("");
-    setStockQuantity("");
-    setLowStockThreshold("");
-    setProductImageUri(null);
-  };
+      // Set category
+      if (product.category) {
+        setSelectedCategory(product.category);
+      }
+
+      // Set pet type
+      if (product.pet_type) {
+        setSelectedPetType(product.pet_type);
+      }
+    }
+  }, [product, visible]);
 
   // Category, Pet Type ve Age Group seçim fonksiyonları
   const handleCategorySelect = (category: Category) => {
@@ -94,14 +103,6 @@ export default function AddProductModal({
   const handleAgeGroupSelect = (value: string) => {
     setAgeGroup(value);
     setShowAgeGroupDropdown(false);
-  };
-
-  // Resim seçme fonksiyonu
-  const handlePickImage = async () => {
-    const imageUri = await pickImageFromLibrary([1, 1]); // Kare format
-    if (imageUri) {
-      setProductImageUri(imageUri);
-    }
   };
 
   // Submit handler
@@ -134,7 +135,8 @@ export default function AddProductModal({
       return;
     }
 
-    if (!price.trim() || parseFloat(price) <= 0) {
+    const priceValue = price.replace(",", ".");
+    if (!priceValue || parseFloat(priceValue) <= 0) {
       Toast.show({
         type: "error",
         text1: "Geçerli bir fiyat giriniz!",
@@ -152,28 +154,15 @@ export default function AddProductModal({
       return;
     }
 
-    // Fotoğraf zorunlu
-    if (!productImageUri) {
-      Toast.show({
-        type: "error",
-        text1: "Lütfen ürün fotoğrafını ekleyin!",
-        bottomOffset: 40,
-      });
-      return;
-    }
-
     // Backend'e gönderilecek data
+    const weightValue = weight.replace(",", ".");
     const productData = {
       categoryId: selectedCategory.id,
       petTypeId: selectedPetType?.id || null,
       name: productName.trim(),
       description: description.trim(),
-      price: price.replace(",", ".")
-        ? parseFloat(price.replace(",", "."))
-        : null,
-      weight_kg: weight.replace(",", ".")
-        ? parseFloat(weight.replace(",", "."))
-        : null,
+      price: parseFloat(priceValue),
+      weight_kg: weightValue ? parseFloat(weightValue) : null,
       age_group: ageGroup || null, // puppy, adult, senior enum değerleri
       stock_quantity: parseInt(stockQuantity),
       low_stock_threshold: lowStockThreshold
@@ -181,45 +170,28 @@ export default function AddProductModal({
         : null,
     };
 
-    addProduct(productData, {
-      onSuccess: async (response: any) => {
-        console.log("✅ Ürün başarıyla eklendi!");
-
-        // Adım 2: Fotoğrafı yükle
-        if (productImageUri && response?.data?.product?.id) {
-          const productId = response.data.product.id;
-
-          try {
-            await productApi.uploadProductImage(productId, productImageUri);
-            console.log("✅ Ürün resmi başarıyla yüklendi!");
-            Toast.show({
-              type: "success",
-              text1: "Ürün ve fotoğrafı başarıyla kaydedildi!",
-              bottomOffset: 40,
-            });
-          } catch (imageError: any) {
-            console.error("❌ Resim yükleme hatası:", imageError);
-            Toast.show({
-              type: "warning",
-              text1: "Ürün oluşturuldu ancak resim yüklenemedi",
-              text2: "Resmi daha sonra ekleyebilirsiniz",
-              bottomOffset: 40,
-            });
-          }
-        }
-
-        resetForm();
-        onClose();
-      },
-      onError: (error: any) => {
-        Toast.show({
-          type: "error",
-          text1:
-            error?.response?.data?.message || "Ürün eklenirken bir hata oluştu",
-          bottomOffset: 40,
-        });
-      },
-    });
+    updateProduct(
+      { id: product.id, data: productData },
+      {
+        onSuccess: () => {
+          Toast.show({
+            type: "success",
+            text1: "Ürün başarıyla güncellendi!",
+            bottomOffset: 40,
+          });
+          onClose();
+        },
+        onError: (error: any) => {
+          Toast.show({
+            type: "error",
+            text1:
+              error?.response?.data?.message ||
+              "Ürün güncellenirken bir hata oluştu",
+            bottomOffset: 40,
+          });
+        },
+      }
+    );
   };
 
   return (
@@ -238,7 +210,7 @@ export default function AddProductModal({
             {/* Header */}
             <View className="flex-row items-center justify-between p-6 border-b border-gray-200">
               <Text className="text-2xl font-bold text-gray-900">
-                Yeni Ürün Ekle
+                Ürünü Düzenle
               </Text>
               <TouchableOpacity
                 onPress={onClose}
@@ -416,7 +388,7 @@ export default function AddProductModal({
                   </Text>
                   <TextInput
                     className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-900"
-                    placeholder="Örn: 250.00"
+                    placeholder="Örn: 250.00 veya 250,00"
                     placeholderTextColor="#9CA3AF"
                     value={price}
                     onChangeText={setPrice}
@@ -431,7 +403,7 @@ export default function AddProductModal({
                   </Text>
                   <TextInput
                     className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-900"
-                    placeholder="Örn: 2.5"
+                    placeholder="Örn: 2.5 veya 2,5"
                     placeholderTextColor="#9CA3AF"
                     value={weight}
                     onChangeText={setWeight}
@@ -530,53 +502,6 @@ export default function AddProductModal({
                 </View>
               </View>
 
-              {/* Photos Section */}
-              <View className="py-6 border-t border-gray-200">
-                <Text className="text-lg font-bold text-gray-900 mb-4">
-                  Fotoğraf (Zorunlu)
-                </Text>
-
-                <TouchableOpacity
-                  className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-8 items-center"
-                  onPress={handlePickImage}
-                  disabled={isAdding}
-                >
-                  {productImageUri ? (
-                    <View className="w-full items-center">
-                      <Image
-                        source={{ uri: productImageUri }}
-                        className="w-64 h-64 rounded-xl mb-3"
-                        resizeMode="cover"
-                      />
-                      <View className="absolute top-2 right-2 bg-white rounded-full p-2">
-                        <Ionicons
-                          name="checkmark-circle"
-                          size={24}
-                          color="#10B981"
-                        />
-                      </View>
-                      <Text className="text-green-600 font-medium text-base">
-                        Fotoğraf Seçildi (Değiştirmek için tıklayın)
-                      </Text>
-                    </View>
-                  ) : (
-                    <>
-                      <MaterialCommunityIcons
-                        name="camera-plus"
-                        size={48}
-                        color="#9CA3AF"
-                      />
-                      <Text className="text-gray-500 font-medium mt-3 text-base">
-                        Fotoğraf Ekle
-                      </Text>
-                      <Text className="text-gray-400 text-sm mt-1 text-center">
-                        Ürünün fotoğrafını yükleyerek satışa sunun.
-                      </Text>
-                    </>
-                  )}
-                </TouchableOpacity>
-              </View>
-
               {/* Bottom Spacing */}
               <View className="h-6" />
             </ScrollView>
@@ -585,7 +510,7 @@ export default function AddProductModal({
             <View className="p-6 border-t border-gray-200">
               <TouchableOpacity
                 className={`rounded-full py-4 items-center ${
-                  !productImageUri || isAdding ? "bg-gray-300" : "bg-primary"
+                  isPending ? "bg-gray-300" : "bg-primary"
                 }`}
                 style={{
                   shadowColor: COLORS.primary,
@@ -595,13 +520,13 @@ export default function AddProductModal({
                   elevation: 5,
                 }}
                 onPress={handleSubmit}
-                disabled={!productImageUri || isAdding}
+                disabled={isPending}
               >
-                {isAdding ? (
+                {isPending ? (
                   <ActivityIndicator color="white" />
                 ) : (
                   <Text className="text-white font-bold text-lg">
-                    Ürünü Ekle
+                    Değişiklikleri Kaydet
                   </Text>
                 )}
               </TouchableOpacity>
@@ -612,3 +537,4 @@ export default function AddProductModal({
     </Modal>
   );
 }
+

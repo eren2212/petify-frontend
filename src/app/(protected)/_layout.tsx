@@ -33,6 +33,13 @@ export default function ProtectedLayout() {
           presentation: "modal",
         }}
       />
+      <Stack.Screen
+        name="products"
+        options={{
+          headerShown: false,
+          presentation: "modal",
+        }}
+      />
     </Stack>
   );
 }
