@@ -1130,3 +1130,133 @@ export const petSitterApi = {
     }
   },
 };
+
+// Pet Sitter Service API
+export const petSitterServiceApi = {
+  // Hizmet kategorilerini getir
+  getCategories: async () => {
+    try {
+      const { data } = await instance.get("/petsitterservices/categories");
+      console.log("✅ Pet sitter service categories fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Pet Sitter Service Categories Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Kullanıcının hizmetlerini getir
+  getMyServices: async (
+    page: number = 1,
+    limit: number = 10,
+    categoryId?: string,
+    status?: boolean
+  ) => {
+    try {
+      const params: any = { page, limit };
+      if (categoryId) params.categoryId = categoryId;
+      if (status !== undefined) params.status = status;
+
+      const { data } = await instance.get("/petsitterservices/my-services", {
+        params,
+      });
+      console.log("✅ My pet sitter services fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get My Pet Sitter Services Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Yeni hizmet ekle
+  addService: async (serviceData: any) => {
+    try {
+      const { data } = await instance.post(
+        "/petsitterservices/add-service",
+        serviceData
+      );
+      console.log("✅ Pet sitter service added:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Add Pet Sitter Service Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Hizmet güncelle
+  updateService: async (id: string, serviceData: any) => {
+    try {
+      const { data } = await instance.put(
+        `/petsitterservices/update-service/${id}`,
+        serviceData
+      );
+      console.log("✅ Pet sitter service updated:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Update Pet Sitter Service Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Hizmet detayını getir
+  getServiceById: async (id: string) => {
+    try {
+      const { data } = await instance.get(`/petsitterservices/service/${id}`);
+      console.log("✅ Pet sitter service detail fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Pet Sitter Service Detail Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Hizmet sil
+  deleteService: async (id: string) => {
+    try {
+      const { data } = await instance.delete(
+        `/petsitterservices/service/${id}`
+      );
+      console.log("✅ Pet sitter service deleted:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Delete Pet Sitter Service Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Hizmet durumu güncelle (aktif/pasif)
+  toggleServiceStatus: async (id: string, status: boolean) => {
+    try {
+      const { data } = await instance.patch(
+        `/petsitterservices/toggle-status/${id}`,
+        { status }
+      );
+      console.log("✅ Pet sitter service status updated:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Toggle Pet Sitter Service Status Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+};
