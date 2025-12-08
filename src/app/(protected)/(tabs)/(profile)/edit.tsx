@@ -5,11 +5,11 @@ import { useCurrentUser, getActiveRole } from "../../../../hooks/useAuth";
 import BackHeader from "../../../../components/BackHeader";
 
 // Component'leri import et
-import PetOwnerEdit from "../../../../components/profile/PetOwnerEdit";
-import VeterinerEdit from "../../../../components/profile/VeterinerEdit";
-import PetSitterEdit from "../../../../components/profile/PetSitterEdit";
-import PetOtelEdit from "../../../../components/profile/PetOtelEdit";
-import PetShopEditProfile from "@/components/profile/PetShopEditProfile";
+import PetOwnerEdit from "@/components/profile/PetOwnerEdit";
+import VeterinerEdit from "@/components/profile/petveteriner/VeterinerEdit";
+import PetSitterEdit from "@/components/profile/petsitter/PetSitterEdit";
+import PetOtelEdit from "@/components/profile/petotel/PetOtelEdit";
+import PetShopEditProfile from "@/components/profile/petshop/PetShopEditProfile";
 
 export default function Edit() {
   const { data: user, isLoading } = useCurrentUser();

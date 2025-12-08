@@ -1032,3 +1032,231 @@ export const productApi = {
     }
   },
 };
+
+export const petSitterApi = {
+  // Pet Sitter profili oluştur
+  createProfile: async (profileData: any) => {
+    try {
+      const { data } = await instance.post(
+        "/petsitter/add/profile",
+        profileData
+      );
+      console.log("✅ Pet sitter profile created:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Create Pet Sitter Profile Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  updatePetSitterProfile: async (profileData: any) => {
+    try {
+      const { data } = await instance.put("/petsitter/profile", profileData);
+      console.log("✅ Pet sitter profile updated:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Update Pet Sitter Profile Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  // Pet Shop profilini getir
+  getProfile: async () => {
+    try {
+      const { data } = await instance.get("/petsitter/profile");
+      console.log("✅ Pet sitter profile fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Pet Sitter Profile Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Pet Shop logo yükle
+  uploadLogo: async (imageUri: string) => {
+    try {
+      const formData = new FormData();
+      const filename = imageUri.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename || "");
+      const type = match ? `image/${match[1]}` : "image/jpeg";
+
+      formData.append("petsitterprofile", {
+        uri: imageUri,
+        name: filename || "petsitter-logo.jpg",
+        type,
+      } as any);
+
+      const { data } = await instance.post(
+        "/petsitter/add/profile/image",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log("✅ Pet sitter logo uploaded:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Pet Sitter Logo Upload Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Pet Shop logo sil
+  deleteLogo: async () => {
+    try {
+      const { data } = await instance.delete("/petsitter/profile/image");
+      console.log("✅ Pet sitter logo deleted:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Delete Pet Sitter Logo Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+};
+
+// Pet Sitter Service API
+export const petSitterServiceApi = {
+  // Hizmet kategorilerini getir
+  getCategories: async () => {
+    try {
+      const { data } = await instance.get("/petsitterservices/categories");
+      console.log("✅ Pet sitter service categories fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Pet Sitter Service Categories Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Kullanıcının hizmetlerini getir
+  getMyServices: async (
+    page: number = 1,
+    limit: number = 10,
+    categoryId?: string,
+    status?: boolean
+  ) => {
+    try {
+      const params: any = { page, limit };
+      if (categoryId) params.categoryId = categoryId;
+      if (status !== undefined) params.status = status;
+
+      const { data } = await instance.get("/petsitterservices/my-services", {
+        params,
+      });
+      console.log("✅ My pet sitter services fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get My Pet Sitter Services Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Yeni hizmet ekle
+  addService: async (serviceData: any) => {
+    try {
+      const { data } = await instance.post(
+        "/petsitterservices/add-service",
+        serviceData
+      );
+      console.log("✅ Pet sitter service added:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Add Pet Sitter Service Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Hizmet güncelle
+  updateService: async (id: string, serviceData: any) => {
+    try {
+      const { data } = await instance.put(
+        `/petsitterservices/update-service/${id}`,
+        serviceData
+      );
+      console.log("✅ Pet sitter service updated:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Update Pet Sitter Service Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Hizmet detayını getir
+  getServiceById: async (id: string) => {
+    try {
+      const { data } = await instance.get(`/petsitterservices/service/${id}`);
+      console.log("✅ Pet sitter service detail fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Pet Sitter Service Detail Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Hizmet sil
+  deleteService: async (id: string) => {
+    try {
+      const { data } = await instance.delete(
+        `/petsitterservices/service/${id}`
+      );
+      console.log("✅ Pet sitter service deleted:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Delete Pet Sitter Service Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Hizmet durumu güncelle (aktif/pasif)
+  toggleServiceStatus: async (id: string, status: boolean) => {
+    try {
+      const { data } = await instance.patch(
+        `/petsitterservices/toggle-status/${id}`,
+        { status }
+      );
+      console.log("✅ Pet sitter service status updated:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Toggle Pet Sitter Service Status Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+};

@@ -9,14 +9,14 @@ import {
 } from "react-native";
 import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { profileApi } from "../../lib/api";
+import { profileApi } from "@/lib/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { User } from "../../hooks/useAuth";
-import AvatarDeleteButton from "../AvatarDeleteButton";
+import { User } from "@/hooks/useAuth";
+import AvatarDeleteButton from "@/components/AvatarDeleteButton";
 import { Feather, AntDesign } from "@expo/vector-icons";
 
-interface PetSitterEditProps {
+interface PetOtelEditProps {
   user: User | null | undefined;
 }
 
@@ -25,7 +25,7 @@ interface FormData {
   phone_number: string;
 }
 
-export default function PetSitterEdit({ user }: PetSitterEditProps) {
+export default function PetOtelEdit({ user }: PetOtelEditProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -106,7 +106,7 @@ export default function PetSitterEdit({ user }: PetSitterEditProps) {
       {/* Kullanıcı Bilgileri Kartı */}
       <View className="bg-white rounded-2xl p-6 mb-4 shadow-sm">
         <Text className="text-lg font-bold text-gray-900 mb-6">
-          Bakıcı Profil Bilgileri
+          Pet Otel Profil Bilgileri
         </Text>
 
         {/* İsim Soyisim */}

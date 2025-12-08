@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { profileApi, petApi, petShopApi } from "../lib/api";
+import { profileApi, petApi, petShopApi, petSitterApi } from "../lib/api";
 /**
  * Avatar yükleme mutation hook'u
  *
@@ -134,6 +134,72 @@ export function useDeletePetShopLogo() {
     },
     onError: (error: any) => {
       console.error("❌ Pet shop logo delete failed:", error);
+    },
+  });
+}
+
+/**
+ * Pet Shop profil oluşturma mutation hook'u
+ */
+export function useCreatePetSitterProfile() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: petSitterApi.createProfile,
+    onSuccess: () => {
+      // Pet shop profilini cache'e invalidate et
+      queryClient.invalidateQueries({ queryKey: ["petsitter", "profile"] });
+      console.log("✅ Pet sitter profile created successfully");
+    },
+    onError: (error: any) => {
+      console.error("❌ Pet sitter profile creation failed:", error);
+    },
+  });
+}
+
+/**
+ * Pet Shop profil getirme query hook'u
+ */
+export function usePetSitterProfile() {
+  return useQuery({
+    queryKey: ["petsitter", "profile"],
+    queryFn: petSitterApi.getProfile,
+    retry: 1,
+  });
+}
+
+/**
+ * Pet Shop logo yükleme mutation hook'u
+ */
+export function useUploadPetSitterLogo() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (imageUri: string) => petSitterApi.uploadLogo(imageUri),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["petsitter", "profile"] });
+      console.log("✅ Pet sitter logo uploaded successfully");
+    },
+    onError: (error: any) => {
+      console.error("❌ Pet sitter logo upload failed:", error);
+    },
+  });
+}
+
+/**
+ * Pet Shop logo silme mutation hook'u
+ */
+export function useDeletePetSitterLogo() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: petSitterApi.deleteLogo,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["petsitter", "profile"] });
+      console.log("✅ Pet sitter logo deleted successfully");
+    },
+    onError: (error: any) => {
+      console.error("❌ Pet sitter logo delete failed:", error);
     },
   });
 }
