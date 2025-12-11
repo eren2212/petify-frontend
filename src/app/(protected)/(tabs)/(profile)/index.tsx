@@ -7,7 +7,7 @@ import PetShopProfil from "../../../../components/profile/petshop/PetShopProfil"
 // TODO: Diğer rol component'leri eklenecek
 // import VeterinerProfil from "../../../../components/profile/VeterinerProfil";
 import PetSitterProfil from "@/components/profile/petsitter/PetSitterProfil";
-// import PetOtelProfil from "../../../../components/profile/PetOtelProfil";
+import PetOtelProfil from "@/components/profile/petotel/PetOtelProfil";
 
 export default function ProfileScreen() {
   const { data: user, isLoading } = useCurrentUser();
@@ -33,8 +33,8 @@ export default function ProfileScreen() {
       //   return <VeterinerProfil />;
       case "pet_sitter":
         return <PetSitterProfil />;
-      // case "pet_hotel":
-      //   return <PetOtelProfil />;
+      case "pet_hotel":
+        return <PetOtelProfil />;
       default:
         // Geçici olarak PetOwnerProfil göster (fallback)
         return <PetOwnerProfil />;
