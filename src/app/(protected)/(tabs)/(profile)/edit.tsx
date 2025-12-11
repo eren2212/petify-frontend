@@ -8,7 +8,7 @@ import BackHeader from "../../../../components/BackHeader";
 import PetOwnerEdit from "@/components/profile/PetOwnerEdit";
 import VeterinerEdit from "@/components/profile/petveteriner/VeterinerEdit";
 import PetSitterEdit from "@/components/profile/petsitter/PetSitterEdit";
-import PetOtelEdit from "@/components/profile/petotel/PetOtelEdit";
+import PetOtelEdit from "@/components/profile/petotelss/PetOtelEdit";
 import PetShopEditProfile from "@/components/profile/petshop/PetShopEditProfile";
 
 export default function Edit() {

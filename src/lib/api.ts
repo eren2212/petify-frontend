@@ -1260,3 +1260,99 @@ export const petSitterServiceApi = {
     }
   },
 };
+
+// Pet Otel API
+export const petOtelApi = {
+  // Pet Otel profili oluştur
+  createProfile: async (profileData: any) => {
+    try {
+      const { data } = await instance.post("/petotel/add/profile", profileData);
+      console.log("✅ Pet otel profile created:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Create Pet Otel Profile Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  updatePetOtelProfile: async (profileData: any) => {
+    try {
+      const { data } = await instance.put("/petotel/profile", profileData);
+      console.log("✅ Pet otel profile updated:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Update Pet Otel Profile Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  // Pet Otel profilini getir
+  getProfile: async () => {
+    try {
+      const { data } = await instance.get("/petotel/profile");
+      console.log("✅ Pet otel profile fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Pet Otel Profile Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Pet Otel logo yükle
+  uploadLogo: async (imageUri: string) => {
+    try {
+      const formData = new FormData();
+      const filename = imageUri.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename || "");
+      const type = match ? `image/${match[1]}` : "image/jpeg";
+
+      formData.append("pethotelprofile", {
+        uri: imageUri,
+        name: filename || "petotel-logo.jpg",
+        type,
+      } as any);
+
+      const { data } = await instance.post(
+        "/petotel/add/profile/image",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log("✅ Pet otel logo uploaded:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Pet Otel Logo Upload Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Pet Otel logo sil
+  deleteLogo: async () => {
+    try {
+      const { data } = await instance.delete("/petotel/profile/logo");
+      console.log("✅ Pet otel logo deleted:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Delete Pet Otel Logo Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+};
