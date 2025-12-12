@@ -1356,3 +1356,101 @@ export const petOtelApi = {
     }
   },
 };
+
+// Pet Otel Service API
+export const petOtelServiceApi = {
+  // Hizmet kategorilerini getir
+  getCategories: async () => {
+    try {
+      const { data } = await instance.get("/petotelservices/categories");
+      console.log("✅ Pet otel service categories fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Pet Otel Service Categories Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Kullanıcının hizmetlerini getir
+  getMyServices: async () => {
+    try {
+      const { data } = await instance.get("/petotelservices/my-services");
+      console.log("✅ My pet otel services fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get My Pet Otel Services Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Yeni hizmet ekle
+  addService: async (category_id: string) => {
+    try {
+      const { data } = await instance.post("/petotelservices/add", {
+        category_id,
+      });
+      console.log("✅ Pet otel service added:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Add Pet Otel Service Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Hizmet detayını getir
+  getServiceById: async (id: string) => {
+    try {
+      const { data } = await instance.get(`/petotelservices/service/${id}`);
+      console.log("✅ Pet otel service detail fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Pet Otel Service Detail Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Hizmet sil
+  deleteService: async (id: string) => {
+    try {
+      const { data } = await instance.delete(`/petotelservices/service/${id}`);
+      console.log("✅ Pet otel service deleted:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Delete Pet Otel Service Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Hizmet durumu güncelle (aktif/pasif)
+  toggleServiceStatus: async (id: string, status: boolean) => {
+    try {
+      const { data } = await instance.patch(
+        `/petotelservices/toggle-status/${id}`,
+        { status }
+      );
+      console.log("✅ Pet otel service status updated:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Toggle Pet Otel Service Status Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+};

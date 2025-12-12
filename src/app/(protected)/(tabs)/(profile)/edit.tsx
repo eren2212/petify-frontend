@@ -8,7 +8,7 @@ import BackHeader from "../../../../components/BackHeader";
 import PetOwnerEdit from "@/components/profile/PetOwnerEdit";
 import VeterinerEdit from "@/components/profile/petveteriner/VeterinerEdit";
 import PetSitterEdit from "@/components/profile/petsitter/PetSitterEdit";
-import PetOtelEdit from "@/components/profile/petotelss/PetOtelEdit";
+import PetOtelEditProfile from "@/components/profile/petotel/PetOtelEditProfile";
 import PetShopEditProfile from "@/components/profile/petshop/PetShopEditProfile";
 
 export default function Edit() {
@@ -33,7 +33,7 @@ export default function Edit() {
       case "pet_sitter":
         return <PetSitterEdit user={user} />;
       case "pet_hotel":
-        return <PetOtelEdit user={user} />;
+        return <PetOtelEditProfile user={user} />;
       case "pet_shop":
         return <PetShopEditProfile user={user} />;
       default:

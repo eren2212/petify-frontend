@@ -126,3 +126,5 @@ export function usePetSitterServiceDetail(id: string) {
     enabled: !!id, // id varsa query çalışsın
   });
 }
+
+
