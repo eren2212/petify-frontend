@@ -8,6 +8,7 @@ import PetShopProfil from "../../../../components/profile/petshop/PetShopProfil"
 // import VeterinerProfil from "../../../../components/profile/VeterinerProfil";
 import PetSitterProfil from "@/components/profile/petsitter/PetSitterProfil";
 import PetOtelProfil from "@/components/profile/petotel/PetOtelProfil";
+import PetClinicProfil from "@/components/profile/petclinic/PetClinicProfil";
 
 export default function ProfileScreen() {
   const { data: user, isLoading } = useCurrentUser();
@@ -28,9 +29,8 @@ export default function ProfileScreen() {
         return <PetOwnerProfil />;
       case "pet_shop":
         return <PetShopProfil />;
-      // TODO: Diğer roller için component'ler eklenecek
-      // case "pet_clinic":
-      //   return <VeterinerProfil />;
+      case "pet_clinic":
+        return <PetClinicProfil />;
       case "pet_sitter":
         return <PetSitterProfil />;
       case "pet_hotel":
