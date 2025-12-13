@@ -1454,3 +1454,102 @@ export const petOtelServiceApi = {
     }
   },
 };
+
+// Pet Clinic API
+export const petClinicApi = {
+  // Pet Clinic profili oluştur
+  createProfile: async (profileData: any) => {
+    try {
+      const { data } = await instance.post(
+        "/petclinic/add/profile",
+        profileData
+      );
+      console.log("✅ Pet clinic profile created:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Create Pet Clinic Profile Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  updatePetClinicProfile: async (profileData: any) => {
+    try {
+      const { data } = await instance.put("/petclinic/profile", profileData);
+      console.log("✅ Pet clinic profile updated:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Update Pet Clinic Profile Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  // Pet Clinic profilini getir
+  getProfile: async () => {
+    try {
+      const { data } = await instance.get("/petclinic/profile");
+      console.log("✅ Pet clinic profile fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Pet Clinic Profile Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Pet Clinic logo yükle
+  uploadLogo: async (imageUri: string) => {
+    try {
+      const formData = new FormData();
+      const filename = imageUri.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename || "");
+      const type = match ? `image/${match[1]}` : "image/jpeg";
+
+      formData.append("petclinicprofile", {
+        uri: imageUri,
+        name: filename || "petclinic-logo.jpg",
+        type,
+      } as any);
+
+      const { data } = await instance.post(
+        "/petclinic/add/profile/image",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log("✅ Pet clinic logo uploaded:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Pet Clinic Logo Upload Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Pet Clinic logo sil
+  deleteLogo: async () => {
+    try {
+      const { data } = await instance.delete("/petclinic/profile/logo");
+      console.log("✅ Pet clinic logo deleted:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Delete Pet Shop Logo Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+};

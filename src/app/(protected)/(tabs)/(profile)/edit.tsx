@@ -6,7 +6,7 @@ import BackHeader from "../../../../components/BackHeader";
 
 // Component'leri import et
 import PetOwnerEdit from "@/components/profile/PetOwnerEdit";
-import VeterinerEdit from "@/components/profile/petveteriner/VeterinerEdit";
+import PetClinicEditProfile from "@/components/profile/petclinic/PetClinicEditProfile";
 import PetSitterEdit from "@/components/profile/petsitter/PetSitterEdit";
 import PetOtelEditProfile from "@/components/profile/petotel/PetOtelEditProfile";
 import PetShopEditProfile from "@/components/profile/petshop/PetShopEditProfile";
@@ -29,7 +29,7 @@ export default function Edit() {
       case "pet_owner":
         return <PetOwnerEdit user={user} />;
       case "pet_clinic":
-        return <VeterinerEdit user={user} />;
+        return <PetClinicEditProfile user={user} />;
       case "pet_sitter":
         return <PetSitterEdit user={user} />;
       case "pet_hotel":

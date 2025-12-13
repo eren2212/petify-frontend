@@ -1,5 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { profileApi, petApi, petShopApi, petSitterApi } from "../lib/api";
+import {
+  profileApi,
+  petApi,
+  petShopApi,
+  petSitterApi,
+  petClinicApi,
+} from "../lib/api";
 /**
  * Avatar yükleme mutation hook'u
  *
@@ -139,7 +145,7 @@ export function useDeletePetShopLogo() {
 }
 
 /**
- * Pet Shop profil oluşturma mutation hook'u
+ * Pet Sitter profil oluşturma mutation hook'u
  */
 export function useCreatePetSitterProfile() {
   const queryClient = useQueryClient();
@@ -158,7 +164,7 @@ export function useCreatePetSitterProfile() {
 }
 
 /**
- * Pet Shop profil getirme query hook'u
+ * Pet Sitter profil getirme query hook'u
  */
 export function usePetSitterProfile() {
   return useQuery({
@@ -169,7 +175,7 @@ export function usePetSitterProfile() {
 }
 
 /**
- * Pet Shop logo yükleme mutation hook'u
+ * Pet Sitter logo yükleme mutation hook'u
  */
 export function useUploadPetSitterLogo() {
   const queryClient = useQueryClient();
@@ -187,7 +193,7 @@ export function useUploadPetSitterLogo() {
 }
 
 /**
- * Pet Shop logo silme mutation hook'u
+ * Pet Sitter logo silme mutation hook'u
  */
 export function useDeletePetSitterLogo() {
   const queryClient = useQueryClient();
@@ -200,6 +206,72 @@ export function useDeletePetSitterLogo() {
     },
     onError: (error: any) => {
       console.error("❌ Pet sitter logo delete failed:", error);
+    },
+  });
+}
+
+/**
+ * Pet Clinic profil oluşturma mutation hook'u
+ */
+export function useCreatePetClinicProfile() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: petClinicApi.createProfile,
+    onSuccess: () => {
+      // Pet clinic profilini cache'e invalidate et
+      queryClient.invalidateQueries({ queryKey: ["petclinic", "profile"] });
+      console.log("✅ Pet clinic profile created successfully");
+    },
+    onError: (error: any) => {
+      console.error("❌ Pet clinic profile creation failed:", error);
+    },
+  });
+}
+
+/**
+ * Pet Clinic profil getirme query hook'u
+ */
+export function usePetClinicProfile() {
+  return useQuery({
+    queryKey: ["petclinic", "profile"],
+    queryFn: petClinicApi.getProfile,
+    retry: 1,
+  });
+}
+
+/**
+ * Pet Clinic logo yükleme mutation hook'u
+ */
+export function useUploadPetClinicLogo() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (imageUri: string) => petClinicApi.uploadLogo(imageUri),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["petclinic", "profile"] });
+      console.log("✅ Pet clinic logo uploaded successfully");
+    },
+    onError: (error: any) => {
+      console.error("❌ Pet clinic logo upload failed:", error);
+    },
+  });
+}
+
+/**
+ * Pet Clinic logo silme mutation hook'u
+ */
+export function useDeletePetClinicLogo() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: petClinicApi.deleteLogo,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["petclinic", "profile"] });
+      console.log("✅ Pet clinic logo deleted successfully");
+    },
+    onError: (error: any) => {
+      console.error("❌ Pet clinic logo delete failed:", error);
     },
   });
 }
