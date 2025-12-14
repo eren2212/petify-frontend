@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Image,
   Linking,
   Platform,
 } from "react-native";
@@ -27,6 +28,7 @@ import AddPetShopProfileModal, {
 } from "./AddPetClinicProfileModal";
 import PetClinicLogoPicker from "./PetClinicLogoPicker";
 import MapView, { Callout, Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { useMyPetClinicServices } from "@/hooks";
 
 export default function PetClinicProfil() {
   const { signOut } = useAuthStore();
@@ -38,6 +40,11 @@ export default function PetClinicProfil() {
   // Pet Clinic profilini al
   const { data: petClinicProfileResponse, isLoading: profileLoading } =
     usePetClinicProfile();
+
+  // Pet Clinic servislerini al
+  const { data: servicesData, isLoading: servicesLoading } =
+    useMyPetClinicServices();
+  const services = servicesData?.data || [];
 
   // Aktif rolü al
   const activeRole = getActiveRole(user);
@@ -415,6 +422,54 @@ export default function PetClinicProfil() {
             )}
           </View>
         </View>
+
+        {/* Services Section */}
+        {!servicesLoading && services.length > 0 && (
+          <View className="w-full px-6 mb-6">
+            <View className="bg-white rounded-2xl p-6 shadow-sm">
+              <Text className="text-lg font-bold text-gray-900 mb-4">
+                Hizmetlerimiz
+              </Text>
+              <View className="flex-row flex-wrap gap-3">
+                {services.map((service: any) => (
+                  <View
+                    key={service.id}
+                    className="bg-gray-50 rounded-xl p-4 items-center justify-center"
+                    style={{
+                      width: "47%",
+                      aspectRatio: 1,
+                    }}
+                  >
+                    <Image
+                      source={{
+                        uri: `${process.env.EXPO_PUBLIC_API_URL}/petclinicservices/category-icon/${service.clinic_service_categories.icon_url}`,
+                      }}
+                      style={{
+                        width: 60,
+                        height: 60,
+                        marginBottom: 8,
+                      }}
+                      resizeMode="contain"
+                    />
+                    <Text
+                      className="text-sm font-semibold text-gray-900 text-center"
+                      numberOfLines={2}
+                    >
+                      {service.clinic_service_categories.name_tr}
+                    </Text>
+                    {service.is_active && (
+                      <View className="bg-green-100 px-2 py-0.5 rounded mt-2">
+                        <Text className="text-green-600 text-xs font-bold">
+                          Aktif
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                ))}
+              </View>
+            </View>
+          </View>
+        )}
 
         {/* Map */}
         {petClinicProfile.latitude && petClinicProfile.longitude && (
