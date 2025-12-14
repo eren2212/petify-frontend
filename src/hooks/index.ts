@@ -19,6 +19,8 @@ export * from "./usePetSitterService";
 // Pet Otel Service hooks
 export * from "./usePetOtelService";
 
+// Pet Clinic Service hooks
+export * from "./usePetClinicService";
 // Doctors hooks (sonradan eklenecek)
 // export * from './useDoctors';
 

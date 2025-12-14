@@ -1553,3 +1553,103 @@ export const petClinicApi = {
     }
   },
 };
+
+// Pet Clinic Service API
+export const petClinicServiceApi = {
+  // Hizmet kategorilerini getir
+  getCategories: async () => {
+    try {
+      const { data } = await instance.get("/petclinicservices/categories");
+      console.log("✅ Pet clinic service categories fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Pet Clinic Service Categories Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Kullanıcının hizmetlerini getir
+  getMyServices: async () => {
+    try {
+      const { data } = await instance.get("/petclinicservices/my-services");
+      console.log("✅ My pet clinic services fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get My Pet Clinic Services Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Yeni hizmet ekle
+  addService: async (category_id: string) => {
+    try {
+      const { data } = await instance.post("/petclinicservices/add", {
+        category_id,
+      });
+      console.log("✅ Pet clinic service added:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Add Pet Clinic Service Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Hizmet detayını getir
+  getServiceById: async (id: string) => {
+    try {
+      const { data } = await instance.get(`/petclinicservices/service/${id}`);
+      console.log("✅ Pet clinic service detail fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Pet Clinic Service Detail Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Hizmet sil
+  deleteService: async (id: string) => {
+    try {
+      const { data } = await instance.delete(
+        `/petclinicservices/service/${id}`
+      );
+      console.log("✅ Pet clinic service deleted:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Delete Pet Clinic Service Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Hizmet durumu güncelle (aktif/pasif)
+  toggleServiceStatus: async (id: string, status: boolean) => {
+    try {
+      const { data } = await instance.patch(
+        `/petclinicservices/toggle-status/${id}`,
+        { status }
+      );
+      console.log("✅ Pet clinic service status updated:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Toggle Pet Clinic Service Status Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+};

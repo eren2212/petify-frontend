@@ -2,6 +2,7 @@ import { View, Text, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PetSitterServiceList } from "../../../components/petsitterservice";
 import { PetOtelServiceList } from "../../../components/petotelservice";
+import { PetClinicServiceList } from "../../../components/petclinicservice";
 import { useCurrentUser, getActiveRole } from "../../../hooks/useAuth";
 import { COLORS } from "../../../styles/theme/color";
 import { Ionicons } from "@expo/vector-icons";
@@ -50,19 +51,7 @@ export default function Services() {
         return <PetOtelServiceList />;
 
       case "pet_clinic":
-        // TODO: Pet Clinic Service List component
-        return (
-          <View className="flex-1 items-center justify-center px-6">
-            <Ionicons name="medical-outline" size={80} color="#D1D5DB" />
-            <Text className="text-gray-900 font-bold text-xl mt-4">
-              Veteriner Hizmetleri
-            </Text>
-            <Text className="text-gray-500 text-center mt-2">
-              Veteriner hizmet yönetimi yakında eklenecek
-            </Text>
-          </View>
-        );
-
+        return <PetClinicServiceList />;
       default:
         return (
           <View className="flex-1 items-center justify-center px-6">
@@ -85,4 +74,3 @@ export default function Services() {
     </SafeAreaView>
   );
 }
-
