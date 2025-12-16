@@ -21,8 +21,9 @@ export * from "./usePetOtelService";
 
 // Pet Clinic Service hooks
 export * from "./usePetClinicService";
-// Doctors hooks (sonradan eklenecek)
-// export * from './useDoctors';
+
+// Pet Clinic Doctors hooks
+export * from "./usePetClinicDoctors";
 
 // Messages hooks (sonradan eklenecek)
 // export * from './useMessages';

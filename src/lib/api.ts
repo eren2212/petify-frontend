@@ -1653,3 +1653,112 @@ export const petClinicServiceApi = {
     }
   },
 };
+
+// Pet Clinic Doctors API
+export const petClinicDoctorsApi = {
+  // Yeni doktor ekle
+  addDoctor: async (doctorData: any) => {
+    try {
+      const { data } = await instance.post("/petclinicdoctors/add", doctorData);
+      console.log("✅ Doctor added:", data);
+      return data;
+    } catch (error: any) {
+      console.log("Add Doctor Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+
+  // Doktorları listele (gender filtresi ile)
+  getMyDoctors: async (gender?: "male" | "female") => {
+    try {
+      const params: any = {};
+      if (gender) params.gender = gender;
+
+      const { data } = await instance.get("/petclinicdoctors/my-list", {
+        params,
+      });
+      console.log("✅ My doctors fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log("Get My Doctors Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+
+  // Doktor detayını getir
+  getDoctorDetail: async (id: string) => {
+    try {
+      const { data } = await instance.get(`/petclinicdoctors/detail/${id}`);
+      console.log("✅ Doctor detail fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Doctor Detail Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Doktor güncelle
+  updateDoctor: async (id: string, doctorData: any) => {
+    try {
+      const { data } = await instance.put(
+        `/petclinicdoctors/update/${id}`,
+        doctorData
+      );
+      console.log("✅ Doctor updated:", data);
+      return data;
+    } catch (error: any) {
+      console.log("Update Doctor Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+
+  // Doktor sil
+  deleteDoctor: async (id: string) => {
+    try {
+      const { data } = await instance.delete(`/petclinicdoctors/delete/${id}`);
+      console.log("✅ Doctor deleted:", data);
+      return data;
+    } catch (error: any) {
+      console.log("Delete Doctor Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+
+  // Doktor resmi yükle
+  uploadDoctorImage: async (doctorId: string, imageUri: string) => {
+    try {
+      const formData = new FormData();
+      const filename = imageUri.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename || "");
+      const type = match ? `image/${match[1]}` : "image/jpeg";
+
+      formData.append("clinic_veterinarians", {
+        uri: imageUri,
+        name: filename || "doctor.jpg",
+        type,
+      } as any);
+
+      const { data } = await instance.post(
+        `/petclinicdoctors/image/${doctorId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log("✅ Doctor image uploaded:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Doctor Image Upload Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+};
