@@ -40,6 +40,13 @@ export default function ProtectedLayout() {
           presentation: "modal",
         }}
       />
+      <Stack.Screen
+        name="doctors"
+        options={{
+          headerShown: false,
+          presentation: "modal",
+        }}
+      />
     </Stack>
   );
 }

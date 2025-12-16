@@ -1,7 +1,7 @@
 import { View, Text, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PetSitterServiceList } from "../../../components/petsitterservice";
-import { PetOtelServiceList } from "../../../components/petotelservice";
+import PetOtelServiceList from "../../../components/petotelservice/PetOtelServiceList";
 import { PetClinicServiceList } from "../../../components/petclinicservice";
 import { useCurrentUser, getActiveRole } from "../../../hooks/useAuth";
 import { COLORS } from "../../../styles/theme/color";
