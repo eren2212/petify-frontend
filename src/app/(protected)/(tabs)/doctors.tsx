@@ -67,7 +67,6 @@ export default function Doctors() {
                   text1: "Doktor başarıyla silindi!",
                   bottomOffset: 40,
                 });
-                refetch();
               },
               onError: (error: any) => {
                 Toast.show({
@@ -141,7 +140,7 @@ export default function Doctors() {
       {doctors.length > 0 && (
         <View className="pt-4">
           <Text className="text-gray-600 text-base items-center justify-center font-bold">
-            Toplam {doctors.length} Doktor Bulundu
+            Toplam {doctors.length} Veteriner Hekim Bulundu
           </Text>
         </View>
       )}
@@ -215,7 +214,7 @@ export default function Doctors() {
 
     return (
       <TouchableOpacity
-        className="bg-white rounded-2xl p-4 m-4  shadow-sm"
+        className="bg-white rounded-2xl p-4 mx-4 my-2  shadow-sm"
         style={{
           shadowColor: "#000",
           shadowOffset: { width: 0, height: 2 },
@@ -312,7 +311,6 @@ export default function Doctors() {
         visible={addModalVisible}
         onClose={() => {
           setAddModalVisible(false);
-          refetch();
         }}
       />
 
@@ -323,7 +321,6 @@ export default function Doctors() {
           onClose={() => {
             setEditModalVisible(false);
             setSelectedDoctor(null);
-            refetch();
           }}
           doctor={selectedDoctor}
         />

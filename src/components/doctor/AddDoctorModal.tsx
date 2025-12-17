@@ -147,7 +147,10 @@ export default function AddDoctorModal({
           const doctorId = response.data.data.id;
 
           try {
-            await petClinicDoctorsApi.uploadDoctorImage(doctorId, doctorImageUri);
+            await petClinicDoctorsApi.uploadDoctorImage(
+              doctorId,
+              doctorImageUri
+            );
             console.log("✅ Doktor resmi başarıyla yüklendi!");
             Toast.show({
               type: "success",
@@ -172,7 +175,8 @@ export default function AddDoctorModal({
         Toast.show({
           type: "error",
           text1:
-            error?.response?.data?.message || "Doktor eklenirken bir hata oluştu",
+            error?.response?.data?.message ||
+            "Doktor eklenirken bir hata oluştu",
           bottomOffset: 40,
         });
       },
@@ -230,7 +234,7 @@ export default function AddDoctorModal({
                     <View className="w-full items-center">
                       <Image
                         source={{ uri: doctorImageUri }}
-                        className="w-32 h-32 rounded-full mb-3"
+                        className="w-32 h-32 rounded-xl mb-3"
                         resizeMode="cover"
                       />
                       <View className="absolute top-2 right-2 bg-white rounded-full p-2">
@@ -305,7 +309,9 @@ export default function AddDoctorModal({
                     onPress={() => setShowGenderDropdown(!showGenderDropdown)}
                     className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 flex-row justify-between items-center"
                   >
-                    <Text className={gender ? "text-gray-900" : "text-gray-400"}>
+                    <Text
+                      className={gender ? "text-gray-900" : "text-gray-400"}
+                    >
                       {getGenderLabel()}
                     </Text>
                     <Text className="text-gray-400">
@@ -320,7 +326,9 @@ export default function AddDoctorModal({
                         <TouchableOpacity
                           key={option.value}
                           onPress={() =>
-                            handleGenderSelect(option.value as "male" | "female")
+                            handleGenderSelect(
+                              option.value as "male" | "female"
+                            )
                           }
                           className={`px-4 py-3 ${
                             index < genderOptions.length - 1
@@ -417,4 +425,3 @@ export default function AddDoctorModal({
     </Modal>
   );
 }
-
