@@ -155,57 +155,6 @@ export default function DoctorDetail() {
               </Text>
             </View>
           </View>
-
-          {/* Stats Cards */}
-          <View className="flex-row mt-6 space-x-3 gap-4">
-            {/* Gender Card */}
-            <View
-              className="flex-1 bg-gray-50 rounded-2xl p-4 items-center "
-              style={{
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 16,
-                elevation: 2,
-              }}
-            >
-              <View
-                className={`w-12 h-12 rounded-full items-center justify-center mb-2 ${
-                  doctor.gender === "male" ? "bg-blue-100" : "bg-pink-100"
-                }`}
-              >
-                <Ionicons
-                  name={doctor.gender === "male" ? "male" : "female"}
-                  size={24}
-                  color={doctor.gender === "male" ? "#3B82F6" : "#EC4899"}
-                />
-              </View>
-              <Text className="text-xs text-gray-500 mb-1">Cinsiyet</Text>
-              <Text className="text-sm font-bold text-gray-900">
-                {doctor.gender === "male" ? "Erkek" : "Kadın"}
-              </Text>
-            </View>
-
-            {/* Experience Card */}
-            <View
-              className="flex-1 bg-gray-50 rounded-2xl p-4 items-center"
-              style={{
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 16,
-                elevation: 2,
-              }}
-            >
-              <View className="w-12 h-12 rounded-full bg-green-100 items-center justify-center mb-2">
-                <Ionicons name="briefcase" size={24} color="#10B981" />
-              </View>
-              <Text className="text-xs text-gray-500 mb-1">Deneyim</Text>
-              <Text className="text-sm font-bold text-gray-900">
-                {doctor.experience_years} Yıl
-              </Text>
-            </View>
-          </View>
         </View>
 
         {/* Bio Section */}

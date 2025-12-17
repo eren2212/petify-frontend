@@ -57,7 +57,7 @@ export default function EditDoctorModal({
       setSpecialization(doctor.specialization || "");
       setExperienceYears(doctor.experience_years?.toString() || "");
       setBio(doctor.bio || "");
-      
+
       // Mevcut fotoğrafı ayarla
       if (doctor.photo_url) {
         const photoUrl = `${process.env.EXPO_PUBLIC_API_URL}/petclinicdoctors/image/${doctor.photo_url}`;
@@ -148,7 +148,10 @@ export default function EditDoctorModal({
           // Eğer yeni fotoğraf seçildiyse, fotoğrafı yükle
           if (doctorImageUri) {
             try {
-              await petClinicDoctorsApi.uploadDoctorImage(doctor.id, doctorImageUri);
+              await petClinicDoctorsApi.uploadDoctorImage(
+                doctor.id,
+                doctorImageUri
+              );
               console.log("✅ Doktor resmi başarıyla güncellendi!");
               Toast.show({
                 type: "success",
@@ -241,7 +244,7 @@ export default function EditDoctorModal({
                     <View className="w-full items-center">
                       <Image
                         source={{ uri: displayImageUri }}
-                        className="w-32 h-32 rounded-full mb-3"
+                        className="w-32 h-32 rounded-xl mb-3"
                         resizeMode="cover"
                       />
                       <View className="absolute top-2 right-2 bg-white rounded-full p-2">
@@ -321,7 +324,9 @@ export default function EditDoctorModal({
                     onPress={() => setShowGenderDropdown(!showGenderDropdown)}
                     className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 flex-row justify-between items-center"
                   >
-                    <Text className={gender ? "text-gray-900" : "text-gray-400"}>
+                    <Text
+                      className={gender ? "text-gray-900" : "text-gray-400"}
+                    >
                       {getGenderLabel()}
                     </Text>
                     <Text className="text-gray-400">
@@ -336,7 +341,9 @@ export default function EditDoctorModal({
                         <TouchableOpacity
                           key={option.value}
                           onPress={() =>
-                            handleGenderSelect(option.value as "male" | "female")
+                            handleGenderSelect(
+                              option.value as "male" | "female"
+                            )
                           }
                           className={`px-4 py-3 ${
                             index < genderOptions.length - 1
@@ -421,9 +428,7 @@ export default function EditDoctorModal({
                 {isUpdating ? (
                   <ActivityIndicator color="white" />
                 ) : (
-                  <Text className="text-white font-bold text-lg">
-                    Güncelle
-                  </Text>
+                  <Text className="text-white font-bold text-lg">Güncelle</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -433,4 +438,3 @@ export default function EditDoctorModal({
     </Modal>
   );
 }
-

@@ -40,7 +40,9 @@ export function useAddDoctor() {
     mutationFn: (doctorData: any) => petClinicDoctorsApi.addDoctor(doctorData),
     onSuccess: () => {
       // Cache'i yenile
-      queryClient.invalidateQueries({ queryKey: ["petClinicDoctors"] });
+      queryClient.invalidateQueries({
+        queryKey: ["petClinicDoctors", "my-list"],
+      });
     },
   });
 }
@@ -56,7 +58,9 @@ export function useUpdateDoctor() {
       petClinicDoctorsApi.updateDoctor(id, data),
     onSuccess: () => {
       // Cache'i yenile
-      queryClient.invalidateQueries({ queryKey: ["petClinicDoctors"] });
+      queryClient.invalidateQueries({
+        queryKey: ["petClinicDoctors", "my-list"],
+      });
     },
   });
 }
@@ -71,8 +75,9 @@ export function useDeleteDoctor() {
     mutationFn: (id: string) => petClinicDoctorsApi.deleteDoctor(id),
     onSuccess: () => {
       // Cache'i yenile
-      queryClient.invalidateQueries({ queryKey: ["petClinicDoctors"] });
+      queryClient.invalidateQueries({
+        queryKey: ["petClinicDoctors", "my-list"],
+      });
     },
   });
 }
-
