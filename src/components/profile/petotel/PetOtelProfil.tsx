@@ -541,11 +541,7 @@ export default function PetOtelProfil() {
                   description={petOtelProfile.address}
                 >
                   <View className="bg-orange-100 rounded-full p-3 items-center justify-center">
-                    <Ionicons
-                      name="storefront"
-                      size={24}
-                      color={COLORS.primary}
-                    />
+                    <Ionicons name="bed" size={24} color={COLORS.primary} />
                   </View>
                 </Marker>
 
