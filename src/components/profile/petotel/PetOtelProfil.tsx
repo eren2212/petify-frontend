@@ -29,6 +29,7 @@ import AddPetOtelProfileModal, {
 import PetOtelLogoPicker from "@/components/profile/petotel/PetOtelLogoPicker";
 import MapView, { Callout, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { Image } from "react-native";
+import { PetifySpinner } from "@/components/PetifySpinner";
 
 export default function PetOtelProfil() {
   const { signOut } = useAuthStore();
@@ -160,8 +161,7 @@ export default function PetOtelProfil() {
   if (userLoading || profileLoading) {
     return (
       <View className="flex-1 justify-center items-center bg-background">
-        <ActivityIndicator size="large" color="#8B5CF6" />
-        <Text className="text-text mt-4">Yükleniyor...</Text>
+        <PetifySpinner size={180} />
       </View>
     );
   }

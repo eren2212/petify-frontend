@@ -15,6 +15,7 @@ import { COLORS } from "../../../styles/theme/color";
 import { useDoctorDetail, useDeleteDoctor } from "../../../hooks";
 import EditDoctorModal from "../../../components/doctor/EditDoctorModal";
 import Toast from "react-native-toast-message";
+import { PetifySpinner } from "@/components/PetifySpinner";
 
 export default function DoctorDetail() {
   const { id } = useLocalSearchParams();
@@ -67,10 +68,7 @@ export default function DoctorDetail() {
     return (
       <SafeAreaView className="flex-1 bg-background">
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text className="text-gray-500 mt-4">
-            Doktor bilgileri yükleniyor...
-          </Text>
+          <PetifySpinner size={180} />
         </View>
       </SafeAreaView>
     );

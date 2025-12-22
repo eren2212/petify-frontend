@@ -21,6 +21,7 @@ import { Feather } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
 import PetAvatarDeleteButton from "../../../components/pet/PetAvatarDeleteButton";
 import PetImagePicker from "../../../components/pet/PetImagePicker";
+import { PetifySpinner } from "@/components/PetifySpinner";
 
 interface FormData {
   name: string;
@@ -113,8 +114,7 @@ export default function PetEditScreen() {
     return (
       <SafeAreaView className="flex-1 bg-gray-50">
         <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color="#8B5CF6" />
-          <Text className="text-gray-600 mt-4 font-medium">Yükleniyor...</Text>
+          <PetifySpinner size={180} />
         </View>
       </SafeAreaView>
     );

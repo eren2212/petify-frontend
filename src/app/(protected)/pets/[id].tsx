@@ -17,6 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { getPetTypeImageByName } from "../../../constants/petTypes";
 import AddVaccinationModal from "../../../components/pet/AddVaccinationModal";
 import { Ionicons, Entypo, MaterialIcons } from "@expo/vector-icons";
+import { PetifySpinner } from "@/components/PetifySpinner";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000/api";
 
@@ -42,8 +43,7 @@ export default function PetDetailScreen() {
     return (
       <SafeAreaView className="flex-1 bg-gray-50">
         <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color="#8B5CF6" />
-          <Text className="text-gray-600 mt-4 font-medium">Yükleniyor...</Text>
+          <PetifySpinner size={180} />
         </View>
       </SafeAreaView>
     );
@@ -238,10 +238,7 @@ export default function PetDetailScreen() {
             {/* Aşılar Loading */}
             {vaccinationsLoading && (
               <View className="py-8 items-center">
-                <ActivityIndicator size="small" color="#8B5CF6" />
-                <Text className="text-gray-400 mt-2 text-sm">
-                  Aşılar yükleniyor...
-                </Text>
+                <PetifySpinner size={56} />
               </View>
             )}
 

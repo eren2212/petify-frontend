@@ -4,6 +4,7 @@ import { useRouter, useSegments } from "expo-router";
 import { AppState } from "react-native";
 import { useAuthStore, useAppStore } from "../stores";
 import { getCurrentLocation } from "../utils/location";
+import { PetifySpinner } from "@/components/PetifySpinner";
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -65,7 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
-        <ActivityIndicator size="large" color="#8B5CF6" />
+        <PetifySpinner size={180} />
       </View>
     );
   }

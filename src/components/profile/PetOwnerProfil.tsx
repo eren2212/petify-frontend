@@ -22,6 +22,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { COLORS } from "@/styles/theme/color";
 import LostPetListings from "../listings/LostPetsListings";
 import AdoptionPetsListings from "../listings/AdoptionPetsListings";
+import { PetifySpinner } from "../PetifySpinner";
 
 export default function ProfileScreen() {
   const { signOut } = useAuthStore();
@@ -45,8 +46,7 @@ export default function ProfileScreen() {
   if (isLoading) {
     return (
       <View className="flex-1 justify-center items-center bg-background">
-        <ActivityIndicator size="large" color="#8B5CF6" />
-        <Text className="text-text mt-4">Yükleniyor...</Text>
+        <PetifySpinner size={180} />
       </View>
     );
   }

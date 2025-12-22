@@ -25,6 +25,7 @@ import MapView, {
   Marker,
   PROVIDER_GOOGLE,
 } from "react-native-maps";
+import { PetifySpinner } from "@/components/PetifySpinner";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000/api";
 
@@ -52,8 +53,7 @@ export default function AdoptionPetDetailScreen() {
     return (
       <SafeAreaView className="flex-1 bg-gray-50">
         <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color="#8B5CF6" />
-          <Text className="text-gray-600 mt-4 font-medium">Yükleniyor...</Text>
+          <PetifySpinner size={180} />
         </View>
       </SafeAreaView>
     );

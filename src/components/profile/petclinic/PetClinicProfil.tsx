@@ -29,6 +29,7 @@ import AddPetShopProfileModal, {
 import PetClinicLogoPicker from "./PetClinicLogoPicker";
 import MapView, { Callout, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { useMyPetClinicServices } from "@/hooks";
+import { PetifySpinner } from "@/components/PetifySpinner";
 
 export default function PetClinicProfil() {
   const { signOut } = useAuthStore();
@@ -160,8 +161,7 @@ export default function PetClinicProfil() {
   if (userLoading || profileLoading) {
     return (
       <View className="flex-1 justify-center items-center bg-background">
-        <ActivityIndicator size="large" color="#8B5CF6" />
-        <Text className="text-text mt-4">Yükleniyor...</Text>
+        <PetifySpinner size={180} />
       </View>
     );
   }

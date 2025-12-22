@@ -5,6 +5,7 @@ import { router } from "expo-router";
 import Toast from "react-native-toast-message";
 import { useAuthStore } from "../../../stores";
 import { useCurrentUser, getActiveRole } from "../../../hooks/useAuth";
+import { PetifySpinner } from "@/components/PetifySpinner";
 
 export default function Home() {
   const { signOut } = useAuthStore();
@@ -38,8 +39,7 @@ export default function Home() {
     return (
       <SafeAreaProvider>
         <SafeAreaView className="flex-1 bg-background items-center justify-center">
-          <ActivityIndicator size="large" color="#8B5CF6" />
-          <Text className="text-text mt-4">Yükleniyor...</Text>
+          <PetifySpinner size={180} />
         </SafeAreaView>
       </SafeAreaProvider>
     );
