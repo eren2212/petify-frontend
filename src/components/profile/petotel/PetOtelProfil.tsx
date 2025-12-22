@@ -21,7 +21,12 @@ import {
 import { useMyPetOtelServices } from "../../../hooks";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { MaterialIcons, Ionicons, FontAwesome } from "@expo/vector-icons";
+import {
+  MaterialIcons,
+  Ionicons,
+  FontAwesome,
+  FontAwesome5,
+} from "@expo/vector-icons";
 import { COLORS } from "@/styles/theme/color";
 import AddPetOtelProfileModal, {
   PetOtelProfileData,
@@ -540,8 +545,8 @@ export default function PetOtelProfil() {
                   title={petOtelProfile.hotel_name}
                   description={petOtelProfile.address}
                 >
-                  <View className="bg-orange-100 rounded-full p-3 items-center justify-center">
-                    <Ionicons name="bed" size={24} color={COLORS.primary} />
+                  <View className="bg-white rounded-full p-4 items-center justify-center">
+                    <FontAwesome5 name="hotel" size={24} color="red" />
                   </View>
                 </Marker>
 
