@@ -20,6 +20,7 @@ import {
   useUpdatePetOtelServiceStatus,
 } from "../../hooks";
 import Toast from "react-native-toast-message";
+import { PetifySpinner } from "../PetifySpinner";
 
 interface Service {
   id: string;
@@ -293,8 +294,7 @@ export default function PetOtelServiceList() {
       {/* Services List */}
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text className="text-gray-500 mt-4">Hizmetler yükleniyor...</Text>
+          <PetifySpinner size={180} />
         </View>
       ) : filteredServices.length === 0 ? (
         <View className="flex-1 items-center justify-center px-6">

@@ -9,6 +9,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { useUploadAvatar } from "../hooks/useProfile";
 import Toast from "react-native-toast-message";
+import { PetifySpinner } from "./PetifySpinner";
 
 interface AvatarPickerProps {
   currentAvatarUrl?: string | null;
@@ -107,8 +108,7 @@ export default function AvatarPicker({
       >
         {isPending ? (
           <View className="flex-1 items-center justify-center bg-gray-300">
-            <ActivityIndicator size="small" color="#8B5CF6" />
-            <Text className="text-xs text-gray-600 mt-2">Yükleniyor...</Text>
+            <PetifySpinner size={56} />
           </View>
         ) : (
           <Image

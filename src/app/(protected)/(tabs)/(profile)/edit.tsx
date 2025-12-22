@@ -10,6 +10,7 @@ import PetClinicEditProfile from "@/components/profile/petclinic/PetClinicEditPr
 import PetSitterEdit from "@/components/profile/petsitter/PetSitterEdit";
 import PetOtelEditProfile from "@/components/profile/petotel/PetOtelEditProfile";
 import PetShopEditProfile from "@/components/profile/petshop/PetShopEditProfile";
+import { PetifySpinner } from "@/components/PetifySpinner";
 
 export default function Edit() {
   const { data: user, isLoading } = useCurrentUser();
@@ -18,7 +19,7 @@ export default function Edit() {
   if (isLoading) {
     return (
       <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="#3B82F6" />
+        <PetifySpinner size={180} />
       </View>
     );
   }

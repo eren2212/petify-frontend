@@ -16,6 +16,7 @@ import {
 import { useAppStore } from "../../stores";
 import { useRouter } from "expo-router";
 import { COLORS } from "../../styles/theme/color";
+import { PetifySpinner } from "../PetifySpinner";
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000/api";
 
@@ -248,12 +249,7 @@ export default function AdoptionPetsListings({
   if ((mode === "nearby" && isLocationLoading) || isLoading) {
     return (
       <View className="items-center justify-center py-20">
-        <ActivityIndicator size="large" color="#8B5CF6" />
-        <Text className="text-gray-400 mt-4">
-          {mode === "nearby" && isLocationLoading
-            ? "Konum alınıyor..."
-            : "Yükleniyor..."}
-        </Text>
+        <PetifySpinner size={180} />
       </View>
     );
   }

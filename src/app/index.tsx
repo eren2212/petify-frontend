@@ -11,6 +11,7 @@ import { Redirect, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { COLORS } from "@/styles/theme/color";
 import { useAuthStore } from "@/stores/authStore";
+import { PetifySpinner } from "@/components/PetifySpinner";
 
 export default function Index() {
   const { isAuthenticated, isLoading } = useAuthStore();
@@ -18,7 +19,7 @@ export default function Index() {
     return (
       <SafeAreaView className="flex-1 bg-background">
         <StatusBar style="light" />
-        <ActivityIndicator size="large" color={COLORS.primary} />
+        <PetifySpinner size={180} />
       </SafeAreaView>
     );
   }

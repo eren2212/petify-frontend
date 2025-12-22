@@ -17,6 +17,7 @@ import AddDoctorModal from "../../../components/doctor/AddDoctorModal";
 import EditDoctorModal from "../../../components/doctor/EditDoctorModal";
 import { router } from "expo-router";
 import Toast from "react-native-toast-message";
+import { PetifySpinner } from "@/components/PetifySpinner";
 
 export default function Doctors() {
   const [selectedGender, setSelectedGender] = useState<
@@ -152,8 +153,7 @@ export default function Doctors() {
     if (isLoading) {
       return (
         <View className="flex-1 items-center justify-center py-20">
-          <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text className="text-gray-500 mt-4">Doktorlar yükleniyor...</Text>
+          <PetifySpinner size={180} />
         </View>
       );
     }

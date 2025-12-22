@@ -6,6 +6,7 @@ import { PetClinicServiceList } from "../../../components/petclinicservice";
 import { useCurrentUser, getActiveRole } from "../../../hooks/useAuth";
 import { COLORS } from "../../../styles/theme/color";
 import { Ionicons } from "@expo/vector-icons";
+import { PetifySpinner } from "@/components/PetifySpinner";
 
 export default function Services() {
   const { data: user, isLoading } = useCurrentUser();
@@ -16,8 +17,7 @@ export default function Services() {
     return (
       <SafeAreaView className="flex-1 bg-background">
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text className="text-gray-500 mt-4">Yükleniyor...</Text>
+          <PetifySpinner size={180} />
         </View>
       </SafeAreaView>
     );

@@ -9,6 +9,7 @@ import PetShopProfil from "../../../../components/profile/petshop/PetShopProfil"
 import PetSitterProfil from "@/components/profile/petsitter/PetSitterProfil";
 import PetOtelProfil from "@/components/profile/petotel/PetOtelProfil";
 import PetClinicProfil from "@/components/profile/petclinic/PetClinicProfil";
+import { PetifySpinner } from "@/components/PetifySpinner";
 
 export default function ProfileScreen() {
   const { data: user, isLoading } = useCurrentUser();
@@ -17,7 +18,7 @@ export default function ProfileScreen() {
   if (isLoading) {
     return (
       <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="#8B5CF6" />
+        <PetifySpinner size={180} />
       </View>
     );
   }

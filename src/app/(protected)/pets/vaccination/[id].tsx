@@ -9,6 +9,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useVaccinationDetail } from "../../../../hooks/usePet";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialCommunityIcons, Entypo } from "@expo/vector-icons";
+import { PetifySpinner } from "@/components/PetifySpinner";
 
 export default function VaccinationDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -96,8 +97,7 @@ export default function VaccinationDetailScreen() {
     return (
       <SafeAreaView className="flex-1 bg-gray-50">
         <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color="#8B5CF6" />
-          <Text className="text-gray-600 mt-4 font-medium">Yükleniyor...</Text>
+          <PetifySpinner size={180} />
         </View>
       </SafeAreaView>
     );

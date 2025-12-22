@@ -31,6 +31,7 @@ import AddPetSitterProfileModal, {
 } from "@/components/profile/petsitter/AddPetSitterProfileModal";
 import PetSitterLogoPicker from "@/components/profile/petsitter/PetSitterLogoPicker";
 import MapView, { Callout, Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { PetifySpinner } from "@/components/PetifySpinner";
 
 export default function PetSitterProfil() {
   const { signOut } = useAuthStore();
@@ -134,8 +135,7 @@ export default function PetSitterProfil() {
   if (userLoading || profileLoading) {
     return (
       <View className="flex-1 justify-center items-center bg-background">
-        <ActivityIndicator size="large" color="#8B5CF6" />
-        <Text className="text-text mt-4">Yükleniyor...</Text>
+        <PetifySpinner size={180} />
       </View>
     );
   }
