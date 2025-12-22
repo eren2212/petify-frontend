@@ -21,6 +21,7 @@ import {
   useProductCategories,
 } from "../../../hooks";
 import Toast from "react-native-toast-message";
+import { PetifySpinner } from "@/components/PetifySpinner";
 
 interface Product {
   id: string;
@@ -277,8 +278,7 @@ export default function Products() {
         {/* Products List */}
         {isLoading ? (
           <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color={COLORS.primary} />
-            <Text className="text-gray-500 mt-4">Ürünler yükleniyor...</Text>
+            <PetifySpinner size={180} />
           </View>
         ) : products.length === 0 ? (
           <View className="flex-1 items-center justify-center px-6">

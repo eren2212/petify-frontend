@@ -20,6 +20,7 @@ import { useProductDetail, useUpdateProductStatus } from "../../../hooks";
 import { getActiveRole, useCurrentUser } from "../../../hooks/useAuth";
 import EditProductModal from "../../../components/product/EditProductModal";
 import Toast from "react-native-toast-message";
+import { PetifySpinner } from "@/components/PetifySpinner";
 
 const { width } = Dimensions.get("window");
 
@@ -70,7 +71,7 @@ export default function ProductDetailScreen() {
   if (isLoading) {
     return (
       <View className="flex-1 bg-gray-50 items-center justify-center">
-        <ActivityIndicator size="large" color={COLORS.primary} />
+        <PetifySpinner size={180} />
       </View>
     );
   }
@@ -231,6 +232,14 @@ export default function ProductDetailScreen() {
           </Text>
 
           <View className="flex-row flex-wrap justify-between gap-y-4">
+            <View className=" w-full bg-white border border-gray-100 px-6 py-4 flex-row items-center justify-between shadow-sm rounded-2xl">
+              <View>
+                <Text className="text-gray-400 text-xs mb-0.5">Fiyat</Text>
+                <Text className="text-3xl font-bold text-gray-900 ">
+                  ₺{product.price.toFixed(2)}
+                </Text>
+              </View>
+            </View>
             {/* Kutu 1: Ağırlık */}
             <View className="w-[48%] bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
               <View className="bg-blue-50 w-10 h-10 rounded-full items-center justify-center mb-3">
@@ -280,17 +289,6 @@ export default function ProductDetailScreen() {
                 </Text>
               </View>
             )}
-
-            <View className=" w-full bg-white border-t border-gray-100 px-6 py-4 flex-row items-center justify-between shadow-sm rounded-b-3xl">
-              <View>
-                <Text className="text-gray-400 text-xs mb-0.5">
-                  Toplam Fiyat
-                </Text>
-                <Text className="text-3xl font-bold text-gray-900">
-                  ₺{product.price.toFixed(2)}
-                </Text>
-              </View>
-            </View>
           </View>
 
           {/* Pet Shop Only - Action Buttons */}
@@ -300,7 +298,7 @@ export default function ProductDetailScreen() {
                 {/* Edit Button */}
                 <TouchableOpacity
                   onPress={() => setShowEditModal(true)}
-                  className="flex-1 bg-primary rounded-2xl py-4 flex-row items-center justify-center"
+                  className="flex-1 bg-white rounded-2xl border border-primary py-4 flex-row items-center justify-center"
                   style={{
                     shadowColor: COLORS.primary,
                     shadowOffset: { width: 0, height: 2 },
@@ -309,8 +307,8 @@ export default function ProductDetailScreen() {
                     elevation: 5,
                   }}
                 >
-                  <Ionicons name="pencil" size={20} color="white" />
-                  <Text className="text-white font-bold text-base ml-2">
+                  <Ionicons name="pencil" size={20} color={COLORS.primary} />
+                  <Text className="text-primary font-bold text-base ml-2">
                     Düzenle
                   </Text>
                 </TouchableOpacity>
@@ -320,7 +318,9 @@ export default function ProductDetailScreen() {
                   onPress={handleToggleStatus}
                   disabled={isUpdatingStatus}
                   className={`flex-1 rounded-2xl py-4 flex-row items-center justify-center ${
-                    product.is_active ? "bg-red-500" : "bg-green-500"
+                    product.is_active
+                      ? "bg-white border border-red-500"
+                      : "bg-white border border-green-500"
                   }`}
                   style={{
                     shadowColor: product.is_active ? "#EF4444" : "#10B981",
@@ -341,9 +341,11 @@ export default function ProductDetailScreen() {
                             : "checkmark-circle"
                         }
                         size={20}
-                        color="white"
+                        color={product.is_active ? "#EF4444" : "#10B981"}
                       />
-                      <Text className="text-white font-bold text-base ml-2">
+                      <Text
+                        className={`font-bold text-base ml-2 ${product.is_active ? "text-red-500" : "text-green-500"}`}
+                      >
                         {product.is_active ? "Pasif Yap" : "Aktif Yap"}
                       </Text>
                     </>
