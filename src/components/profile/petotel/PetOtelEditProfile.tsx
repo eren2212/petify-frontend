@@ -9,32 +9,36 @@ import {
 } from "react-native";
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { profileApi, petShopApi } from "@/lib/api";
+import { profileApi, petClinicApi, petOtelApi } from "@/lib/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { User } from "@/hooks/useAuth";
 import AvatarDeleteButton from "@/components/AvatarDeleteButton";
 import { Feather, AntDesign, Ionicons } from "@expo/vector-icons";
-import { usePetShopProfile } from "@/hooks/useProfile";
+import { usePetClinicProfile } from "@/hooks/useProfile";
 import { COLORS } from "@/styles/theme/color";
 import MapLocationPicker from "@/components/map/MapLocationPicker";
+import { usePetOtelProfile } from "@/hooks/usePetOtel";
 
-interface PetShopEditProfileProps {
+interface PetOtelEditProfileProps {
   user: User | null | undefined;
 }
 
 interface FormData {
   full_name: string;
+  hotel_name: string;
   phone_number: string;
-  shop_name: string;
   description: string;
   latitude: number;
   longitude: number;
   address: string;
-  shop_phone_number: string;
-  shop_email: string;
-  website_url: string;
+  email: string;
+  logo_url: string;
   instagram_url: string;
+  website_url: string;
+  capacity: number;
+  check_in_time: string;
+  check_out_time: string;
   working_hours: { day: string; start: string; end: string; closed: boolean }[];
 }
 
@@ -48,20 +52,20 @@ const DAYS_OF_WEEK = [
   "Pazar",
 ];
 
-export default function PetShopEditProfile({ user }: PetShopEditProfileProps) {
+export default function PetOtelEditProfile({ user }: PetOtelEditProfileProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
   // Pet Shop profilini getir
-  const { data: petShopProfileResponse } = usePetShopProfile();
-  const petShopProfile = petShopProfileResponse?.data?.petShopProfile;
+  const { data: petOtelProfileResponse } = usePetOtelProfile();
+  const petOtelProfile = petOtelProfileResponse?.data?.petOtelProfile;
 
   const DEFAULT_LAT = 41.0082;
   const DEFAULT_LNG = 28.9784;
   const [showMapPicker, setShowMapPicker] = useState(false);
-  const [latitude, setLatitude] = useState(petShopProfile?.latitude || 41.0082);
+  const [latitude, setLatitude] = useState(petOtelProfile?.latitude || 41.0082);
   const [longitude, setLongitude] = useState(
-    petShopProfile?.longitude || 28.9784
+    petOtelProfile?.longitude || 28.9784
   );
 
   const {
@@ -74,16 +78,19 @@ export default function PetShopEditProfile({ user }: PetShopEditProfileProps) {
   } = useForm<FormData>({
     defaultValues: {
       full_name: "",
+      hotel_name: "",
+      email: "",
       phone_number: "",
-      shop_name: "",
       description: "",
       address: "",
       latitude: DEFAULT_LAT,
       longitude: DEFAULT_LNG,
-      shop_phone_number: "",
-      shop_email: "",
+      logo_url: "",
       website_url: "",
       instagram_url: "",
+      capacity: 0,
+      check_in_time: "",
+      check_out_time: "",
       working_hours: DAYS_OF_WEEK.map((day) => ({
         day,
         start: "09:00",
@@ -99,7 +106,7 @@ export default function PetShopEditProfile({ user }: PetShopEditProfileProps) {
   const longitudeValue = watch("longitude");
 
   useEffect(() => {
-    if (user?.profile && petShopProfile) {
+    if (user?.profile && petOtelProfile) {
       // Çalışma saatlerini parse et
       let parsedHours = DAYS_OF_WEEK.map((day) => ({
         day,
@@ -108,8 +115,8 @@ export default function PetShopEditProfile({ user }: PetShopEditProfileProps) {
         closed: false,
       }));
 
-      if (petShopProfile.working_hours) {
-        parsedHours = petShopProfile.working_hours.map((wh: any) => {
+      if (petOtelProfile.working_hours) {
+        parsedHours = petOtelProfile.working_hours.map((wh: any) => {
           if (wh.hours === "Kapalı") {
             return {
               day: wh.day,
@@ -130,23 +137,25 @@ export default function PetShopEditProfile({ user }: PetShopEditProfileProps) {
 
       reset({
         full_name: user.profile.full_name || "",
-        phone_number: user.profile.phone_number || "",
-        shop_name: petShopProfile.shop_name || "",
-        description: petShopProfile.description || "",
-        address: petShopProfile.address || "",
-        shop_phone_number: petShopProfile.phone_number || "",
-        shop_email: petShopProfile.email || "",
-        website_url: petShopProfile.website_url || "",
-        instagram_url: petShopProfile.instagram_url || "",
-        latitude: petShopProfile.latitude || DEFAULT_LAT, // ✅ Eklendi
-        longitude: petShopProfile.longitude || DEFAULT_LNG,
+        hotel_name: petOtelProfile.hotel_name || "",
+        email: petOtelProfile.email || "",
+        description: petOtelProfile.description || "",
+        address: petOtelProfile.address || "",
+        phone_number: petOtelProfile.phone_number || "",
+        website_url: petOtelProfile.website_url || "",
+        instagram_url: petOtelProfile.instagram_url || "",
+        capacity: petOtelProfile.capacity || 0,
+        check_in_time: petOtelProfile.check_in_time || "",
+        check_out_time: petOtelProfile.check_out_time || "",
+        latitude: petOtelProfile.latitude || DEFAULT_LAT, // ✅ Eklendi
+        longitude: petOtelProfile.longitude || DEFAULT_LNG,
         working_hours: parsedHours, // ✅ Form'a çalışma saatlerini ekliyoruz
       });
 
-      setLatitude(petShopProfile.latitude || 41.0082);
-      setLongitude(petShopProfile.longitude || 28.9784);
+      setLatitude(petOtelProfile.latitude || 41.0082);
+      setLongitude(petOtelProfile.longitude || 28.9784);
     }
-  }, [user, petShopProfile, reset]);
+  }, [user, petOtelProfile, reset]);
 
   const updateUserMutation = useMutation({
     mutationFn: profileApi.updateInformation,
@@ -168,12 +177,12 @@ export default function PetShopEditProfile({ user }: PetShopEditProfileProps) {
     },
   });
 
-  const updatePetShopMutation = useMutation({
+  const updatePetOtelMutation = useMutation({
     mutationFn: async (data: any) => {
-      return await petShopApi.updatePetShopProfile(data);
+      return await petOtelApi.updatePetOtelProfile(data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["petshop", "profile"] });
+      queryClient.invalidateQueries({ queryKey: ["petotel", "profile"] });
     },
   });
   const isLocationSelected =
@@ -217,28 +226,31 @@ export default function PetShopEditProfile({ user }: PetShopEditProfileProps) {
 
       await updateUserMutation.mutateAsync(userUpdateData);
 
-      // Pet Shop profil bilgilerini güncelle
+      // Pet Clinic profil bilgilerini güncelle
       const formattedWorkingHours = workingHours.map((wh) => ({
         day: wh.day,
         hours: wh.closed ? "Kapalı" : `${wh.start}-${wh.end}`,
       }));
 
-      const petShopUpdateData = {
-        shop_name: data.shop_name.trim(),
+      const petOtelUpdateData = {
+        hotel_name: data.hotel_name.trim(),
+        capacity: data.capacity,
+        check_in_time: data.check_in_time,
+        check_out_time: data.check_out_time,
         description: data.description.trim(),
         address: data.address.trim(),
+        email: data.email.trim(),
         latitude: data.latitude,
         longitude: data.longitude,
-        phone_number: data.shop_phone_number.trim(),
-        email: data.shop_email.trim(),
+        phone_number: data.phone_number.trim(),
         website_url: data.website_url.trim() || undefined,
         instagram_url: data.instagram_url.trim() || undefined,
         working_hours: formattedWorkingHours,
       };
 
-      await updatePetShopMutation.mutateAsync(petShopUpdateData);
+      await updatePetOtelMutation.mutateAsync(petOtelUpdateData);
 
-      Alert.alert("Başarılı", "Mağaza bilgileriniz güncellendi", [
+      Alert.alert("Başarılı", "Pet otel bilgileriniz güncellendi", [
         {
           text: "Tamam",
           onPress: () => router.back(),
@@ -248,13 +260,13 @@ export default function PetShopEditProfile({ user }: PetShopEditProfileProps) {
       Alert.alert(
         "Hata",
         error.response?.data?.message ||
-          "Mağaza bilgileri güncellenirken bir hata oluştu"
+          "Pet otel bilgileri güncellenirken bir hata oluştu"
       );
     }
   };
 
   const isLoading =
-    updateUserMutation.isPending || updatePetShopMutation.isPending;
+    updateUserMutation.isPending || updatePetOtelMutation.isPending;
 
   return (
     <>
@@ -343,36 +355,36 @@ export default function PetShopEditProfile({ user }: PetShopEditProfileProps) {
           </View>
         </View>
 
-        {/* Pet Shop Bilgileri Kartı */}
+        {/* Pet Clinic Bilgileri Kartı */}
         <View className="bg-white rounded-2xl p-6 mb-4 shadow-sm">
           <Text className="text-lg font-bold text-gray-900 mb-6">
-            Mağaza Bilgileri
+            Klinik Bilgileri
           </Text>
 
-          {/* Mağaza Adı */}
+          {/* Klinik Adı */}
           <View className="mb-4">
             <Text className="text-sm font-medium text-gray-700 mb-2">
-              Mağaza Adı *
+              Pet Otel Adı *
             </Text>
             <Controller
               control={control}
-              name="shop_name"
-              rules={{ required: "Mağaza adı zorunludur" }}
+              name="hotel_name"
+              rules={{ required: "Klinik adı zorunludur" }}
               render={({ field: { onChange, value } }) => (
                 <TextInput
                   value={value}
                   onChangeText={onChange}
-                  placeholder="Mağaza adını girin"
+                  placeholder="Klinik adını girin"
                   className={`bg-gray-50 border ${
-                    errors.shop_name ? "border-red-500" : "border-gray-200"
+                    errors.hotel_name ? "border-red-500" : "border-gray-200"
                   } rounded-xl px-4 py-3.5 text-gray-900 text-base`}
                   placeholderTextColor="#9CA3AF"
                 />
               )}
             />
-            {errors.shop_name && (
+            {errors.hotel_name && (
               <Text className="text-red-500 text-xs mt-1">
-                {errors.shop_name.message}
+                {errors.hotel_name.message}
               </Text>
             )}
           </View>
@@ -389,7 +401,7 @@ export default function PetShopEditProfile({ user }: PetShopEditProfileProps) {
                 <TextInput
                   value={value}
                   onChangeText={onChange}
-                  placeholder="Mağazanız hakkında kısa bir açıklama"
+                  placeholder="Klinikiniz hakkında kısa bir açıklama"
                   multiline
                   numberOfLines={4}
                   textAlignVertical="top"
@@ -444,16 +456,16 @@ export default function PetShopEditProfile({ user }: PetShopEditProfileProps) {
             )}
           </View>
 
-          {/* Mağaza Telefonu */}
+          {/* Klinik Telefonu */}
           <View className="mb-4">
             <Text className="text-sm font-medium text-gray-700 mb-2">
-              Mağaza Telefonu *
+              Pet Otel Telefonu *
             </Text>
             <Controller
               control={control}
-              name="shop_phone_number"
+              name="phone_number"
               rules={{
-                required: "Mağaza telefonu zorunludur",
+                required: "Pet otel telefonu zorunludur",
                 pattern: {
                   value: /^[0-9]{10}$/,
                   message: "Geçerli bir 10 haneli telefon numarası girin",
@@ -470,29 +482,27 @@ export default function PetShopEditProfile({ user }: PetShopEditProfileProps) {
                   keyboardType="phone-pad"
                   maxLength={10}
                   className={`bg-gray-50 border ${
-                    errors.shop_phone_number
-                      ? "border-red-500"
-                      : "border-gray-200"
+                    errors.phone_number ? "border-red-500" : "border-gray-200"
                   } rounded-xl px-4 py-3.5 text-gray-900 text-base`}
                   placeholderTextColor="#9CA3AF"
                 />
               )}
             />
-            {errors.shop_phone_number && (
+            {errors.phone_number && (
               <Text className="text-red-500 text-xs mt-1">
-                {errors.shop_phone_number.message}
+                {errors.phone_number.message}
               </Text>
             )}
           </View>
 
-          {/* Mağaza E-postası */}
+          {/* Pet Otel E-postası */}
           <View className="mb-4">
             <Text className="text-sm font-medium text-gray-700 mb-2">
-              Mağaza E-postası *
+              Pet Otel E-postası *
             </Text>
             <Controller
               control={control}
-              name="shop_email"
+              name="email"
               rules={{
                 required: "E-posta zorunludur",
                 pattern: {
@@ -508,15 +518,15 @@ export default function PetShopEditProfile({ user }: PetShopEditProfileProps) {
                   keyboardType="email-address"
                   autoCapitalize="none"
                   className={`bg-gray-50 border ${
-                    errors.shop_email ? "border-red-500" : "border-gray-200"
+                    errors.email ? "border-red-500" : "border-gray-200"
                   } rounded-xl px-4 py-3.5 text-gray-900 text-base`}
                   placeholderTextColor="#9CA3AF"
                 />
               )}
             />
-            {errors.shop_email && (
+            {errors.email && (
               <Text className="text-red-500 text-xs mt-1">
-                {errors.shop_email.message}
+                {errors.email.message}
               </Text>
             )}
           </View>
@@ -635,8 +645,6 @@ export default function PetShopEditProfile({ user }: PetShopEditProfileProps) {
             E-posta adresi değiştirilemez
           </Text>
         </View>
-
-        {/* Avatar Silme Butonu */}
 
         {/* Güncelle Butonu */}
         <TouchableOpacity
