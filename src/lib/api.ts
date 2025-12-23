@@ -29,35 +29,122 @@ instance.interceptors.request.use(
   }
 );
 
-// Response interceptor - Hata yönetimi
+// Token yenileme için değişkenler
+let isRefreshing = false;
+let failedQueue: any[] = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
+// Response interceptor - Token yenileme ve hata yönetimi
 instance.interceptors.response.use(
   (response) => {
     // Başarılı response'ları olduğu gibi döndür
     return response;
   },
   async (error) => {
+    const originalRequest = error.config;
+
     // 401 hatası = Token geçersiz veya süresi dolmuş
-    if (error.response?.status === 401) {
-      console.log("🚨 401 Unauthorized - Token geçersiz, çıkış yapılıyor...");
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      // Zaten refresh işlemi devam ediyorsa, sıraya ekle
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return instance(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
+      }
 
-      // AsyncStorage'ı temizle
-      await AsyncStorage.multiRemove(["access_token", "refresh_token", "user"]);
+      originalRequest._retry = true;
+      isRefreshing = true;
 
-      // QueryClient cache'ini temizle (import etmeden direk kullanıyoruz)
-      const { queryClient } = await import("./queryClient");
-      queryClient.clear();
-
-      // AuthStore'u temizle (import etmeden direk kullanıyoruz)
-      const { useAuthStore } = await import("../stores/authStore");
-      useAuthStore.getState().reset();
-
-      // Signin sayfasına yönlendir
       try {
-        router.replace("/(auth)/signin");
-      } catch (routerError) {
-        console.error("Router yönlendirme hatası:", routerError);
+        // Refresh token ile yeni token al
+        const refreshToken = await AsyncStorage.getItem("refresh_token");
+
+        if (!refreshToken) {
+          throw new Error("Refresh token bulunamadı");
+        }
+
+        console.log("🔄 Token yenileniyor...");
+
+        // Refresh endpoint'ini çağır (axios doğrudan kullan, instance değil)
+        const { data } = await axios.post(`${BASE_URL}/auth/refresh`, {
+          refresh_token: refreshToken,
+        });
+
+        if (data?.data?.session) {
+          // Yeni token'ları kaydet
+          await AsyncStorage.setItem(
+            "access_token",
+            data.data.session.access_token
+          );
+          await AsyncStorage.setItem(
+            "refresh_token",
+            data.data.session.refresh_token
+          );
+
+          console.log("✅ Token başarıyla yenilendi!");
+
+          // Başarılı olan istekleri işle
+          processQueue(null, data.data.session.access_token);
+
+          // Orijinal isteği yeni token ile tekrarla
+          originalRequest.headers.Authorization = `Bearer ${data.data.session.access_token}`;
+          return instance(originalRequest);
+        } else {
+          throw new Error("Token yenileme başarısız");
+        }
+      } catch (refreshError: any) {
+        // Refresh token da geçersizse, çıkış yap
+        console.log(
+          "🚨 Refresh token geçersiz veya süresi dolmuş, çıkış yapılıyor..."
+        );
+
+        processQueue(refreshError, null);
+
+        // AsyncStorage'ı temizle
+        await AsyncStorage.multiRemove([
+          "access_token",
+          "refresh_token",
+          "user",
+        ]);
+
+        // QueryClient cache'ini temizle
+        const { queryClient } = await import("./queryClient");
+        queryClient.clear();
+
+        // AuthStore'u temizle
+        const { useAuthStore } = await import("../stores/authStore");
+        useAuthStore.getState().reset();
+
+        // Signin sayfasına yönlendir
+        try {
+          router.replace("/(auth)/signin");
+        } catch (routerError) {
+          console.error("Router yönlendirme hatası:", routerError);
+        }
+
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
       }
     }
+
     return Promise.reject(error);
   }
 );
@@ -1680,7 +1767,10 @@ export const petClinicDoctorsApi = {
       console.log("✅ My doctors fetched:", data);
       return data;
     } catch (error: any) {
-      console.log("Get My Doctors Error:", error.response?.data || error.message);
+      console.log(
+        "Get My Doctors Error:",
+        error.response?.data || error.message
+      );
       throw error;
     }
   },
@@ -1710,7 +1800,10 @@ export const petClinicDoctorsApi = {
       console.log("✅ Doctor updated:", data);
       return data;
     } catch (error: any) {
-      console.log("Update Doctor Error:", error.response?.data || error.message);
+      console.log(
+        "Update Doctor Error:",
+        error.response?.data || error.message
+      );
       throw error;
     }
   },
@@ -1722,7 +1815,10 @@ export const petClinicDoctorsApi = {
       console.log("✅ Doctor deleted:", data);
       return data;
     } catch (error: any) {
-      console.log("Delete Doctor Error:", error.response?.data || error.message);
+      console.log(
+        "Delete Doctor Error:",
+        error.response?.data || error.message
+      );
       throw error;
     }
   },
