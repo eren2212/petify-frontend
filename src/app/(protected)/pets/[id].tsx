@@ -341,9 +341,9 @@ export default function PetDetailScreen() {
         <View className="flex-row justify-center items-center mt-8 gap-6">
           <TouchableOpacity
             onPress={() => router.push(`/pets/edit?id=${id}`)}
-            className="bg-primary px-16 py-4 rounded-full  shadow-lg mb-6"
+            className="bg-white border-2 border-primary px-16 py-4 rounded-full  shadow-lg mb-6"
           >
-            <Text className="text-white font-bold text-center text-base">
+            <Text className="text-primary font-bold text-center text-base">
               Düzenle
             </Text>
           </TouchableOpacity>

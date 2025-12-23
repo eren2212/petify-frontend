@@ -509,7 +509,7 @@ export default function PetClinicProfil() {
                   title={petClinicProfile.clinic_name}
                   description={petClinicProfile.address}
                 >
-                  <View className="bg-orange-100 rounded-full p-3 items-center justify-center">
+                  <View className="bg-white rounded-full p-4 items-center justify-center">
                     <Ionicons name="medkit" size={24} color="red" />
                   </View>
                 </Marker>

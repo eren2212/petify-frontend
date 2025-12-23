@@ -130,7 +130,7 @@ export default function ProfileScreen() {
         </View>
         {/* My Pets Liste */}
         {petsLoading ? (
-          <ActivityIndicator size="small" color="#8B5CF6" />
+          <PetifySpinner size={56} />
         ) : pets.length > 0 ? (
           <FlatList
             horizontal

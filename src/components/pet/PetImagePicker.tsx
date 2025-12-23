@@ -11,6 +11,7 @@ import { pickImageFromLibrary } from "../../utils/imagePicker";
 import { petApi } from "../../lib/api";
 import Toast from "react-native-toast-message";
 import { useQueryClient } from "@tanstack/react-query";
+import { COLORS } from "@/styles/theme/color";
 
 interface PetImagePickerProps {
   petId: string;
@@ -85,7 +86,7 @@ export default function PetImagePicker({
           onPress={handlePickImage}
           disabled={isUploading}
           className={`rounded-xl px-6 py-3 flex-row items-center ${
-            isUploading ? "bg-gray-300" : "bg-blue-500"
+            isUploading ? "bg-gray-300" : "bg-white border-2 border-primary"
           }`}
         >
           {isUploading ? (
@@ -95,9 +96,9 @@ export default function PetImagePicker({
               <Feather
                 name={currentImageUrl ? "edit-2" : "upload"}
                 size={18}
-                color="white"
+                color={COLORS.primary}
               />
-              <Text className="text-white font-semibold text-base ml-2">
+              <Text className="text-primary font-semibold text-base ml-2">
                 {currentImageUrl ? "Resmi Değiştir" : "Resim Yükle"}
               </Text>
             </>
