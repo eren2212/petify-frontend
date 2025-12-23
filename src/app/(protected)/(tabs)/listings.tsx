@@ -77,7 +77,7 @@ export default function ListingsScreen() {
         {/* Kategori Seçimi */}
         <View className="flex-row gap-4 mb-6 justify-around items-start">
           <TouchableOpacity
-            className={`p-4 rounded-3xl items-center justify-center w-2/5 ${
+            className={`p-4 rounded-2xl items-center justify-center w-2/5 ${
               activeTab === "lost"
                 ? "bg-primary"
                 : "bg-white border border-primary"
@@ -93,7 +93,7 @@ export default function ListingsScreen() {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className={`p-4 rounded-3xl items-center justify-center w-2/5 ${
+            className={`p-4 rounded-2xl items-center justify-center w-2/5 ${
               activeTab === "adoption"
                 ? "bg-primary"
                 : "bg-white border border-primary"

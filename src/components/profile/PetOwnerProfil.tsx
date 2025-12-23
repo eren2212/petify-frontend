@@ -110,9 +110,9 @@ export default function ProfileScreen() {
         {/* Profili Düzenle Butonu */}
         <TouchableOpacity
           onPress={() => router.push("/edit")}
-          className="bg-primary px-16 py-4 rounded-full w-11/12 shadow-lg  mb-6"
+          className="bg-primary/10 px-16 py-4 rounded-2xl  shadow-lg border-2 border-primary mb-6"
         >
-          <Text className="text-white font-bold text-center text-base">
+          <Text className="text-primary font-bold text-center text-base">
             Profili Düzenle
           </Text>
         </TouchableOpacity>

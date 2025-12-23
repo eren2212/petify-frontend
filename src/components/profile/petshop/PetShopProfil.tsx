@@ -283,9 +283,9 @@ export default function PetShopProfil() {
         {/* Profili Düzenle Butonu */}
         <TouchableOpacity
           onPress={() => router.push("/edit")}
-          className="bg-primary px-16 py-5 rounded-full shadow-lg mb-6"
+          className="bg-primary/10 px-16 py-5 rounded-2xl shadow-lg border-2 border-primary mb-6 "
         >
-          <Text className="text-white font-bold text-center text-base">
+          <Text className="text-primary font-bold text-center text-base">
             Profili Düzenle
           </Text>
         </TouchableOpacity>

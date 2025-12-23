@@ -341,7 +341,7 @@ export default function PetDetailScreen() {
         <View className="flex-row justify-center items-center mt-8 gap-6">
           <TouchableOpacity
             onPress={() => router.push(`/pets/edit?id=${id}`)}
-            className="bg-white border-2 border-primary px-16 py-4 rounded-full  shadow-lg mb-6"
+            className="bg-primary/10 border border-primary px-16 py-4 rounded-2xl  shadow-lg mb-6"
           >
             <Text className="text-primary font-bold text-center text-base">
               Düzenle
@@ -350,9 +350,9 @@ export default function PetDetailScreen() {
 
           <TouchableOpacity
             onPress={() => setShowVaccinationModal(true)}
-            className="bg-green-500 px-16 py-4 rounded-full shadow-lg mb-6"
+            className="bg-green-100 px-16 py-4 rounded-2xl shadow-lg border border-green-500 mb-6"
           >
-            <Text className="text-white font-bold text-center text-base">
+            <Text className="text-green-500 font-bold text-center text-base">
               Aşı Ekle
             </Text>
           </TouchableOpacity>

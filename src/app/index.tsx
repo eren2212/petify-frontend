@@ -63,7 +63,7 @@ export default function Index() {
         <View className="w-full items-center px-8">
           <TouchableOpacity
             onPress={() => router.replace("/signin")}
-            className="w-full bg-white py-4 rounded-full shadow-md"
+            className="w-full bg-white py-5 rounded-full shadow-md"
           >
             <Text className="text-center text-[#2980B9] text-lg font-semibold">
               Giriş Yap
@@ -72,7 +72,7 @@ export default function Index() {
 
           <TouchableOpacity
             onPress={() => router.replace("/signup")}
-            className="w-full py-4 rounded-full border-2 border-white mt-4"
+            className="w-full py-5 rounded-full border-2 border-white mt-4"
           >
             <Text className="text-center text-white text-lg font-semibold">
               Kayıt Ol
