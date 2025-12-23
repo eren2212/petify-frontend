@@ -86,7 +86,7 @@ export default function PetImagePicker({
           onPress={handlePickImage}
           disabled={isUploading}
           className={`rounded-xl px-6 py-3 flex-row items-center ${
-            isUploading ? "bg-gray-300" : "bg-white border-2 border-primary"
+            isUploading ? "bg-gray-300" : "bg-primary/10 border border-primary"
           }`}
         >
           {isUploading ? (

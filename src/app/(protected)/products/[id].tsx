@@ -298,7 +298,7 @@ export default function ProductDetailScreen() {
                 {/* Edit Button */}
                 <TouchableOpacity
                   onPress={() => setShowEditModal(true)}
-                  className="flex-1 bg-white rounded-2xl border border-primary py-4 flex-row items-center justify-center"
+                  className="flex-1 bg-primary/10 rounded-2xl border border-primary py-4 flex-row items-center justify-center"
                   style={{
                     shadowColor: COLORS.primary,
                     shadowOffset: { width: 0, height: 2 },
@@ -319,8 +319,8 @@ export default function ProductDetailScreen() {
                   disabled={isUpdatingStatus}
                   className={`flex-1 rounded-2xl py-4 flex-row items-center justify-center ${
                     product.is_active
-                      ? "bg-white border border-red-500"
-                      : "bg-white border border-green-500"
+                      ? "bg-red-50 border border-red-500"
+                      : "bg-green-100 border border-green-500"
                   }`}
                   style={{
                     shadowColor: product.is_active ? "#EF4444" : "#10B981",
@@ -344,7 +344,7 @@ export default function ProductDetailScreen() {
                         color={product.is_active ? "#EF4444" : "#10B981"}
                       />
                       <Text
-                        className={`font-bold text-base ml-2 ${product.is_active ? "text-red-500" : "text-green-500"}`}
+                        className={`font-bold text-base ml-2 ${product.is_active ? "text-red-500" : "text-primary"}`}
                       >
                         {product.is_active ? "Pasif Yap" : "Aktif Yap"}
                       </Text>

@@ -296,7 +296,7 @@ export default function DoctorDetail() {
             {/* Edit Button */}
             <TouchableOpacity
               onPress={() => setEditModalVisible(true)}
-              className="flex-1 bg-white border-2 rounded-2xl py-4 flex-row items-center justify-center"
+              className="flex-1 bg-primary/10 border border-primary rounded-2xl py-4 flex-row items-center justify-center"
               style={{
                 borderColor: COLORS.primary,
                 shadowColor: "#000",
@@ -319,7 +319,7 @@ export default function DoctorDetail() {
             <TouchableOpacity
               onPress={handleDeleteDoctor}
               disabled={isDeleting}
-              className="flex-1 bg-red-50 border-2 border-red-500 rounded-2xl py-4 flex-row items-center justify-center"
+              className="flex-1 bg-red-50 border border-red-500 rounded-2xl py-4 flex-row items-center justify-center"
               style={{
                 shadowColor: "#000",
                 shadowOffset: { width: 0, height: 2 },

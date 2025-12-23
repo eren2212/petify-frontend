@@ -276,13 +276,21 @@ export default function LostPetDetailScreen() {
       >
         {/* Header - KAYIP Badge */}
         <View
-          className={`px-6 py-4 rounded-full items-center justify-center mx-2 ${
-            lostPet.status === "found" ? "bg-green-500" : "bg-red-500"
+          className={`px-6 py-4 rounded-2xl items-center justify-center w-11/12 mx-auto ${
+            lostPet.status === "found"
+              ? "bg-green-100 border border-green-500"
+              : "bg-red-50 border border-red-500"
           }`}
         >
           <View className="flex-row items-center justify-center">
-            <Ionicons name="alert-circle" size={24} color="white" />
-            <Text className="text-white text-lg font-bold ml-2">
+            <Ionicons
+              name="alert-circle-outline"
+              size={24}
+              color={lostPet.status === "found" ? "#10B981" : "#EF4444"}
+            />
+            <Text
+              className={`text-${lostPet.status === "found" ? "green-500" : "red-500"} text-lg font-bold ml-2`}
+            >
               {lostPet.status === "found" ? "BULUNDU" : "KAYIP"}
             </Text>
           </View>

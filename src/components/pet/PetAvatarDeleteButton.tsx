@@ -63,7 +63,7 @@ export default function PetAvatarDeleteButton({
     <TouchableOpacity
       onPress={handleDelete}
       disabled={deletePetImageMutation.isPending}
-      className="bg-white border-2 border-red-500 rounded-xl p-4 mb-4 flex-row items-center justify-center active:bg-red-50"
+      className="bg-red-50 border border-red-500 rounded-xl p-4 mb-4 flex-row items-center justify-center active:bg-red-50"
     >
       {deletePetImageMutation.isPending ? (
         <ActivityIndicator size="small" color="#EF4444" />

@@ -250,13 +250,21 @@ export default function AdoptionPetDetailScreen() {
       >
         {/* Header - YUVA ARIYOR Badge */}
         <View
-          className={`px-6 py-4 rounded-full items-center justify-center mx-2 ${
-            adoptionPet.adoption_fee === 0 ? "bg-red-500" : "bg-green-500"
+          className={`px-6 py-4 rounded-2xl items-center justify-center w-11/12 mx-auto ${
+            adoptionPet.adoption_fee === 0
+              ? "bg-red-50 border border-red-500"
+              : "bg-green-100 border border-green-500"
           }`}
         >
           <View className="flex-row items-center justify-center">
-            <Ionicons name="heart" size={24} color="white" />
-            <Text className="text-white text-lg font-bold ml-2">
+            <Ionicons
+              name="heart"
+              size={24}
+              color={adoptionPet.adoption_fee === 0 ? "#EF4444" : "#10B981"}
+            />
+            <Text
+              className={`text-${adoptionPet.adoption_fee === 0 ? "red-500" : "green-500"} text-lg font-bold ml-2`}
+            >
               {adoptionPet.status !== "passive"
                 ? adoptionPet.adoption_fee === 0
                   ? "ÜCRETSİZ"
@@ -345,7 +353,7 @@ export default function AdoptionPetDetailScreen() {
           <View className="px-5 mb-6">
             <View className="flex-row gap-3">
               <TouchableOpacity
-                className="flex-1 bg-green-500 py-4 rounded-full items-center justify-center"
+                className="flex-1 bg-green-100 border border-green-500 py-4 rounded-2xl items-center justify-center"
                 style={{
                   shadowColor: "#10B981",
                   shadowOffset: { width: 0, height: 4 },
@@ -367,9 +375,9 @@ export default function AdoptionPetDetailScreen() {
                       <Ionicons
                         name="checkmark-circle"
                         size={20}
-                        color="white"
+                        color="#10B981"
                       />
-                      <Text className="text-white font-bold text-base ml-2">
+                      <Text className="text-green-500 font-bold text-base ml-2">
                         Sahiplendirildi
                       </Text>
                     </>
@@ -378,7 +386,7 @@ export default function AdoptionPetDetailScreen() {
               </TouchableOpacity>
 
               <TouchableOpacity
-                className="bg-red-500 py-4 px-6 rounded-full items-center justify-center"
+                className="bg-red-500 py-4 px-6 rounded-2xl items-center justify-center"
                 style={{
                   shadowColor: "#EF4444",
                   shadowOffset: { width: 0, height: 4 },
