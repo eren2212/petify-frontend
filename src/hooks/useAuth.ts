@@ -74,15 +74,15 @@ export function useCurrentUser() {
     },
     // Auth varsa çalıştır, yoksa disabled
     enabled: isAuthenticated,
-    // 5 dakika boyunca fresh kabul et
-    staleTime: 1000 * 60 * 5,
+    // 30 dakika boyunca fresh kabul et (Instagram gibi uzun süre açık kalması için)
+    staleTime: 1000 * 60 * 30,
     // Ekrana dönüldüğünde otomatik yenile
     refetchOnWindowFocus: true,
     // Mount olunca otomatik çek
     refetchOnMount: true,
     // 401 hatası için retry yapma (token geçersiz)
     retry: (failureCount, error: any) => {
-      // 401 hatası ise retry yapma
+      // 401 hatası ise retry yapma (zaten interceptor yeniliyor)
       if (error?.response?.status === 401) {
         return false;
       }
