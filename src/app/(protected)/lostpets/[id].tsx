@@ -334,9 +334,14 @@ export default function LostPetDetailScreen() {
           <View className="px-5 mb-6">
             <View className="flex-row gap-3">
               <TouchableOpacity
-                className="flex-1 bg-green-500 py-4 rounded-full items-center justify-center"
+                className={`flex-1 py-4 rounded-2xl items-center justify-center ${
+                  lostPet.status === "found"
+                    ? "bg-gray-100 border border-gray-400"
+                    : "bg-red-100 border border-red-500"
+                }`}
                 style={{
-                  shadowColor: "#10B981",
+                  shadowColor:
+                    lostPet.status === "found" ? "#9CA3AF" : "#EF4444",
                   shadowOffset: { width: 0, height: 4 },
                   shadowOpacity: 0.3,
                   shadowRadius: 8,
@@ -349,16 +354,31 @@ export default function LostPetDetailScreen() {
               >
                 <View className="flex-row items-center">
                   {markAsFoundMutation.isPending ? (
-                    <ActivityIndicator size="small" color="white" />
+                    <ActivityIndicator
+                      size="small"
+                      color={lostPet.status === "found" ? "#9CA3AF" : "white"}
+                    />
                   ) : (
                     <>
                       <Ionicons
-                        name="checkmark-circle"
+                        name={
+                          lostPet.status === "found"
+                            ? "checkmark-circle"
+                            : "alert-circle"
+                        }
                         size={20}
-                        color="white"
+                        color={
+                          lostPet.status === "found" ? "#9CA3AF" : "#EF4444"
+                        }
                       />
-                      <Text className="text-white font-bold text-base ml-2">
-                        Bulundu
+                      <Text
+                        className={`font-bold text-base ml-2 ${
+                          lostPet.status === "found"
+                            ? "text-gray-500"
+                            : "text-red-500"
+                        }`}
+                      >
+                        {lostPet.status === "found" ? "Bulundu" : "Kayıp"}
                       </Text>
                     </>
                   )}
@@ -366,7 +386,7 @@ export default function LostPetDetailScreen() {
               </TouchableOpacity>
 
               <TouchableOpacity
-                className="bg-red-500 py-4 px-6 rounded-full items-center justify-center"
+                className="bg-red-500 py-4 px-6 rounded-2xl items-center justify-center"
                 style={{
                   shadowColor: "#EF4444",
                   shadowOffset: { width: 0, height: 4 },

@@ -258,7 +258,7 @@ export default function AdoptionPetDetailScreen() {
         >
           <View className="flex-row items-center justify-center">
             <Ionicons
-              name="heart"
+              name="heart-outline"
               size={24}
               color={adoptionPet.adoption_fee === 0 ? "#EF4444" : "#10B981"}
             />
@@ -353,9 +353,14 @@ export default function AdoptionPetDetailScreen() {
           <View className="px-5 mb-6">
             <View className="flex-row gap-3">
               <TouchableOpacity
-                className="flex-1 bg-green-100 border border-green-500 py-4 rounded-2xl items-center justify-center"
+                className={`flex-1 py-4 rounded-2xl items-center justify-center ${
+                  adoptionPet.status === "passive"
+                    ? "bg-gray-100 border border-gray-400"
+                    : "bg-green-100 border border-green-500"
+                }`}
                 style={{
-                  shadowColor: "#10B981",
+                  shadowColor:
+                    adoptionPet.status === "passive" ? "#9CA3AF" : "#10B981",
                   shadowOffset: { width: 0, height: 4 },
                   shadowOpacity: 0.3,
                   shadowRadius: 8,
@@ -369,16 +374,32 @@ export default function AdoptionPetDetailScreen() {
               >
                 <View className="flex-row items-center">
                   {markAsAdoptedMutation.isPending ? (
-                    <ActivityIndicator size="small" color="white" />
+                    <ActivityIndicator size="small" color="#10B981" />
                   ) : (
                     <>
                       <Ionicons
-                        name="checkmark-circle"
+                        name={
+                          adoptionPet.status === "passive"
+                            ? "checkmark-circle"
+                            : "heart"
+                        }
                         size={20}
-                        color="#10B981"
+                        color={
+                          adoptionPet.status === "passive"
+                            ? "#9CA3AF"
+                            : "#10B981"
+                        }
                       />
-                      <Text className="text-green-500 font-bold text-base ml-2">
-                        Sahiplendirildi
+                      <Text
+                        className={`font-bold text-base ml-2 ${
+                          adoptionPet.status === "passive"
+                            ? "text-gray-500"
+                            : "text-green-600"
+                        }`}
+                      >
+                        {adoptionPet.status === "passive"
+                          ? "Sahiplendirildi"
+                          : "Yuva Arıyor"}
                       </Text>
                     </>
                   )}
