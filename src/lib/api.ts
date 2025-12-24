@@ -1858,3 +1858,17 @@ export const petClinicDoctorsApi = {
     }
   },
 };
+
+export const bannerApi = {
+  // Banner'ları getir
+  getBanners: async () => {
+    try {
+      const { data } = await instance.get("/home/banners");
+      console.log("✅ Banners fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log("Get Banners Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+};
