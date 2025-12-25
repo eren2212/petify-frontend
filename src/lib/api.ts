@@ -1872,3 +1872,19 @@ export const bannerApi = {
     }
   },
 };
+
+export const homeApi = {
+  getLostPets: async () => {
+    try {
+      const { data } = await instance.get("/home/lost-pets");
+      console.log("✅ Lost pets fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Lost Pets Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+};

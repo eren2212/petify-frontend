@@ -9,6 +9,7 @@ import { PetifySpinner } from "@/components/PetifySpinner";
 import { HomeIconNavigation } from "@/components/home/HomeIconNavigation";
 import { HomeHeader } from "@/components/home/HomeHeader";
 import { HomeBannerSlider } from "@/components/home/HomeBannerSlider";
+import { HomeLostPetsCard } from "@/components/home/HomeLostPetsCard";
 
 export default function Home() {
   const { signOut } = useAuthStore();
@@ -85,6 +86,9 @@ export default function Home() {
 
           {/* Banner Slider */}
           <HomeBannerSlider />
+
+          {/* Kayıp Evcil Hayvanlar */}
+          <HomeLostPetsCard />
 
           {/* Ana içerik buraya gelecek */}
           <View className="px-6 py-4">

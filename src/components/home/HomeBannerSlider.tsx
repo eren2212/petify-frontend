@@ -94,8 +94,6 @@ export const HomeBannerSlider = () => {
     );
   }
 
-  console.log("✅ Rendering", banners.length, "banners");
-
   return (
     <View className="py-4">
       {/* Slider */}
