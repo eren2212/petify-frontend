@@ -10,6 +10,7 @@ import { HomeIconNavigation } from "@/components/home/HomeIconNavigation";
 import { HomeHeader } from "@/components/home/HomeHeader";
 import { HomeBannerSlider } from "@/components/home/HomeBannerSlider";
 import { HomeLostPetsCard } from "@/components/home/HomeLostPetsCard";
+import { HomeClinicCard } from "@/components/home/HomeClinicCard";
 
 export default function Home() {
   const { signOut } = useAuthStore();
@@ -89,6 +90,9 @@ export default function Home() {
 
           {/* Kayıp Evcil Hayvanlar */}
           <HomeLostPetsCard />
+
+          {/* Klinikler */}
+          <HomeClinicCard />
 
           {/* Ana içerik buraya gelecek */}
           <View className="px-6 py-4">

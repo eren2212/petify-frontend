@@ -7,41 +7,27 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { router } from "expo-router";
-import { useLostPetsForHome } from "@/hooks/useLostPets";
-import { Ionicons } from "@expo/vector-icons";
+import { useClinicsForHome } from "@/hooks/useHome";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 
-export const HomeLostPetsCard = () => {
-  const { data, isLoading, isError } = useLostPetsForHome();
+export const HomeClinicCard = () => {
+  const { data, isLoading, isError } = useClinicsForHome();
 
   // Resim URL'i oluştur
-  const getLostPetImageUrl = (filename: string) => {
+  const getClinicImageUrl = (filename: string) => {
     const baseUrl =
       process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000/api";
-    return `${baseUrl}/home/images/lost-pet/${filename}`;
-  };
-
-  // Tarihi formatla
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 0) return "Bugün";
-    if (diffDays === 1) return "Dün";
-    if (diffDays < 7) return `${diffDays} gün önce`;
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)} hafta önce`;
-    return `${Math.floor(diffDays / 30)} ay önce`;
+    return `${baseUrl}/home/images/clinic-logo/${filename}`;
   };
 
   // Hepsini Gör butonuna tıklama
   const handleViewAll = () => {
-    router.push("/(protected)/(tabs)/listings");
+    router.push("/(protected)/(tabs)/clinics");
   };
 
   // Kart tıklama
   const handleCardPress = (id: string) => {
-    router.push(`/(protected)/lostpets/${id}`);
+    router.push(`/(protected)/clinics/${id}`);
   };
 
   // Loading state
@@ -60,16 +46,14 @@ export const HomeLostPetsCard = () => {
     return null;
   }
 
-  const lostPets = data.data;
+  const clinics = data.data;
 
   return (
     <View className="py-4">
       {/* Header */}
       <View className="px-6 flex-row items-center justify-between mb-4">
         <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold text-gray-800">
-            Kayıp Hayvanlar
-          </Text>
+          <Text className="text-lg font-bold text-gray-800">Klinikler</Text>
           <View className="w-2 h-2 rounded-full bg-red-500" />
         </View>
         <TouchableOpacity
@@ -83,24 +67,24 @@ export const HomeLostPetsCard = () => {
 
       {/* Cards */}
       <View className="px-6 gap-3">
-        {lostPets.map((pet) => (
+        {clinics.map((clinic) => (
           <TouchableOpacity
-            key={pet.id}
-            onPress={() => handleCardPress(pet.id)}
+            key={clinic.id}
+            onPress={() => handleCardPress(clinic.id)}
             activeOpacity={0.7}
             className="bg-white/95 rounded-2xl shadow-sm overflow-hidden flex-row border border-gray-200"
           >
             {/* Pet Image */}
             <View className="w-24 h-24 p-3 ">
-              {pet.image_url ? (
+              {clinic.logo_url ? (
                 <Image
-                  source={{ uri: getLostPetImageUrl(pet.image_url) }}
+                  source={{ uri: getClinicImageUrl(clinic.logo_url) }}
                   className="w-full h-full rounded-2xl"
                   resizeMode="cover"
                 />
               ) : (
                 <View className="w-full h-full items-center justify-center bg-gray-100">
-                  <Ionicons name="paw" size={32} color="#9CA3AF" />
+                  <Ionicons name="medkit" size={32} color="#9CA3AF" />
                 </View>
               )}
             </View>
@@ -110,25 +94,19 @@ export const HomeLostPetsCard = () => {
               <View>
                 <View className="flex-row items-center justify-between mb-1">
                   <Text className="text-base font-bold text-gray-800">
-                    {pet.pet_name}
+                    {clinic.clinic_name}
                   </Text>
-                  <View className="bg-red-100 px-2 py-1 rounded-full">
-                    <Text className="text-red-600 text-xs font-semibold">
-                      ACİL
-                    </Text>
-                  </View>
                 </View>
                 <Text className="text-sm text-gray-600 mb-1">
-                  {pet.pet_type.name_tr}
-                  {pet.breed ? ` • ${pet.breed}` : ""}
+                  {clinic.address}
                 </Text>
               </View>
 
-              <View className="flex-row items-center gap-1">
-                <Ionicons name="time-outline" size={14} color="#6B7280" />
-                <Text className="text-xs text-gray-500">
-                  Son görülme: {formatDate(pet.lost_date)}
-                </Text>
+              <View className="flex-row items-center gap-1 justify-start">
+                <View className="flex-row items-center gap-1 justify-start ">
+                  <AntDesign name="star" size={14} color="#FFD700" />
+                  <Text className="text-xs text-gray-500 font-bold">4.8</Text>
+                </View>
               </View>
             </View>
 

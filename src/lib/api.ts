@@ -1874,6 +1874,17 @@ export const bannerApi = {
 };
 
 export const homeApi = {
+  getClinicsForHome: async () => {
+    try {
+      const { data } = await instance.get("/home/clinics");
+      console.log("✅ Clinics fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log("Get Clinics Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+
   getLostPets: async () => {
     try {
       const { data } = await instance.get("/home/lost-pets");
