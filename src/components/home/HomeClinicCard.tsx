@@ -22,12 +22,13 @@ export const HomeClinicCard = () => {
 
   // Hepsini Gör butonuna tıklama
   const handleViewAll = () => {
-    router.push("/(protected)/(tabs)/clinics");
+    // TODO: Tüm klinikler listesi sayfası oluşturulacak
+    router.push("/(protected)/(tabs)/map");
   };
 
-  // Kart tıklama
+  // Kart tıklama - Klinik detay sayfasına git
   const handleCardPress = (id: string) => {
-    router.push(`/(protected)/clinics/${id}`);
+    router.push(`/(protected)/clinics/${id}` as any);
   };
 
   // Loading state

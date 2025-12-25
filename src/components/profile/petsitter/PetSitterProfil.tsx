@@ -61,8 +61,8 @@ export default function PetSitterProfil() {
 
   // Logo URL oluştur
   const getLogoUrl = () => {
-    if (!petSitterProfile?.profile_image_url) return null;
-    return `${process.env.EXPO_PUBLIC_API_URL}/petsitter/profile/image/${petSitterProfile.profile_image_url}`;
+    if (!petSitterProfile?.logo_url) return null;
+    return `${process.env.EXPO_PUBLIC_API_URL}/petsitter/profile/logo/${petSitterProfile.logo_url}`;
   };
 
   // Profil oluşturma handler
@@ -226,7 +226,7 @@ export default function PetSitterProfil() {
         {/* Logo - Tıklanabilir Logo Picker */}
         <View className="mb-4 relative">
           <PetSitterLogoPicker
-            currentLogoUrl={petSitterProfile.profile_image_url}
+            currentLogoUrl={petSitterProfile.logo_url}
             className="w-36 h-36"
           />
 

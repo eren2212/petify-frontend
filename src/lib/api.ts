@@ -1874,6 +1874,7 @@ export const bannerApi = {
 };
 
 export const homeApi = {
+  // Ana sayfa için klinik listesi
   getClinicsForHome: async () => {
     try {
       const { data } = await instance.get("/home/clinics");
@@ -1885,6 +1886,7 @@ export const homeApi = {
     }
   },
 
+  // Ana sayfa için kayıp hayvanlar
   getLostPets: async () => {
     try {
       const { data } = await instance.get("/home/lost-pets");
@@ -1893,6 +1895,66 @@ export const homeApi = {
     } catch (error: any) {
       console.log(
         "Get Lost Pets Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Klinik detayı getir
+  getClinicDetail: async (id: string) => {
+    try {
+      const { data } = await instance.get(`/home/clinic/${id}`);
+      console.log("✅ Clinic detail fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Clinic Detail Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Otel detayı getir
+  getHotelDetail: async (id: string) => {
+    try {
+      const { data } = await instance.get(`/home/hotel/${id}`);
+      console.log("✅ Hotel detail fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Hotel Detail Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Shop detayı getir
+  getShopDetail: async (id: string) => {
+    try {
+      const { data } = await instance.get(`/home/shop/${id}`);
+      console.log("✅ Shop detail fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Shop Detail Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Sitter detayı getir
+  getSitterDetail: async (id: string) => {
+    try {
+      const { data } = await instance.get(`/home/sitter/${id}`);
+      console.log("✅ Sitter detail fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Sitter Detail Error:",
         error.response?.data || error.message
       );
       throw error;
