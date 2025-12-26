@@ -1960,4 +1960,51 @@ export const homeApi = {
       throw error;
     }
   },
+
+  // Kliniğin doktorlarını getir
+  getClinicDoctors: async (clinicId: string) => {
+    try {
+      const { data } = await instance.get(`/home/clinic/${clinicId}/doctors`);
+      console.log("✅ Clinic doctors fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Clinic Doctors Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Doktor detayını getir
+  getDoctorDetail: async (clinicId: string, doctorId: string) => {
+    try {
+      const { data } = await instance.get(
+        `/home/clinic/${clinicId}/doctor/${doctorId}`
+      );
+      console.log("✅ Doctor detail fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Doctor Detail Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Kliniğin hizmetlerini getir
+  getClinicServices: async (clinicId: string) => {
+    try {
+      const { data } = await instance.get(`/home/clinic/${clinicId}/services`);
+      console.log("✅ Clinic services fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Clinic Services Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
 };

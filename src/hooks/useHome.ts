@@ -197,3 +197,126 @@ export const useSitterDetail = (id: string) => {
     staleTime: 1000 * 60 * 5,
   });
 };
+
+// ==================== CLINIC DOCTORS ====================
+
+/**
+ * Doktor tipi
+ */
+export interface ClinicDoctor {
+  id: string;
+  clinic_profile_id: string;
+  first_name: string;
+  last_name: string;
+  gender: "male" | "female";
+  specialization: string;
+  experience_years: number;
+  bio: string | null;
+  photo_url: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ClinicDoctorsResponse {
+  message: string;
+  data: ClinicDoctor[];
+  total: number;
+}
+
+/**
+ * Kliniğin doktorlarını getir
+ */
+export const useClinicDoctors = (clinicId: string) => {
+  return useQuery<ClinicDoctorsResponse>({
+    queryKey: ["clinic-doctors", clinicId],
+    queryFn: async () => {
+      const response = await homeApi.getClinicDoctors(clinicId);
+      return response.data;
+    },
+    enabled: !!clinicId,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export interface DoctorDetailResponse {
+  message: string;
+  data: DoctorDetail;
+}
+
+export interface DoctorDetail {
+  id: string;
+  clinic_profile_id: string;
+  first_name: string;
+  last_name: string;
+  gender: "male" | "female";
+  specialization: string;
+  experience_years: number;
+  bio: string | null;
+  photo_url: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Doktor detayını getir (Public - herkes görebilir)
+ */
+export const useDoctorDetail = (
+  clinicId: string,
+  doctorId: string,
+  options?: { enabled?: boolean }
+) => {
+  return useQuery<DoctorDetailResponse>({
+    queryKey: ["doctor-detail-public", clinicId, doctorId],
+    queryFn: async () => {
+      const response = await homeApi.getDoctorDetail(clinicId, doctorId);
+      return response.data;
+    },
+    enabled:
+      options?.enabled !== undefined
+        ? options.enabled
+        : !!clinicId && !!doctorId,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+// ==================== CLINIC SERVICES ====================
+
+/**
+ * Klinik hizmeti tipi
+ */
+export interface ClinicService {
+  id: string;
+  clinic_profile_id: string;
+  service_category_id: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  clinic_service_categories: {
+    id: string;
+    name: string;
+    name_tr: string;
+    icon_url: string | null;
+    description: string | null;
+  };
+}
+
+export interface ClinicServicesResponse {
+  message: string;
+  data: ClinicService[];
+  total: number;
+}
+
+/**
+ * Kliniğin hizmetlerini getir
+ */
+export const useClinicServices = (clinicId: string) => {
+  return useQuery<ClinicServicesResponse>({
+    queryKey: ["clinic-services", clinicId],
+    queryFn: async () => {
+      const response = await homeApi.getClinicServices(clinicId);
+      return response.data;
+    },
+    enabled: !!clinicId,
+    staleTime: 1000 * 60 * 5,
+  });
+};

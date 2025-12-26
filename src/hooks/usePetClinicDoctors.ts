@@ -16,9 +16,12 @@ export function useMyDoctors(gender?: "male" | "female") {
 }
 
 /**
- * Doktor detayını getir
+ * Doktor detayını getir (Private - sadece klinik sahibi)
  */
-export function useDoctorDetail(id: string) {
+export function useDoctorDetail(
+  id: string,
+  options?: { enabled?: boolean }
+) {
   return useQuery({
     queryKey: ["petClinicDoctors", "detail", id],
     queryFn: async () => {
@@ -26,7 +29,7 @@ export function useDoctorDetail(id: string) {
       // Backend response: { data: { data: {...}, message: "..." } }
       return response.data?.data;
     },
-    enabled: !!id,
+    enabled: options?.enabled !== undefined ? options.enabled : !!id,
   });
 }
 

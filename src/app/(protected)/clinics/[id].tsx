@@ -7,6 +7,8 @@ import {
 } from "@/components/profile/ProfileDetailView";
 import { PetifySpinner } from "@/components/PetifySpinner";
 import { useClinicDetail } from "@/hooks/useHome";
+import { ClinicDoctorsList } from "@/components/clinic/ClinicDoctorsList";
+import { ClinicServicesList } from "@/components/clinic/ClinicServicesList";
 
 /**
  * Klinik Detay Sayfası
@@ -64,10 +66,13 @@ export default function ClinicDetailScreen() {
       editable={false}
       logoImagePath="/home/images/clinic-logo/"
       extraSections={
-        <View className="w-full px-6 mb-6">
-          {/* TODO: Klinik için özel bölümler eklenecek */}
-          {/* Örnek: Doktorlar listesi, Servisler, vs. */}
-        </View>
+        <>
+          {/* Veteriner Hekimler */}
+          <ClinicDoctorsList clinicId={clinic.id} />
+
+          {/* Hizmetler */}
+          <ClinicServicesList clinicId={clinic.id} />
+        </>
       }
     />
   );
