@@ -7,6 +7,7 @@ import {
 } from "@/components/profile/ProfileDetailView";
 import { PetifySpinner } from "@/components/PetifySpinner";
 import { useHotelDetail } from "@/hooks/useHome";
+import { HotelServicesList } from "@/components/hotel/HotelServicesList";
 
 /**
  * Pet Otel Detay Sayfası
@@ -63,10 +64,9 @@ export default function HotelDetailScreen() {
       editable={false}
       logoImagePath="/home/images/hotel-logo/"
       extraSections={
-        <View className="w-full px-6 mb-6">
-          {/* TODO: Otel için özel bölümler eklenecek */}
-          {/* Örnek: Oda tipleri, Fiyatlar, Hizmetler */}
-        </View>
+        <>
+          <HotelServicesList hotelId={hotel.id} />
+        </>
       }
     />
   );

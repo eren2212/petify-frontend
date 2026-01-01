@@ -70,7 +70,7 @@ export default function ProtectedLayout() {
       />
 
       <Stack.Screen
-        name="sitter"
+        name="sitters"
         options={{
           headerShown: false,
           presentation: "modal",

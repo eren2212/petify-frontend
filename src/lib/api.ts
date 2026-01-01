@@ -1916,6 +1916,17 @@ export const homeApi = {
     }
   },
 
+  // Ana sayfa için otel listesi
+  getHotelsForHome: async () => {
+    try {
+      const { data } = await instance.get("/home/hotels");
+      console.log("✅ Hotels fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log("Get Hotels Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
   // Otel detayı getir
   getHotelDetail: async (id: string) => {
     try {
@@ -1925,6 +1936,20 @@ export const homeApi = {
     } catch (error: any) {
       console.log(
         "Get Hotel Detail Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  // Otel hizmetlerini getir
+  getHotelServices: async (id: string) => {
+    try {
+      const { data } = await instance.get(`/home/hotel/${id}/services`);
+      console.log("✅ Hotel services fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Hotel Services Error:",
         error.response?.data || error.message
       );
       throw error;

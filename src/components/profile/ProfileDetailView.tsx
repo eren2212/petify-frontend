@@ -371,7 +371,11 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                 </Marker>
               </MapView>
               <TouchableOpacity
-                className="bg-primary mt-4 p-4 rounded-2xl items-center justify-center"
+                className="border mt-4 p-4 rounded-2xl items-center justify-center"
+                style={{
+                  backgroundColor: `${config.color}10`,
+                  borderColor: config.color,
+                }}
                 onPress={() =>
                   openMaps(
                     profileData.latitude,
@@ -381,8 +385,13 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                 }
               >
                 <View className="flex-row items-center gap-2">
-                  <Ionicons name="navigate" size={20} color="white" />
-                  <Text className="text-white font-bold">Yol Tarifi Al</Text>
+                  <Ionicons name="navigate" size={20} color={config.color} />
+                  <Text
+                    className="text-sm font-bold"
+                    style={{ color: config.color }}
+                  >
+                    Yol Tarifi Al
+                  </Text>
                 </View>
               </TouchableOpacity>
             </View>

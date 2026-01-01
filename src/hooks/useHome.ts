@@ -23,6 +23,26 @@ export interface ClinicsResponse {
   total_count: number;
 }
 
+// Otel listesi için
+export interface Hotel {
+  id: string;
+  hotel_name: string;
+  description: string;
+  address: string;
+  logo_url: string | null;
+  latitude: number;
+  longitude: number;
+  phone_number: string;
+  working_hours: string;
+  created_at: string;
+}
+
+export interface HotelsResponse {
+  message: string;
+  data: Hotel[];
+  total_count: number;
+}
+
 // Klinik detayı için
 export interface ClinicDetail {
   id: string;
@@ -132,6 +152,20 @@ export const useClinicsForHome = () => {
     queryKey: ["clinics-home"],
     queryFn: async () => {
       const response = await homeApi.getClinicsForHome();
+      return response.data;
+    },
+    staleTime: 1000 * 60 * 5, // 5 dakika
+  });
+};
+
+/**
+ * Ana sayfa için otel listesi
+ */
+export const useHotelsForHome = () => {
+  return useQuery<HotelsResponse>({
+    queryKey: ["hotels-home"],
+    queryFn: async () => {
+      const response = await homeApi.getHotelsForHome();
       return response.data;
     },
     staleTime: 1000 * 60 * 5, // 5 dakika
@@ -317,6 +351,47 @@ export const useClinicServices = (clinicId: string) => {
       return response.data;
     },
     enabled: !!clinicId,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+// ==================== HOTEL SERVICES ====================
+/**
+ * Otel hizmeti tipi
+ */
+export interface HotelService {
+  id: string;
+  hotel_profile_id: string;
+  service_category_id: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  pet_hotel_service_categories: {
+    id: string;
+    name: string;
+    name_tr: string;
+    icon_url: string | null;
+    description: string | null;
+  };
+}
+
+export interface HotelServicesResponse {
+  message: string;
+  data: HotelService[];
+  total: number;
+}
+
+/**
+ * Otel hizmetlerini getir
+ */
+export const useHotelServices = (hotelId: string) => {
+  return useQuery<HotelServicesResponse>({
+    queryKey: ["hotel-services", hotelId],
+    queryFn: async () => {
+      const response = await homeApi.getHotelServices(hotelId);
+      return response.data;
+    },
+    enabled: !!hotelId,
     staleTime: 1000 * 60 * 5,
   });
 };

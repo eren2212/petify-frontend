@@ -1,19 +1,19 @@
 import React from "react";
 import { View, Text, ActivityIndicator, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useClinicServices } from "@/hooks/useHome";
+import { useHotelServices } from "@/hooks/useHome";
 
-interface ClinicServicesListProps {
-  clinicId: string;
+interface HotelServicesListProps {
+  hotelId: string;
 }
 
 /**
- * Klinik detay sayfasında hizmetleri listeleyen component
+ * Hotel detay sayfasında hizmetleri listeleyen component
  */
-export const ClinicServicesList: React.FC<ClinicServicesListProps> = ({
-  clinicId,
+export const HotelServicesList: React.FC<HotelServicesListProps> = ({
+  hotelId,
 }) => {
-  const { data, isLoading, isError } = useClinicServices(clinicId);
+  const { data, isLoading, isError } = useHotelServices(hotelId);
 
   // Loading state
   if (isLoading) {
@@ -38,12 +38,12 @@ export const ClinicServicesList: React.FC<ClinicServicesListProps> = ({
       <View className="bg-white rounded-2xl p-6 shadow-sm">
         {/* Header */}
         <View className="flex-row items-center mb-4">
-          <View className="w-10 h-10 rounded-full bg-green-100 items-center justify-center mr-3">
-            <Ionicons name="medical" size={20} color="#10B981" />
+          <View className="w-10 h-10 rounded-full bg-blue-100 items-center justify-center mr-3">
+            <Ionicons name="bed" size={20} color="blue" />
           </View>
           <Text className="text-lg font-bold text-gray-900">Hizmetlerimiz</Text>
-          <View className="ml-auto bg-green-100 px-3 py-1 rounded-full">
-            <Text className="text-xs font-semibold text-green-600">
+          <View className="ml-auto bg-blue-100 px-3 py-1 rounded-full">
+            <Text className="text-xs font-semibold text-blue-600">
               {services.length}
             </Text>
           </View>
@@ -57,7 +57,7 @@ export const ClinicServicesList: React.FC<ClinicServicesListProps> = ({
                 {/* Icon */}
                 <Image
                   source={{
-                    uri: `${process.env.EXPO_PUBLIC_API_URL}/petclinicservices/category-icon/${service.clinic_service_categories.icon_url}`,
+                    uri: `${process.env.EXPO_PUBLIC_API_URL}/petotelservices/category-icon/${service.pet_hotel_service_categories.icon_url}`,
                   }}
                   style={{
                     width: 60,
@@ -69,16 +69,19 @@ export const ClinicServicesList: React.FC<ClinicServicesListProps> = ({
 
                 {/* Hizmet Adı */}
                 <Text
-                  className="text-sm font-bold text-gray-900 mb-1"
+                  className="text-sm font-bold text-gray-900 mb-1 text-center"
                   numberOfLines={2}
                 >
-                  {service.clinic_service_categories.name_tr}
+                  {service.pet_hotel_service_categories.name_tr}
                 </Text>
 
                 {/* Açıklama (varsa) */}
-                {service.clinic_service_categories.description && (
-                  <Text className="text-xs text-gray-500" numberOfLines={2}>
-                    {service.clinic_service_categories.description}
+                {service.pet_hotel_service_categories.description && (
+                  <Text
+                    className="text-xs text-gray-500 text-center"
+                    numberOfLines={2}
+                  >
+                    {service.pet_hotel_service_categories.description}
                   </Text>
                 )}
               </View>

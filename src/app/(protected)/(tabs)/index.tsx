@@ -11,7 +11,7 @@ import { HomeHeader } from "@/components/home/HomeHeader";
 import { HomeBannerSlider } from "@/components/home/HomeBannerSlider";
 import { HomeLostPetsCard } from "@/components/home/HomeLostPetsCard";
 import { HomeClinicCard } from "@/components/home/HomeClinicCard";
-
+import { HomeHotelCard } from "@/components/home/HomeHotelCard";
 export default function Home() {
   const { signOut } = useAuthStore();
 
@@ -93,6 +93,9 @@ export default function Home() {
 
           {/* Klinikler */}
           <HomeClinicCard />
+
+          {/* Oteller */}
+          <HomeHotelCard />
 
           {/* Ana içerik buraya gelecek */}
           <View className="px-6 py-4">
