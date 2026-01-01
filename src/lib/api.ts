@@ -1971,6 +1971,18 @@ export const homeApi = {
     }
   },
 
+  // Ana sayfa için bakıcı listesi
+  getSittersForHome: async () => {
+    try {
+      const { data } = await instance.get("/home/sitters");
+      console.log("✅ Sitters fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log("Get Sitters Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+
   // Sitter detayı getir
   getSitterDetail: async (id: string) => {
     try {
@@ -2027,6 +2039,21 @@ export const homeApi = {
     } catch (error: any) {
       console.log(
         "Get Clinic Services Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Sitter'ın hizmetlerini getir
+  getSitterServices: async (sitterId: string) => {
+    try {
+      const { data } = await instance.get(`/home/sitter/${sitterId}/services`);
+      console.log("✅ Sitter services fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Sitter Services Error:",
         error.response?.data || error.message
       );
       throw error;

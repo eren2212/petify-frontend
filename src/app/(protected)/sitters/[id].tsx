@@ -7,6 +7,7 @@ import {
 } from "@/components/profile/ProfileDetailView";
 import { PetifySpinner } from "@/components/PetifySpinner";
 import { useSitterDetail } from "@/hooks/useHome";
+import { SitterServicesList } from "@/components/sitter/SitterServicesList";
 
 /**
  * Pet Sitter Detay Sayfası
@@ -44,7 +45,7 @@ export default function SitterDetailScreen() {
     id: sitter.id,
     name: sitter.display_name,
     description: sitter.bio || undefined,
-    logo_url: sitter.profile_image_url,
+    logo_url: sitter.logo_url,
     address: "", // Sitter'da address yok, boş bırakıyoruz
     latitude: 0, // Sitter'da konum yok
     longitude: 0,
@@ -60,20 +61,9 @@ export default function SitterDetailScreen() {
       editable={false}
       logoImagePath="/home/images/sitter-profile/"
       extraSections={
-        <View className="w-full px-6 mb-6">
-          {/* TODO: Sitter için özel bölümler eklenecek */}
-          {/* Örnek: Deneyim, Sertifikalar, Hizmetler, Saatlik ücret */}
-          {sitter.experience_years && (
-            <View className="bg-white rounded-2xl p-6 shadow-sm mb-4">
-              <Text className="text-lg font-bold text-gray-900 mb-2">
-                Deneyim
-              </Text>
-              <Text className="text-base text-gray-600">
-                {sitter.experience_years} yıllık profesyonel deneyim
-              </Text>
-            </View>
-          )}
-        </View>
+        <>
+          <SitterServicesList sitterId={sitter.id} />
+        </>
       }
     />
   );

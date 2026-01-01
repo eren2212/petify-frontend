@@ -128,7 +128,7 @@ export interface SitterDetail {
   display_name: string;
   bio: string | null;
   experience_years: number | null;
-  profile_image_url: string | null;
+  logo_url: string | null;
   cover_image_url: string | null;
   phone_number: string;
   instagram_url: string | null;
@@ -140,6 +140,21 @@ export interface SitterDetail {
 export interface SitterDetailResponse {
   message: string;
   data: SitterDetail;
+}
+
+export interface Sitter {
+  id: string;
+  display_name: string;
+  bio: string | null;
+  logo_url: string | null;
+  phone_number: string;
+  experience_years: number | null;
+}
+
+export interface SittersResponse {
+  message: string;
+  data: Sitter[];
+  total_count: number;
 }
 
 // ==================== HOOKS ====================
@@ -172,6 +187,19 @@ export const useHotelsForHome = () => {
   });
 };
 
+/**
+ * Ana sayfa için bakıcı listesi
+ */
+export const useSittersForHome = () => {
+  return useQuery<SittersResponse>({
+    queryKey: ["sitters-home"],
+    queryFn: async () => {
+      const response = await homeApi.getSittersForHome();
+      return response.data;
+    },
+    staleTime: 1000 * 60 * 5, // 5 dakika
+  });
+};
 /**
  * Klinik detayı getir
  */
@@ -392,6 +420,49 @@ export const useHotelServices = (hotelId: string) => {
       return response.data;
     },
     enabled: !!hotelId,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+// ==================== SITTER SERVICES ====================
+/**
+ * Sitter hizmeti tipi
+ */
+export interface SitterService {
+  id: string;
+  pet_sitter_profile_id: string;
+  service_category_id: string;
+  price: number | null;
+  price_type: "daily" | "hourly" | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  pet_sitter_service_categories: {
+    id: string;
+    name: string;
+    name_tr: string;
+    icon_url: string | null;
+    description: string | null;
+  };
+}
+
+export interface SitterServicesResponse {
+  message: string;
+  data: SitterService[];
+  total: number;
+}
+
+/**
+ * Sitter hizmetlerini getir
+ */
+export const useSitterServices = (sitterId: string) => {
+  return useQuery<SitterServicesResponse>({
+    queryKey: ["sitter-services", sitterId],
+    queryFn: async () => {
+      const response = await homeApi.getSitterServices(sitterId);
+      return response.data;
+    },
+    enabled: !!sitterId,
     staleTime: 1000 * 60 * 5,
   });
 };

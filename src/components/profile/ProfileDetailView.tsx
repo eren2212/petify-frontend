@@ -220,19 +220,21 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
               )}
 
             {/* Adres */}
-            <View className="mb-4">
-              <View className="flex-row items-start mb-2">
-                <Ionicons name="location" size={20} color={config.color} />
-                <View className="flex-1 ml-2">
-                  <Text className="text-sm font-semibold text-gray-700 mb-1">
-                    Adres
-                  </Text>
-                  <Text className="text-sm text-gray-600">
-                    {profileData.address}
-                  </Text>
+            {profileData.address && (
+              <View className="mb-4">
+                <View className="flex-row items-start mb-2">
+                  <Ionicons name="location" size={20} color={config.color} />
+                  <View className="flex-1 ml-2">
+                    <Text className="text-sm font-semibold text-gray-700 mb-1">
+                      Adres
+                    </Text>
+                    <Text className="text-sm text-gray-600">
+                      {profileData.address}
+                    </Text>
+                  </View>
                 </View>
               </View>
-            </View>
+            )}
 
             {/* Telefon */}
             <TouchableOpacity
