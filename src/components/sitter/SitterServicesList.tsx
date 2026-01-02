@@ -6,7 +6,7 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Fontisto, Ionicons } from "@expo/vector-icons";
 import { useSitterServices } from "@/hooks/useHome";
 
 interface SitterServicesListProps {
@@ -24,9 +24,9 @@ export const SitterServicesList: React.FC<SitterServicesListProps> = ({
   // Loading state
   if (isLoading) {
     return (
-      <View className="w-full px-6 mb-6">
-        <View className="bg-white rounded-2xl p-6 shadow-sm">
-          <ActivityIndicator size="small" color="gray" />
+      <View className="w-full px-5 mb-6">
+        <View className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100">
+          <ActivityIndicator size="small" color="#F59E0B" />
         </View>
       </View>
     );
@@ -56,29 +56,36 @@ export const SitterServicesList: React.FC<SitterServicesListProps> = ({
   };
 
   return (
-    <View className="w-full px-6 mb-6">
-      <View className="bg-white rounded-2xl p-6 shadow-sm">
+    <View className="w-full px-5 mb-8">
+      <View className="bg-white rounded-[32px] p-6 shadow-lg shadow-gray-200/50">
         {/* Header */}
-        <View className="flex-row items-center mb-4">
-          <View className="w-10 h-10 rounded-full bg-amber-100 items-center justify-center mr-3">
-            <Ionicons name="paw" size={20} color="#F59E0B" />
+        <View className="flex-row items-center mb-6">
+          <View className="w-12 h-12 rounded-2xl bg-amber-50 items-center justify-center mr-4 border border-amber-100">
+            <Ionicons name="paw" size={24} color="#F59E0B" />
           </View>
-          <Text className="text-lg font-bold text-gray-900">Hizmetlerimiz</Text>
-          <View className="ml-auto bg-amber-100 px-3 py-1 rounded-full">
-            <Text className="text-xs font-semibold text-amber-600">
-              {services.length}
+          <View>
+            <Text className="text-xl font-bold text-gray-900 tracking-tight">
+              Hizmetlerimiz
+            </Text>
+            <Text className="text-xs text-gray-400 mt-1 font-medium">
+              Profesyonel Bakım Seçenekleri
+            </Text>
+          </View>
+          <View className="ml-auto bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100/50">
+            <Text className="text-xs font-bold text-gray-500">
+              {services.length} Hizmet
             </Text>
           </View>
         </View>
 
-        {/* Hizmetler Listesi - Alt Alta Dikdörtgen */}
+        {/* Hizmetler Listesi */}
         <View>
           {services.map((service, index) => (
             <View
               key={service.id}
-              className="bg-amber-50 rounded-xl p-4 border border-amber-100"
+              className="bg-gray-50 rounded-3xl p-4 border border-gray-100"
               style={{
-                marginBottom: index < services.length - 1 ? 12 : 0,
+                marginBottom: index < services.length - 1 ? 16 : 0,
               }}
             >
               <View className="flex-row items-center">
@@ -90,66 +97,72 @@ export const SitterServicesList: React.FC<SitterServicesListProps> = ({
                         uri: `${process.env.EXPO_PUBLIC_API_URL}/petsitterservices/category-icon/${service.pet_sitter_service_categories.icon_url}`,
                       }}
                       style={{
-                        width: 50,
-                        height: 50,
+                        width: 56,
+                        height: 56,
+                        borderRadius: 20,
                       }}
                       resizeMode="contain"
                     />
                   ) : (
-                    <View className="w-12 h-12 rounded-full bg-amber-200 items-center justify-center">
-                      <Ionicons name="heart" size={24} color="#F59E0B" />
+                    <View className="w-14 h-14 rounded-2xl bg-white items-center justify-center shadow-sm">
+                      <Ionicons name="heart" size={26} color="#F59E0B" />
                     </View>
                   )}
                 </View>
 
                 {/* Orta: Hizmet Bilgileri */}
                 <View className="flex-1">
-                  {/* Hizmet Adı */}
-                  <View className="flex-row items-center justify-between">
+                  {/* Hizmet Adı ve Badge */}
+                  <View className="flex-row items-start justify-between mb-1">
                     <Text
-                      className="text-base font-bold text-gray-900 mb-1"
+                      className="text-base font-bold text-gray-900 flex-1 mr-2"
                       numberOfLines={1}
                     >
                       {service.pet_sitter_service_categories.name_tr}
                     </Text>
+                  </View>
+
+                  {/* Tip ve Fiyat Satırı */}
+                  <View className="flex-row items-center mb-2">
                     {service.price_type && (
-                      <View className="bg-red-500 px-2 py-1 rounded-full ml-2">
-                        <Text className="text-xs font-semibold text-white">
+                      <View className="bg-indigo-50 px-2.5 py-1 rounded-lg mr-2 self-start">
+                        <Text className="text-[10px] uppercase font-bold text-indigo-500 tracking-wider">
                           {getPriceTypeLabel(service.price_type)}
                         </Text>
                       </View>
                     )}
+
+                    <Text className="text-lg font-black text-gray-900">
+                      {formatPrice(service.price)}
+                    </Text>
                   </View>
 
-                  {/* Açıklama (varsa) */}
+                  {/* Açıklama */}
                   {service.pet_sitter_service_categories.description && (
                     <Text
-                      className="text-xs text-gray-500 mb-2"
+                      className="text-xs text-gray-500 leading-4"
                       numberOfLines={2}
                     >
                       {service.pet_sitter_service_categories.description}
                     </Text>
                   )}
-
-                  {/* Fiyat */}
-                  <View className="flex-row items-center">
-                    <Ionicons name="cash-outline" size={14} color="#F59E0B" />
-                    <Text className="text-sm font-semibold text-amber-600 ml-1 ">
-                      {formatPrice(service.price)}
-                    </Text>
-                  </View>
                 </View>
 
                 {/* Sağ: Sepet İkonu */}
                 <TouchableOpacity
-                  className="w-10 h-10 rounded-full bg-amber-100 items-center justify-center ml-3"
-                  activeOpacity={0.7}
+                  className="w-14 h-14 rounded-full bg-amber-500 items-center justify-center ml-3 shadow-md shadow-amber-200"
+                  activeOpacity={0.8}
                   onPress={() => {
                     // TODO: Sepete ekleme işlemi
                     console.log("Sepete eklendi:", service.id);
                   }}
                 >
-                  <Ionicons name="cart-outline" size={20} color="#F59E0B" />
+                  <Fontisto
+                    name="shopping-basket-add"
+                    size={24}
+                    color="white"
+                    className="p-1"
+                  />
                 </TouchableOpacity>
               </View>
             </View>

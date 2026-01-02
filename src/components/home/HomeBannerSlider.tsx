@@ -69,38 +69,39 @@ export const HomeBannerSlider = () => {
     setActiveIndex(index);
   };
 
-  // Loading state
+  // Loading state - Modern Skeleton Look
   if (isLoading) {
     return (
       <View className="px-6 py-4">
         <View
-          className="bg-gray-200 rounded-3xl items-center justify-center"
+          className="bg-gray-100 rounded-[32px] items-center justify-center overflow-hidden w-full border border-gray-100"
           style={{ height: BANNER_HEIGHT }}
         >
-          <ActivityIndicator size="large" color="#9333EA" />
+          <View className="items-center">
+            <ActivityIndicator size="small" color="#9333EA" />
+            <Text className="text-gray-400 text-xs mt-2 font-medium">
+              Yükleniyor...
+            </Text>
+          </View>
         </View>
       </View>
     );
   }
 
-  // Error state veya banner yoksa
+  // Error state veya banner yoksa - Daha temiz empty state
   if (isError || !banners || banners.length === 0) {
+    // Development'ta loglamak faydalı olabilir ama kullanıcı boş bir alan görmemeli
     console.log("❌ Banner error or empty:", { isError, banners });
-
-    return (
-      <View className="px-6 py-4">
-        <Text>Banner bulunamadı</Text>
-      </View>
-    );
+    return null;
   }
 
   return (
-    <View className="py-4">
+    <View className="py-6">
       {/* Slider */}
       <ScrollView
         ref={scrollViewRef}
         horizontal
-        pagingEnabled
+        pagingEnabled={false} // pagingEnabled yerine snapToInterval kullanıyoruz
         showsHorizontalScrollIndicator={false}
         onScroll={handleScroll}
         scrollEventThrottle={16}
@@ -111,7 +112,7 @@ export const HomeBannerSlider = () => {
         {banners.map((banner, index) => (
           <TouchableOpacity
             key={banner.id}
-            activeOpacity={0.9}
+            activeOpacity={0.95}
             onPress={() => handleBannerPress(banner.target_url)}
             style={{
               width: BANNER_WIDTH,
@@ -119,7 +120,7 @@ export const HomeBannerSlider = () => {
               marginRight: index < banners.length - 1 ? 12 : 0,
             }}
           >
-            <View className="w-full h-full rounded-3xl overflow-hidden bg-gray-100 shadow-md">
+            <View className="w-full h-full rounded-[32px] overflow-hidden bg-white shadow-lg shadow-indigo-500/20 border border-gray-100 relative">
               {/* Banner Resmi */}
               <Image
                 source={{ uri: getBannerImageUrl(banner.image_url) }}
@@ -127,16 +128,22 @@ export const HomeBannerSlider = () => {
                 resizeMode="cover"
               />
 
-              {/* Overlay (opsiyonel - title/subtitle varsa) */}
+              {/* Gradient Overlay & Text Content */}
               {(banner.title || banner.subtitle) && (
-                <View className="absolute bottom-0 left-0 right-0 bg-black/40 p-4">
+                <View
+                  className="absolute bottom-0 left-0 right-0 pt-6 pb-6 px-6 bg-transparent"
+                  style={{
+                    // React Native'de basit gradient efekti için
+                    backgroundColor: "rgba(0,0,0,0.4)",
+                  }}
+                >
                   {banner.title && (
-                    <Text className="text-white text-lg font-bold mb-1">
+                    <Text className="text-white text-xl font-black mb-1 tracking-tight shadow-sm">
                       {banner.title}
                     </Text>
                   )}
                   {banner.subtitle && (
-                    <Text className="text-white/90 text-sm">
+                    <Text className="text-white/90 text-sm font-medium leading-5">
                       {banner.subtitle}
                     </Text>
                   )}
@@ -147,14 +154,16 @@ export const HomeBannerSlider = () => {
         ))}
       </ScrollView>
 
-      {/* Pagination Dots */}
+      {/* Modern Pagination Dots */}
       {banners.length > 1 && (
-        <View className="flex-row items-center justify-center mt-4 gap-2">
+        <View className="flex-row items-center justify-center mt-5 gap-1.5">
           {banners.map((_, index) => (
             <View
               key={index}
-              className={`h-2 rounded-full ${
-                index === activeIndex ? "bg-primary-500 w-6" : "bg-gray-300 w-2"
+              className={`rounded-full ${
+                index === activeIndex
+                  ? "bg-purple-600 h-2 w-8"
+                  : "bg-gray-200 h-2 w-2"
               }`}
             />
           ))}
