@@ -150,7 +150,7 @@ export const SitterServicesList: React.FC<SitterServicesListProps> = ({
 
                 {/* Sağ: Sepet İkonu */}
                 <TouchableOpacity
-                  className="w-14 h-14 rounded-full bg-amber-500 items-center justify-center ml-3 shadow-md shadow-amber-200"
+                  className="w-12 h-12 rounded-full bg-amber-500 items-center justify-center ml-3 shadow-md shadow-amber-200"
                   activeOpacity={0.8}
                   onPress={() => {
                     // TODO: Sepete ekleme işlemi
@@ -159,9 +159,8 @@ export const SitterServicesList: React.FC<SitterServicesListProps> = ({
                 >
                   <Fontisto
                     name="shopping-basket-add"
-                    size={24}
+                    size={18}
                     color="white"
-                    className="p-1"
                   />
                 </TouchableOpacity>
               </View>

@@ -67,11 +67,10 @@ export default function ClinicDetailScreen() {
       logoImagePath="/home/images/clinic-logo/"
       extraSections={
         <>
-          {/* Veteriner Hekimler */}
-          <ClinicDoctorsList clinicId={clinic.id} />
-
           {/* Hizmetler */}
           <ClinicServicesList clinicId={clinic.id} />
+          {/* Veteriner Hekimler */}
+          <ClinicDoctorsList clinicId={clinic.id} />
         </>
       }
     />

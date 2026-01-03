@@ -109,7 +109,7 @@ export const PetShopProductList: React.FC<PetShopProductListProps> = ({
               <TouchableOpacity
                 onPress={() => handleProductPress(product.id)}
                 activeOpacity={0.8}
-                className="bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-sm h-[350px] flex-col"
+                className="bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-sm h-[300px] flex-col"
               >
                 {/* Ürün Resmi */}
                 <View className="w-full aspect-square bg-gray-50 items-center justify-center relative">
@@ -165,7 +165,7 @@ export const PetShopProductList: React.FC<PetShopProductListProps> = ({
                     </View>
                   ) : product.low_stock_threshold &&
                     product.stock_quantity <= product.low_stock_threshold ? (
-                    <View className="absolute top-10 right-2 bg-orange-500 px-2 py-1 rounded-full shadow-md">
+                    <View className="absolute top-4 left-1  bg-orange-500/70 px-2 py-1 rounded-full shadow-md">
                       <Text className="text-[9px] font-black text-white">
                         SON {product.stock_quantity}
                       </Text>
@@ -176,49 +176,21 @@ export const PetShopProductList: React.FC<PetShopProductListProps> = ({
                 {/* Ürün Bilgileri */}
                 <View className="p-3 flex-1 flex-col">
                   {/* Kategori ve Pet Type */}
-                  <View className="flex-row items-center mb-2 flex-wrap gap-1">
-                    <View className="bg-teal-50 px-2 py-0.5 rounded-md">
+                  <View className="flex-row items-center  justify-start mb-2 flex-wrap gap-1">
+                    <View className="bg-teal-50  py-0.5 rounded-md">
                       <Text className="text-[9px] font-bold text-teal-600 uppercase tracking-wide">
                         {product.product_categories.name_tr}
-                      </Text>
-                    </View>
-                    <View className="bg-purple-50 px-2 py-0.5 rounded-md">
-                      <Text className="text-[9px] font-bold text-purple-600 uppercase tracking-wide">
-                        {product.pet_types.name_tr}
                       </Text>
                     </View>
                   </View>
 
                   {/* Ürün Adı */}
                   <Text
-                    className="text-sm font-bold text-gray-900 mb-2 leading-4"
+                    className="text-sm font-bold text-gray-900 mb-2 leading-4 text-start"
                     numberOfLines={2}
                   >
                     {product.name}
                   </Text>
-
-                  {/* Ek Bilgiler - Spacer görevi de görebilir */}
-                  <View className="flex-row items-center mb-2 flex-wrap gap-1">
-                    {product.weight_kg && (
-                      <View className="flex-row items-center bg-gray-50 px-1.5 py-0.5 rounded-md">
-                        <Ionicons
-                          name="scale-outline"
-                          size={10}
-                          color="#6B7280"
-                        />
-                        <Text className="text-[9px] text-gray-600 ml-0.5 font-semibold">
-                          {product.weight_kg}kg
-                        </Text>
-                      </View>
-                    )}
-                  </View>
-                  <View className="flex-row items-center mb-2 flex-wrap gap-1">
-                    <View className="bg-gray-50 px-2 py-0.5 rounded-md">
-                      <Text className="text-[9px] font-bold text-gray-600 uppercase tracking-wide">
-                        {getAgeGroupLabel(product.age_group)}
-                      </Text>
-                    </View>
-                  </View>
 
                   {/* Fiyat ve Aksiyonlar - En alta sabitlendi */}
                   <View className="flex-row items-center justify-between pt-2 border-t border-gray-100 mt-auto ">

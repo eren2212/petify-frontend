@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -8,13 +8,14 @@ import {
   TouchableOpacity,
   StatusBar,
   Dimensions,
+  Animated,
 } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { useLocalSearchParams, router } from "expo-router";
-import { FontAwesome6, Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../../../styles/theme/color";
 import { useProductDetail, useUpdateProductStatus } from "../../../hooks";
 import { getActiveRole, useCurrentUser } from "../../../hooks/useAuth";
@@ -22,7 +23,8 @@ import EditProductModal from "../../../components/product/EditProductModal";
 import Toast from "react-native-toast-message";
 import { PetifySpinner } from "@/components/PetifySpinner";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
+const IMAGE_HEIGHT = height * 0.45;
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -31,18 +33,27 @@ export default function ProductDetailScreen() {
   const { data: user } = useCurrentUser();
   const { mutate: updateStatus, isPending: isUpdatingStatus } =
     useUpdateProductStatus();
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   // States
   const [showEditModal, setShowEditModal] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
-  // Aktif rolü al (approved olan)
+  // Aktif rolü al
   const activeRole = getActiveRole(user);
   const roleType = activeRole?.role_type;
+
+  // Header opacity animation
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [0, IMAGE_HEIGHT - 100],
+    outputRange: [0, 1],
+    extrapolate: "clamp",
+  });
 
   // Handle status toggle
   const handleToggleStatus = () => {
     if (!product) return;
-
     const newStatus = !product.is_active;
     updateStatus(
       { id: product.id, status: newStatus },
@@ -51,26 +62,23 @@ export default function ProductDetailScreen() {
           Toast.show({
             type: "success",
             text1: `Ürün ${newStatus ? "aktif" : "pasif"} duruma getirildi!`,
-            bottomOffset: 40,
           });
           refetch();
         },
         onError: (error: any) => {
           Toast.show({
             type: "error",
-            text1:
-              error?.response?.data?.message ||
-              "Durum değiştirilirken bir hata oluştu",
-            bottomOffset: 40,
+            text1: error?.response?.data?.message || "Bir hata oluştu",
           });
         },
       }
     );
   };
+
   // Loading State
   if (isLoading) {
     return (
-      <View className="flex-1 bg-gray-50 items-center justify-center">
+      <View className="flex-1 bg-white items-center justify-center">
         <PetifySpinner size={180} />
       </View>
     );
@@ -79,22 +87,17 @@ export default function ProductDetailScreen() {
   // Error State
   if (!product) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-50 items-center justify-center px-6">
-        <Ionicons
-          name="alert-circle"
-          size={64}
-          color="#EF4444"
-          className="opacity-80"
-        />
-        <Text className="text-gray-800 font-bold text-xl mt-4 text-center">
+      <SafeAreaView className="flex-1 bg-white items-center justify-center px-6">
+        <Ionicons name="alert-circle" size={64} color="#EF4444" />
+        <Text className="text-gray-900 font-bold text-xl mt-4">
           Ürün Bulunamadı
         </Text>
-        <Text className="text-gray-500 text-center mt-2 mb-8">
-          Aradığınız ürün kaldırılmış veya mevcut değil.
+        <Text className="text-gray-500 text-center mt-2 mb-6">
+          Aradığınız ürün mevcut değil.
         </Text>
         <TouchableOpacity
           onPress={() => router.back()}
-          className="bg-gray-900 px-8 py-4 rounded-2xl shadow-lg shadow-gray-300"
+          className="bg-black px-8 py-4 rounded-full"
         >
           <Text className="text-white font-semibold">Geri Dön</Text>
         </TouchableOpacity>
@@ -103,20 +106,6 @@ export default function ProductDetailScreen() {
   }
 
   // Helpers
-  const getStockStatus = (stock: number) => {
-    if (stock === 0)
-      return { text: "Tükendi", color: "bg-red-100 text-red-600 icon-red-600" };
-    if (stock <= 10)
-      return {
-        text: "Son Ürünler",
-        color: "bg-orange-100 text-orange-600 icon-orange-600",
-      };
-    return {
-      text: "Stokta Var",
-      color: "bg-green-100 text-green-600 icon-green-600",
-    };
-  };
-
   const getAgeGroupLabel = (ageGroup: string) => {
     const labels: { [key: string]: string } = {
       puppy: "Yavru",
@@ -126,236 +115,317 @@ export default function ProductDetailScreen() {
     return labels[ageGroup] || ageGroup;
   };
 
-  const stockStatus = getStockStatus(product.stock_quantity);
+  const hasDiscount = product.price > 50;
+  const originalPrice = hasDiscount ? product.price * 1.25 : null;
+  const discountPercent = hasDiscount ? 20 : 0;
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-white">
       <StatusBar
         barStyle="light-content"
         translucent
         backgroundColor="transparent"
       />
 
-      <ScrollView
+      {/* FLOATING HEADER BUTTONS - Always visible */}
+
+      <Animated.ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
-        bounces={false}
+        bounces={true}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+        scrollEventThrottle={16}
       >
-        {/* 1. HERO IMAGE SECTION (Tam ekran genişliği) */}
-        <View className="w-96 mx-auto h-[45vh] mb-10 bg-gray-200 relative">
+        {/* HERO IMAGE */}
+        <View style={{ height: IMAGE_HEIGHT }} className="bg-gray-100">
           {product.image_url ? (
             <Image
               source={{
                 uri: `${process.env.EXPO_PUBLIC_API_URL}/products/image/${product.image_url}`,
               }}
-              className="w-full h-full"
+              style={{ width: "100%", height: "100%" }}
               resizeMode="cover"
             />
           ) : (
-            <View className="w-full h-full items-center justify-center bg-gray-100">
-              <Ionicons name="image-outline" size={80} color="#E5E7EB" />
+            <View className="flex-1 items-center justify-center">
+              <Ionicons name="image-outline" size={80} color="#D1D5DB" />
             </View>
           )}
-          {/* Resmin altına hafif bir karartma gradyanı ekleyebilirsiniz (Opsiyonel) */}
+
+          {/* Discount Badge */}
+          {hasDiscount && (
+            <View className="absolute top-8 left-5 bg-red-500 px-3 py-1.5 rounded-full">
+              <Text className="text-white text-xs font-bold">
+                %{discountPercent} İNDİRİM
+              </Text>
+            </View>
+          )}
+          <View className="absolute top-10 right-5 bg-white px-3 py-1.5 rounded-full">
+            <Ionicons name="heart-outline" size={20} color="red" />
+          </View>
         </View>
 
-        {/* 2. CONTENT CONTAINER (Bottom Sheet Tarzı) */}
-        <View className="-mt-10 bg-gray-50 rounded-t-[32px] px-6 pt-8 pb-32 shadow-2xl shadow-black/10 min-h-[60vh]">
-          {/* Header Info */}
-          <View className="flex-row justify-between items-start mb-2">
-            <View className="flex-1 mr-4">
-              {product.category && (
-                <Text className="text-primary font-bold tracking-wider text-xs uppercase mb-2">
-                  {product.category.name_tr} • {product.pet_type?.name_tr}
+        {/* PRODUCT INFO CONTAINER */}
+        <View className="bg-white -mt-6 rounded-t-[28px] pt-6 pb-40">
+          <View className="px-5">
+            {/* Category & Rating Row */}
+            <View className="flex-row items-center justify-between mb-3">
+              <View className="flex-row items-center">
+                {product.category && (
+                  <Text className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    {product.category.name_tr}
+                  </Text>
+                )}
+                {product.pet_type && (
+                  <>
+                    <View className="w-1 h-1 bg-gray-300 rounded-full mx-2" />
+                    <Text className="text-xs font-semibold text-gray-500">
+                      {product.pet_type.name_tr}
+                    </Text>
+                  </>
+                )}
+              </View>
+
+              {/* Rating */}
+              <View className="flex-row items-center bg-gray-50 px-2.5 py-1 rounded-full">
+                <Ionicons name="star" size={14} color="#FBBF24" />
+                <Text className="text-xs font-bold text-gray-700 ml-1">
+                  4.8
+                </Text>
+                <Text className="text-xs text-gray-400 ml-1">(256)</Text>
+              </View>
+            </View>
+
+            {/* Product Name */}
+            <Text className="text-2xl font-black text-gray-900 mb-4 leading-tight">
+              {product.name}
+            </Text>
+
+            {/* Price Section */}
+            <View className="flex-row items-baseline mb-6">
+              <Text className="text-3xl font-black text-gray-900">
+                ₺
+                {product.price.toLocaleString("tr-TR", {
+                  minimumFractionDigits: 2,
+                })}
+              </Text>
+              {originalPrice && (
+                <Text className="text-lg text-gray-400 line-through ml-3">
+                  ₺
+                  {originalPrice.toLocaleString("tr-TR", {
+                    minimumFractionDigits: 2,
+                  })}
                 </Text>
               )}
-              <Text className="text-3xl font-bold text-gray-900 leading-tight">
-                {product.name}
-              </Text>
             </View>
-          </View>
 
-          {/* Rating / Reviews placeholder (Opsiyonel modern dokunuş) */}
-          <View className="flex-row items-center mb-6">
-            <Ionicons name="star" size={16} color="#F59E0B" />
-            <Text className="text-gray-700 font-medium ml-1">4.8</Text>
-            <Text className="text-gray-400 text-xs ml-2">
-              (124 Değerlendirme)
-            </Text>
-          </View>
+            {/* Delivery Info */}
+            <View className="flex-row items-center bg-emerald-50 px-4 py-3 rounded-2xl mb-6">
+              <Ionicons name="rocket-outline" size={20} color="#059669" />
+              <View className="ml-3">
+                <Text className="text-sm font-bold text-emerald-700">
+                  Hızlı Teslimat
+                </Text>
+                <Text className="text-xs text-emerald-600">Yarın kapında</Text>
+              </View>
+            </View>
 
-          {/* Stock & Status Badge Row */}
-          <View className="flex-row items-center gap-3 mb-8">
-            <View
-              className={`px-3 py-1.5 rounded-full flex-row items-center ${stockStatus.color.split(" ")[0]}`}
+            {/* Feature Pills - Horizontal Scroll */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              className="mb-6 -mx-5 px-5"
             >
-              <Ionicons
-                name="cube-outline"
-                size={14}
-                className="mr-1"
-                color={
-                  stockStatus.color.includes("red")
-                    ? "#DC2626"
-                    : stockStatus.color.includes("orange")
-                      ? "#EA580C"
-                      : "#16A34A"
-                }
-              />
-              <Text
-                className={`text-xs font-bold ${stockStatus.color.split(" ")[1]}`}
-              >
-                {stockStatus.text}
-              </Text>
-            </View>
+              <View className="flex-row gap-2">
+                {product.stock_quantity > 0 ? (
+                  <View className="bg-emerald-100 px-4 py-2 rounded-full">
+                    <Text className="text-xs font-bold text-emerald-700">
+                      {product.stock_quantity} Adet Stokta
+                    </Text>
+                  </View>
+                ) : (
+                  <View className="bg-red-100 px-4 py-2 rounded-full">
+                    <Text className="text-xs font-bold text-red-700">
+                      Tükendi
+                    </Text>
+                  </View>
+                )}
 
-            {!product.is_active && (
-              <View className="px-3 py-1.5 bg-gray-200 rounded-full">
-                <Text className="text-xs font-bold text-gray-500">
-                  Satışa Kapalı
-                </Text>
-              </View>
-            )}
-          </View>
+                {product.weight_kg && (
+                  <View className="bg-gray-100 px-4 py-2 rounded-full">
+                    <Text className="text-xs font-bold text-gray-700">
+                      {product.weight_kg} kg
+                    </Text>
+                  </View>
+                )}
 
-          <View className="h-[1px] bg-gray-200 w-full mb-6" />
+                {product.age_group && (
+                  <View className="bg-purple-100 px-4 py-2 rounded-full">
+                    <Text className="text-xs font-bold text-purple-700">
+                      {getAgeGroupLabel(product.age_group)}
+                    </Text>
+                  </View>
+                )}
 
-          {/* 3. DESCRIPTION */}
-          <Text className="text-lg font-bold text-gray-900 mb-3">Açıklama</Text>
-          <Text className="text-gray-500 leading-7 text-base mb-8">
-            {product.description ||
-              "Bu ürün için henüz bir açıklama girilmemiş."}
-          </Text>
-
-          {/* 4. MODERN GRID DETAILS */}
-          <Text className="text-lg font-bold text-gray-900 mb-4">
-            Ürün Özellikleri
-          </Text>
-
-          <View className="flex-row flex-wrap justify-between gap-y-4">
-            <View className=" w-full bg-white border border-gray-100 px-6 py-4 flex-row items-center justify-between shadow-sm rounded-2xl">
-              <View>
-                <Text className="text-gray-400 text-xs mb-0.5">Fiyat</Text>
-                <Text className="text-3xl font-bold text-gray-900 ">
-                  ₺{product.price.toFixed(2)}
-                </Text>
-              </View>
-            </View>
-            {/* Kutu 1: Ağırlık */}
-            <View className="w-[48%] bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-              <View className="bg-blue-50 w-10 h-10 rounded-full items-center justify-center mb-3">
-                <Ionicons name="scale-outline" size={20} color="#3B82F6" />
-              </View>
-              <Text className="text-gray-400 text-xs mb-1">Ağırlık</Text>
-              <Text className="text-gray-900 font-bold text-lg">
-                {product.weight_kg ? `${product.weight_kg} kg` : "-"}
-              </Text>
-            </View>
-
-            {/* Kutu 2: Yaş Grubu */}
-            <View className="w-[48%] bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-              <View className="bg-purple-50 w-10 h-10 rounded-full items-center justify-center mb-3">
-                <FontAwesome6 name="baby-carriage" size={22} color="purple" />
-              </View>
-              <Text className="text-gray-400 text-xs mb-1">Yaş Grubu</Text>
-              <Text className="text-gray-900 font-bold text-lg">
-                {product.age_group ? getAgeGroupLabel(product.age_group) : "-"}
-              </Text>
-            </View>
-
-            {/* Kutu 3: Stok Miktarı */}
-            <View className="w-[48%] bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-              <View className="bg-orange-50 w-10 h-10 rounded-full items-center justify-center mb-3">
-                <Ionicons name="layers-outline" size={20} color="#F97316" />
-              </View>
-              <Text className="text-gray-400 text-xs mb-1">Stok Adedi</Text>
-              <Text className="text-gray-900 font-bold text-lg">
-                {product.stock_quantity}
-              </Text>
-            </View>
-
-            {/* Kutu 4: Güncelleme */}
-            {roleType === "pet_shop" && (
-              <View className="w-[48%] bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-                <View className="bg-emerald-50 w-10 h-10 rounded-full items-center justify-center mb-3">
-                  <Ionicons name="calendar-outline" size={20} color="#10B981" />
-                </View>
-                <Text className="text-gray-400 text-xs mb-1">
-                  Son Güncelleme
-                </Text>
-                <Text className="text-gray-900 font-bold text-sm mt-1">
-                  {new Date(
-                    product.updated_at || product.created_at
-                  ).toLocaleDateString("tr-TR")}
-                </Text>
-              </View>
-            )}
-          </View>
-
-          {/* Pet Shop Only - Action Buttons */}
-          {roleType === "pet_shop" && (
-            <View className="px-6 pb-8 pt-4">
-              <View className="flex-row gap-3">
-                {/* Edit Button */}
-                <TouchableOpacity
-                  onPress={() => setShowEditModal(true)}
-                  className="flex-1 bg-primary/10 rounded-2xl border border-primary py-4 flex-row items-center justify-center"
-                  style={{
-                    shadowColor: COLORS.primary,
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.3,
-                    shadowRadius: 4,
-                    elevation: 5,
-                  }}
+                <View
+                  className={`px-4 py-2 rounded-full ${
+                    product.is_active ? "bg-blue-100" : "bg-gray-100"
+                  }`}
                 >
-                  <Ionicons name="pencil" size={20} color={COLORS.primary} />
-                  <Text className="text-primary font-bold text-base ml-2">
-                    Düzenle
+                  <Text
+                    className={`text-xs font-bold ${
+                      product.is_active ? "text-blue-700" : "text-gray-500"
+                    }`}
+                  >
+                    {product.is_active ? "Aktif" : "Pasif"}
+                  </Text>
+                </View>
+              </View>
+            </ScrollView>
+
+            {/* Divider */}
+            <View className="h-px bg-gray-100 mb-6" />
+
+            {/* Description */}
+            <View className="mb-6">
+              <Text className="text-base font-bold text-gray-900 mb-3">
+                Ürün Açıklaması
+              </Text>
+              <Text
+                className="text-sm text-gray-600 leading-6"
+                numberOfLines={showFullDescription ? undefined : 3}
+              >
+                {product.description ||
+                  "Bu ürün için açıklama bulunmamaktadır."}
+              </Text>
+              {product.description && product.description.length > 100 && (
+                <TouchableOpacity
+                  onPress={() => setShowFullDescription(!showFullDescription)}
+                  className="mt-2"
+                >
+                  <Text className="text-sm font-semibold text-orange-500">
+                    {showFullDescription ? "Daha Az Göster" : "Devamını Oku"}
                   </Text>
                 </TouchableOpacity>
-
-                {/* Toggle Status Button */}
-                <TouchableOpacity
-                  onPress={handleToggleStatus}
-                  disabled={isUpdatingStatus}
-                  className={`flex-1 rounded-2xl py-4 flex-row items-center justify-center ${
-                    product.is_active
-                      ? "bg-red-50 border border-red-500"
-                      : "bg-green-100 border border-green-500"
-                  }`}
-                  style={{
-                    shadowColor: product.is_active ? "#EF4444" : "#10B981",
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.3,
-                    shadowRadius: 4,
-                    elevation: 5,
-                  }}
-                >
-                  {isUpdatingStatus ? (
-                    <ActivityIndicator color="white" size="small" />
-                  ) : (
-                    <>
-                      <Ionicons
-                        name={
-                          product.is_active
-                            ? "close-circle"
-                            : "checkmark-circle"
-                        }
-                        size={20}
-                        color={product.is_active ? "#EF4444" : "#10B981"}
-                      />
-                      <Text
-                        className={`font-bold text-base ml-2 ${product.is_active ? "text-red-500" : "text-primary"}`}
-                      >
-                        {product.is_active ? "Pasif Yap" : "Aktif Yap"}
-                      </Text>
-                    </>
-                  )}
-                </TouchableOpacity>
-              </View>
+              )}
             </View>
-          )}
+
+            {/* Quantity Selector - Only for customers */}
+            {roleType !== "pet_shop" && product.stock_quantity > 0 && (
+              <View className="mb-6">
+                <Text className="text-base font-bold text-gray-900 mb-3">
+                  Adet
+                </Text>
+                <View className="flex-row items-center">
+                  <TouchableOpacity
+                    onPress={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="w-12 h-12 bg-gray-100 rounded-full items-center justify-center"
+                  >
+                    <Ionicons name="remove" size={22} color="#374151" />
+                  </TouchableOpacity>
+
+                  <Text className="mx-8 text-xl font-black text-gray-900">
+                    {quantity}
+                  </Text>
+
+                  <TouchableOpacity
+                    onPress={() => setQuantity(quantity + 1)}
+                    className="w-12 h-12 bg-gray-100 rounded-full items-center justify-center"
+                  >
+                    <Ionicons name="add" size={22} color="#374151" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          </View>
         </View>
-      </ScrollView>
+      </Animated.ScrollView>
+
+      {/* STICKY BOTTOM BAR */}
+      <View
+        style={{
+          paddingBottom: Math.max(insets.bottom, 16),
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.1,
+          shadowRadius: 20,
+          elevation: 20,
+        }}
+        className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-gray-100 px-5 pt-4"
+      >
+        {roleType === "pet_shop" ? (
+          <View className="flex-row gap-3">
+            <TouchableOpacity
+              onPress={() => setShowEditModal(true)}
+              className="flex-1 h-14 bg-gray-900 rounded-full items-center justify-center flex-row"
+            >
+              <Ionicons name="create-outline" size={18} color="white" />
+              <Text className="text-white font-bold text-base ml-2">
+                Düzenle
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleToggleStatus}
+              disabled={isUpdatingStatus}
+              className={`flex-1 h-14 rounded-full items-center justify-center flex-row ${
+                product.is_active ? "bg-orange-500" : "bg-emerald-500"
+              }`}
+            >
+              {isUpdatingStatus ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <>
+                  <Ionicons
+                    name={
+                      product.is_active
+                        ? "pause-circle-outline"
+                        : "play-circle-outline"
+                    }
+                    size={18}
+                    color="white"
+                  />
+                  <Text className="text-white font-bold text-base ml-2">
+                    {product.is_active ? "Pasif Yap" : "Aktif Yap"}
+                  </Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View className="flex-row items-center gap-4">
+            {/* Price in bottom bar */}
+            <View className="flex-1">
+              <Text className="text-xs text-gray-500">Toplam</Text>
+              <Text className="text-xl font-black text-gray-900">
+                ₺
+                {(product.price * quantity).toLocaleString("tr-TR", {
+                  minimumFractionDigits: 2,
+                })}
+              </Text>
+            </View>
+
+            {/* Add to Cart Button */}
+            <TouchableOpacity
+              className="flex-[2] h-14 bg-primary rounded-full items-center justify-center flex-row shadow-lg"
+              style={{
+                shadowColor: COLORS.primary,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+              }}
+            >
+              <Ionicons name="cart" size={20} color="white" />
+              <Text className="text-white font-bold text-base ml-2">
+                Sepete Ekle
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
 
       {/* Edit Product Modal */}
       {product && (
