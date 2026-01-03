@@ -13,6 +13,7 @@ import { HomeLostPetsCard } from "@/components/home/HomeLostPetsCard";
 import { HomeClinicCard } from "@/components/home/HomeClinicCard";
 import { HomeHotelCard } from "@/components/home/HomeHotelCard";
 import { HomeSitterCard } from "@/components/home/HomeSitterCard";
+import { HomePetShopCard } from "@/components/home/HomePetShopCard";
 export default function Home() {
   const { signOut } = useAuthStore();
 
@@ -89,8 +90,11 @@ export default function Home() {
           {/* Banner Slider */}
           <HomeBannerSlider />
 
-          {/* Kayıp Evcil Hayvanlar */}
-          <HomeLostPetsCard />
+          {/* Pet Shop'lar Card */}
+          <HomePetShopCard />
+
+          {/* Bakıcılar */}
+          <HomeSitterCard />
 
           {/* Klinikler */}
           <HomeClinicCard />
@@ -98,8 +102,8 @@ export default function Home() {
           {/* Oteller */}
           <HomeHotelCard />
 
-          {/* Bakıcılar */}
-          <HomeSitterCard />
+          {/* Kayıp Evcil Hayvanlar */}
+          <HomeLostPetsCard />
 
           {/* Ana içerik buraya gelecek */}
           <View className="px-6 py-4">

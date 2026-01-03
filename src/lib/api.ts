@@ -1955,6 +1955,20 @@ export const homeApi = {
       throw error;
     }
   },
+  // Ana sayfa için pet shop listesi
+  getPetShopsForHome: async () => {
+    try {
+      const { data } = await instance.get("/home/shops");
+      console.log("✅ Pet shops fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Pet Shops Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
 
   // Shop detayı getir
   getShopDetail: async (id: string) => {
@@ -1965,6 +1979,21 @@ export const homeApi = {
     } catch (error: any) {
       console.log(
         "Get Shop Detail Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Shop ürünlerini getir
+  getShopProducts: async (shopId: string) => {
+    try {
+      const { data } = await instance.get(`/home/shops/${shopId}/products`);
+      console.log("✅ Shop products fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Shop Products Error:",
         error.response?.data || error.message
       );
       throw error;

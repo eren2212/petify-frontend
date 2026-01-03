@@ -204,6 +204,11 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
           </View>
         )}
 
+        {/* Extra Sections */}
+        {extraSections && (
+          <View className="w-full mb-6 relative z-10">{extraSections}</View>
+        )}
+
         {/* İletişim & Detaylar Card */}
         <View className="w-full px-5 mb-6">
           <View className="bg-white rounded-[24px] overflow-hidden shadow-sm border border-gray-100">
@@ -387,11 +392,6 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
             </View>
           </View>
         </View>
-
-        {/* Extra Sections */}
-        {extraSections && (
-          <View className="w-full mb-6 relative z-10">{extraSections}</View>
-        )}
 
         {/* Harita */}
         {profileData.latitude !== 0 && profileData.longitude !== 0 && (

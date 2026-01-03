@@ -7,6 +7,7 @@ import {
 } from "@/components/profile/ProfileDetailView";
 import { PetifySpinner } from "@/components/PetifySpinner";
 import { useShopDetail } from "@/hooks/useHome";
+import { PetShopProductList } from "@/components/petshop/PetShopProductList";
 
 /**
  * Pet Shop Detay Sayfası
@@ -61,12 +62,7 @@ export default function ShopDetailScreen() {
       profileData={profileData}
       editable={false}
       logoImagePath="/home/images/shop-logo/"
-      extraSections={
-        <View className="w-full px-6 mb-6">
-          {/* TODO: Shop için özel bölümler eklenecek */}
-          {/* Örnek: Popüler ürünler, Kategoriler */}
-        </View>
-      }
+      extraSections={<PetShopProductList shopId={shop.id} />}
     />
   );
 }

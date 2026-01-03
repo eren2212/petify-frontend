@@ -122,6 +122,38 @@ export interface ShopDetailResponse {
   data: ShopDetail;
 }
 
+// Shop ürünleri için
+export interface ShopProduct {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number;
+  stock_quantity: number;
+  weight_kg: number | null;
+  age_group: string | null;
+  low_stock_threshold: number | null;
+  is_featured: boolean;
+  image_url: string | null;
+  created_at: string;
+  updated_at: string;
+  product_categories: {
+    id: string;
+    name: string;
+    name_tr: string;
+  };
+  pet_types: {
+    id: string;
+    name: string;
+    name_tr: string;
+  };
+}
+
+export interface ShopProductsResponse {
+  message: string;
+  data: ShopProduct[];
+  total: number;
+}
+
 // Sitter detayı için
 export interface SitterDetail {
   id: string;
@@ -154,6 +186,30 @@ export interface Sitter {
 export interface SittersResponse {
   message: string;
   data: Sitter[];
+  total_count: number;
+}
+
+export interface PetShop {
+  id: string;
+  shop_name: string;
+  description: string | null;
+  address: string;
+  latitude: number;
+  longitude: number;
+  phone_number: string;
+  email: string | null;
+  website_url: string | null;
+  instagram_url: string | null;
+  logo_url: string | null;
+  cover_image_url: string | null;
+  working_hours: Array<{ day: string; hours: string }> | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PetShopsResponse {
+  message: string;
+  data: PetShop[];
   total_count: number;
 }
 
@@ -200,6 +256,20 @@ export const useSittersForHome = () => {
     staleTime: 1000 * 60 * 5, // 5 dakika
   });
 };
+
+/**
+ * Ana sayfa için pet shop listesi
+ */
+export const usePetShopsForHome = () => {
+  return useQuery<PetShopsResponse>({
+    queryKey: ["pet-shops-home"],
+    queryFn: async () => {
+      const response = await homeApi.getPetShopsForHome();
+      return response.data;
+    },
+    staleTime: 1000 * 60 * 5, // 5 dakika
+  });
+};
 /**
  * Klinik detayı getir
  */
@@ -241,6 +311,21 @@ export const useShopDetail = (id: string) => {
       return response.data;
     },
     enabled: !!id,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+/**
+ * Shop ürünlerini getir
+ */
+export const useShopProducts = (shopId: string) => {
+  return useQuery<ShopProductsResponse>({
+    queryKey: ["shop-products", shopId],
+    queryFn: async () => {
+      const response = await homeApi.getShopProducts(shopId);
+      return response.data;
+    },
+    enabled: !!shopId,
     staleTime: 1000 * 60 * 5,
   });
 };
