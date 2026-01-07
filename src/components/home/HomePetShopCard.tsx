@@ -107,7 +107,7 @@ export const HomePetShopCard = () => {
               )}
             </View>
 
-            {/* Hotel Info */}
+            {/* Pet Shop Info */}
             <View className="flex-1 ml-4 justify-center py-1">
               <View className="flex-row items-start justify-between mb-1">
                 <Text

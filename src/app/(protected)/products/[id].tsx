@@ -269,20 +269,6 @@ export default function ProductDetailScreen() {
                     </Text>
                   </View>
                 )}
-
-                <View
-                  className={`px-4 py-2 rounded-full ${
-                    product.is_active ? "bg-blue-100" : "bg-gray-100"
-                  }`}
-                >
-                  <Text
-                    className={`text-xs font-bold ${
-                      product.is_active ? "text-blue-700" : "text-gray-500"
-                    }`}
-                  >
-                    {product.is_active ? "Aktif" : "Pasif"}
-                  </Text>
-                </View>
               </View>
             </ScrollView>
 

@@ -198,12 +198,6 @@ export const PetShopProductList: React.FC<PetShopProductListProps> = ({
                       <Text className="text-lg font-black text-teal-600">
                         {formatPrice(product.price)}
                       </Text>
-                      {/* Stok bilgisi ufak şekilde fiyatın altında kalsın veya yanında */}
-                      {product.stock_quantity > 0 && (
-                        <Text className="text-[9px] text-gray-400 font-medium">
-                          Stok: {product.stock_quantity}
-                        </Text>
-                      )}
                     </View>
 
                     {/* Sepete Ekle Butonu */}
@@ -214,12 +208,7 @@ export const PetShopProductList: React.FC<PetShopProductListProps> = ({
                         console.log("Sepete eklendi:", product.id);
                       }}
                     >
-                      <Fontisto
-                        name="shopping-basket-add"
-                        size={16}
-                        color="white"
-                        className="p-1"
-                      />
+                      <Ionicons name="cart" size={20} color="white" />
                     </TouchableOpacity>
                   </View>
                 </View>
