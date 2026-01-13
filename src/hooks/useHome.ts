@@ -1,7 +1,38 @@
 import { homeApi } from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 
 // ==================== TYPES ====================
+
+// Featured Products için
+export interface FeaturedProduct {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number;
+  stock_quantity: number;
+  is_featured: boolean;
+  image_url: string | null;
+}
+
+export interface FeaturedProductsResponse {
+  message: string;
+  data: FeaturedProduct[];
+}
+
+// Pagination için
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasMore: boolean;
+}
+
+export interface PaginatedProductsResponse {
+  message: string;
+  data: FeaturedProduct[];
+  pagination: PaginationMeta;
+}
 
 // Klinik listesi için
 export interface Clinic {
@@ -214,6 +245,41 @@ export interface PetShopsResponse {
 }
 
 // ==================== HOOKS ====================
+
+/**
+ * Ana sayfa için rastgele öne çıkan ürünler
+ */
+export const useFeaturedProducts = () => {
+  return useQuery<FeaturedProductsResponse>({
+    queryKey: ["featured-products"],
+    queryFn: async () => {
+      const response = await homeApi.getFeaturedProducts();
+      return response.data;
+    },
+    staleTime: 1000 * 60 * 5, // 5 dakika
+  });
+};
+
+/**
+ * Tüm ürünler - Infinite scroll için
+ */
+export const useAllProducts = () => {
+  return useInfiniteQuery<PaginatedProductsResponse>({
+    queryKey: ["all-products"],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await homeApi.getAllProducts(pageParam as number, 10);
+      return response.data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.pagination.hasMore) {
+        return lastPage.pagination.page + 1;
+      }
+      return undefined;
+    },
+    initialPageParam: 1,
+    staleTime: 1000 * 60 * 2, // 2 dakika
+  });
+};
 
 /**
  * Ana sayfa için klinik listesi

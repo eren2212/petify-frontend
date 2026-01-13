@@ -8,10 +8,21 @@ export default function ProductsLayout() {
       }}
     >
       <Stack.Screen
+        name="all"
+        options={{
+          headerShown: true,
+          title: "Tüm Ürünler",
+          headerBackButtonDisplayMode: "minimal",
+        }}
+      />
+      <Stack.Screen
         name="[id]"
-        options={{ headerShown: true, title: "Ürün Detayı" }}
+        options={{
+          headerShown: true,
+          title: "Ürün Detayı",
+          headerBackButtonDisplayMode: "minimal",
+        }}
       />
     </Stack>
   );
 }
-

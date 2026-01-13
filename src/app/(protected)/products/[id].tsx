@@ -223,14 +223,32 @@ export default function ProductDetailScreen() {
             </View>
 
             {/* Delivery Info */}
+
             <View className="flex-row items-center bg-emerald-50 px-4 py-3 rounded-2xl mb-6">
-              <Ionicons name="rocket-outline" size={20} color="#059669" />
-              <View className="ml-3">
-                <Text className="text-sm font-bold text-emerald-700">
-                  Hızlı Teslimat
-                </Text>
-                <Text className="text-xs text-emerald-600">Yarın kapında</Text>
-              </View>
+              <TouchableOpacity
+                onPress={() =>
+                  router.push(`/shops/${product.pet_shop_profile.id}`)
+                }
+              >
+                <View className="flex-row items-center gap-2">
+                  {product.pet_shop_profile.logo_url && (
+                    <Image
+                      source={{
+                        uri: `${process.env.EXPO_PUBLIC_API_URL}/petshop/profile/logo/${product.pet_shop_profile.logo_url}`,
+                      }}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 30,
+                      }}
+                      resizeMode="contain"
+                    />
+                  )}
+                  <Text className="text-sm font-bold text-emerald-700">
+                    {product.pet_shop_profile.shop_name}
+                  </Text>
+                </View>
+              </TouchableOpacity>
             </View>
 
             {/* Feature Pills - Horizontal Scroll */}

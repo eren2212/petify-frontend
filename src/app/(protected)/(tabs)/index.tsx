@@ -14,6 +14,7 @@ import { HomeClinicCard } from "@/components/home/HomeClinicCard";
 import { HomeHotelCard } from "@/components/home/HomeHotelCard";
 import { HomeSitterCard } from "@/components/home/HomeSitterCard";
 import { HomePetShopCard } from "@/components/home/HomePetShopCard";
+import { HomeFeaturedProducts } from "@/components/home/HomeFeaturedProducts";
 export default function Home() {
   const { signOut } = useAuthStore();
 
@@ -89,6 +90,9 @@ export default function Home() {
 
           {/* Banner Slider */}
           <HomeBannerSlider />
+
+          {/* En Çok Satanlar - Featured Products */}
+          <HomeFeaturedProducts />
 
           {/* Pet Shop'lar Card */}
           <HomePetShopCard />

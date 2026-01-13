@@ -1874,6 +1874,38 @@ export const bannerApi = {
 };
 
 export const homeApi = {
+  // Ana sayfa için öne çıkan ürünler
+  getFeaturedProducts: async () => {
+    try {
+      const { data } = await instance.get("/home/featured-products");
+      console.log("✅ Featured products fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Featured Products Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Tüm ürünler - Sayfalama desteği ile
+  getAllProducts: async (page: number = 1, limit: number = 10) => {
+    try {
+      const { data } = await instance.get("/home/featured-products", {
+        params: { page, limit },
+      });
+      console.log(`✅ All products fetched (page ${page}):`, data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get All Products Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
   // Ana sayfa için klinik listesi
   getClinicsForHome: async () => {
     try {
