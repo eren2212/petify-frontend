@@ -47,6 +47,35 @@ export default function ProtectedLayout() {
           presentation: "modal",
         }}
       />
+      <Stack.Screen
+        name="clinics"
+        options={{
+          headerShown: false,
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
+        name="hotels"
+        options={{
+          headerShown: false,
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
+        name="shops"
+        options={{
+          headerShown: false,
+          presentation: "modal",
+        }}
+      />
+
+      <Stack.Screen
+        name="sitters"
+        options={{
+          headerShown: false,
+          presentation: "modal",
+        }}
+      />
     </Stack>
   );
 }

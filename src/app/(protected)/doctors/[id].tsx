@@ -13,17 +13,46 @@ import { useLocalSearchParams, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../../../styles/theme/color";
 import { useDoctorDetail, useDeleteDoctor } from "../../../hooks";
+import { useCurrentUser, getActiveRole } from "../../../hooks/useAuth";
+import { useDoctorDetail as usePublicDoctorDetail } from "@/hooks/useHome";
 import EditDoctorModal from "../../../components/doctor/EditDoctorModal";
 import Toast from "react-native-toast-message";
 import { PetifySpinner } from "@/components/PetifySpinner";
 
 export default function DoctorDetail() {
-  const { id } = useLocalSearchParams();
+  const { id, clinicId } = useLocalSearchParams();
   const doctorId = Array.isArray(id) ? id[0] : id;
+  const clinicIdParam = Array.isArray(clinicId) ? clinicId[0] : clinicId;
 
-  const { data: doctor, isLoading, refetch } = useDoctorDetail(doctorId);
+  // Kullanıcı bilgisini ve rolünü al
+  const { data: user } = useCurrentUser();
+  const activeRole = getActiveRole(user);
+  const isClinicOwner = activeRole?.role_type === "pet_clinic";
+
+  // Klinik sahibi ise private endpoint, değilse public endpoint kullan
+  const {
+    data: privateDoctor,
+    isLoading: isPrivateLoading,
+    refetch: refetchPrivate,
+  } = useDoctorDetail(doctorId, {
+    enabled: isClinicOwner,
+  });
+
+  const {
+    data: publicDoctorResponse,
+    isLoading: isPublicLoading,
+    refetch: refetchPublic,
+  } = usePublicDoctorDetail(clinicIdParam || "", doctorId, {
+    enabled: !isClinicOwner && !!clinicIdParam,
+  });
+
   const { mutate: deleteDoctor, isPending: isDeleting } = useDeleteDoctor();
   const [editModalVisible, setEditModalVisible] = useState(false);
+
+  // Hangi veriyi kullanacağımıza karar ver
+  const doctor = isClinicOwner ? privateDoctor : publicDoctorResponse?.data;
+  const isLoading = isClinicOwner ? isPrivateLoading : isPublicLoading;
+  const refetch = isClinicOwner ? refetchPrivate : refetchPublic;
 
   // Doktor silme fonksiyonu
   const handleDeleteDoctor = () => {
@@ -290,57 +319,59 @@ export default function DoctorDetail() {
           </View>
         </View>
 
-        {/* Action Buttons */}
-        <View className="px-6 mt-6">
-          <View className="flex-row space-x-3 gap-4">
-            {/* Edit Button */}
-            <TouchableOpacity
-              onPress={() => setEditModalVisible(true)}
-              className="flex-1 bg-primary/10 border border-primary rounded-2xl py-4 flex-row items-center justify-center"
-              style={{
-                borderColor: COLORS.primary,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.05,
-                shadowRadius: 8,
-                elevation: 2,
-              }}
-            >
-              <Ionicons name="pencil" size={20} color={COLORS.primary} />
-              <Text
-                className="font-bold text-base ml-2"
-                style={{ color: COLORS.primary }}
+        {/* Action Buttons - Sadece klinik sahibi görebilir */}
+        {isClinicOwner && (
+          <View className="px-6 mt-6">
+            <View className="flex-row space-x-3 gap-4">
+              {/* Edit Button */}
+              <TouchableOpacity
+                onPress={() => setEditModalVisible(true)}
+                className="flex-1 bg-primary/10 border border-primary rounded-2xl py-4 flex-row items-center justify-center"
+                style={{
+                  borderColor: COLORS.primary,
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.05,
+                  shadowRadius: 8,
+                  elevation: 2,
+                }}
               >
-                Düzenle
-              </Text>
-            </TouchableOpacity>
+                <Ionicons name="pencil" size={20} color={COLORS.primary} />
+                <Text
+                  className="font-bold text-base ml-2"
+                  style={{ color: COLORS.primary }}
+                >
+                  Düzenle
+                </Text>
+              </TouchableOpacity>
 
-            {/* Delete Button */}
-            <TouchableOpacity
-              onPress={handleDeleteDoctor}
-              disabled={isDeleting}
-              className="flex-1 bg-red-50 border border-red-500 rounded-2xl py-4 flex-row items-center justify-center"
-              style={{
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.05,
-                shadowRadius: 8,
-                elevation: 2,
-              }}
-            >
-              {isDeleting ? (
-                <ActivityIndicator color="#EF4444" />
-              ) : (
-                <>
-                  <Ionicons name="trash-outline" size={20} color="#EF4444" />
-                  <Text className="text-red-500 font-bold text-base ml-2">
-                    Sil
-                  </Text>
-                </>
-              )}
-            </TouchableOpacity>
+              {/* Delete Button */}
+              <TouchableOpacity
+                onPress={handleDeleteDoctor}
+                disabled={isDeleting}
+                className="flex-1 bg-red-50 border border-red-500 rounded-2xl py-4 flex-row items-center justify-center"
+                style={{
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.05,
+                  shadowRadius: 8,
+                  elevation: 2,
+                }}
+              >
+                {isDeleting ? (
+                  <ActivityIndicator color="#EF4444" />
+                ) : (
+                  <>
+                    <Ionicons name="trash-outline" size={20} color="#EF4444" />
+                    <Text className="text-red-500 font-bold text-base ml-2">
+                      Sil
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        )}
       </ScrollView>
 
       {/* Edit Doctor Modal */}

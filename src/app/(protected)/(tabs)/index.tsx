@@ -1,12 +1,20 @@
 import { useEffect } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import Toast from "react-native-toast-message";
 import { useAuthStore } from "../../../stores";
 import { useCurrentUser, getActiveRole } from "../../../hooks/useAuth";
 import { PetifySpinner } from "@/components/PetifySpinner";
-
+import { HomeIconNavigation } from "@/components/home/HomeIconNavigation";
+import { HomeHeader } from "@/components/home/HomeHeader";
+import { HomeBannerSlider } from "@/components/home/HomeBannerSlider";
+import { HomeLostPetsCard } from "@/components/home/HomeLostPetsCard";
+import { HomeClinicCard } from "@/components/home/HomeClinicCard";
+import { HomeHotelCard } from "@/components/home/HomeHotelCard";
+import { HomeSitterCard } from "@/components/home/HomeSitterCard";
+import { HomePetShopCard } from "@/components/home/HomePetShopCard";
+import { HomeFeaturedProducts } from "@/components/home/HomeFeaturedProducts";
 export default function Home() {
   const { signOut } = useAuthStore();
 
@@ -72,16 +80,42 @@ export default function Home() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-background">
-        <View className="p-6">
-          <Text className="text-3xl font-bold text-text mb-8">Ana Sayfa</Text>
+      <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+          {/* Header */}
+          <HomeHeader />
 
-          <TouchableOpacity className="bg-red-500 rounded-xl p-5 mb-4">
-            <Text className="text-white text-center text-base font-semibold">
-              Petify Uygulamasına Hoşgeldiniz
+          {/* Icon Navigation */}
+          <HomeIconNavigation />
+
+          {/* Banner Slider */}
+          <HomeBannerSlider />
+
+          {/* En Çok Satanlar - Featured Products */}
+          <HomeFeaturedProducts />
+
+          {/* Pet Shop'lar Card */}
+          <HomePetShopCard />
+
+          {/* Bakıcılar */}
+          <HomeSitterCard />
+
+          {/* Klinikler */}
+          <HomeClinicCard />
+
+          {/* Oteller */}
+          <HomeHotelCard />
+
+          {/* Kayıp Evcil Hayvanlar */}
+          <HomeLostPetsCard />
+
+          {/* Ana içerik buraya gelecek */}
+          <View className="px-6 py-4">
+            <Text className="text-gray-400 text-center">
+              🚧 İçerik yapım aşamasında...
             </Text>
-          </TouchableOpacity>
-        </View>
+          </View>
+        </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
   );

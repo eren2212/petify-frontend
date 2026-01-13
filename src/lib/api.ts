@@ -1858,3 +1858,266 @@ export const petClinicDoctorsApi = {
     }
   },
 };
+
+export const bannerApi = {
+  // Banner'ları getir
+  getBanners: async () => {
+    try {
+      const { data } = await instance.get("/home/banners");
+      console.log("✅ Banners fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log("Get Banners Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+};
+
+export const homeApi = {
+  // Ana sayfa için öne çıkan ürünler
+  getFeaturedProducts: async () => {
+    try {
+      const { data } = await instance.get("/home/featured-products");
+      console.log("✅ Featured products fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Featured Products Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Tüm ürünler - Sayfalama desteği ile
+  getAllProducts: async (page: number = 1, limit: number = 10) => {
+    try {
+      const { data } = await instance.get("/home/featured-products", {
+        params: { page, limit },
+      });
+      console.log(`✅ All products fetched (page ${page}):`, data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get All Products Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Ana sayfa için klinik listesi
+  getClinicsForHome: async () => {
+    try {
+      const { data } = await instance.get("/home/clinics");
+      console.log("✅ Clinics fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log("Get Clinics Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+
+  // Ana sayfa için kayıp hayvanlar
+  getLostPets: async () => {
+    try {
+      const { data } = await instance.get("/home/lost-pets");
+      console.log("✅ Lost pets fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Lost Pets Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Klinik detayı getir
+  getClinicDetail: async (id: string) => {
+    try {
+      const { data } = await instance.get(`/home/clinic/${id}`);
+      console.log("✅ Clinic detail fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Clinic Detail Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Ana sayfa için otel listesi
+  getHotelsForHome: async () => {
+    try {
+      const { data } = await instance.get("/home/hotels");
+      console.log("✅ Hotels fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log("Get Hotels Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+  // Otel detayı getir
+  getHotelDetail: async (id: string) => {
+    try {
+      const { data } = await instance.get(`/home/hotel/${id}`);
+      console.log("✅ Hotel detail fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Hotel Detail Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  // Otel hizmetlerini getir
+  getHotelServices: async (id: string) => {
+    try {
+      const { data } = await instance.get(`/home/hotel/${id}/services`);
+      console.log("✅ Hotel services fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Hotel Services Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  // Ana sayfa için pet shop listesi
+  getPetShopsForHome: async () => {
+    try {
+      const { data } = await instance.get("/home/shops");
+      console.log("✅ Pet shops fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Pet Shops Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Shop detayı getir
+  getShopDetail: async (id: string) => {
+    try {
+      const { data } = await instance.get(`/home/shop/${id}`);
+      console.log("✅ Shop detail fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Shop Detail Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Shop ürünlerini getir
+  getShopProducts: async (shopId: string) => {
+    try {
+      const { data } = await instance.get(`/home/shops/${shopId}/products`);
+      console.log("✅ Shop products fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Shop Products Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Ana sayfa için bakıcı listesi
+  getSittersForHome: async () => {
+    try {
+      const { data } = await instance.get("/home/sitters");
+      console.log("✅ Sitters fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log("Get Sitters Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+
+  // Sitter detayı getir
+  getSitterDetail: async (id: string) => {
+    try {
+      const { data } = await instance.get(`/home/sitter/${id}`);
+      console.log("✅ Sitter detail fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Sitter Detail Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Kliniğin doktorlarını getir
+  getClinicDoctors: async (clinicId: string) => {
+    try {
+      const { data } = await instance.get(`/home/clinic/${clinicId}/doctors`);
+      console.log("✅ Clinic doctors fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Clinic Doctors Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Doktor detayını getir
+  getDoctorDetail: async (clinicId: string, doctorId: string) => {
+    try {
+      const { data } = await instance.get(
+        `/home/clinic/${clinicId}/doctor/${doctorId}`
+      );
+      console.log("✅ Doctor detail fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Doctor Detail Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Kliniğin hizmetlerini getir
+  getClinicServices: async (clinicId: string) => {
+    try {
+      const { data } = await instance.get(`/home/clinic/${clinicId}/services`);
+      console.log("✅ Clinic services fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Clinic Services Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Sitter'ın hizmetlerini getir
+  getSitterServices: async (sitterId: string) => {
+    try {
+      const { data } = await instance.get(`/home/sitter/${sitterId}/services`);
+      console.log("✅ Sitter services fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Sitter Services Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+};
