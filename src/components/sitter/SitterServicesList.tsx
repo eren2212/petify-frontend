@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Fontisto, Ionicons } from "@expo/vector-icons";
-import { useSitterServices } from "@/hooks/useHome";
+import { SitterService, useSitterServices } from "@/hooks/useHome";
+import { useCartHandler } from "@/hooks/useCartHandler";
+import Toast from "react-native-toast-message";
 
 interface SitterServicesListProps {
   sitterId: string;
@@ -20,7 +22,24 @@ export const SitterServicesList: React.FC<SitterServicesListProps> = ({
   sitterId,
 }) => {
   const { data, isLoading, isError } = useSitterServices(sitterId);
-
+  const { safeAddToCart } = useCartHandler();
+  const handleAddToCart = (service: SitterService) => {
+    if (!service) return;
+    safeAddToCart({
+      id: service.id,
+      name: service.pet_sitter_service_categories.name_tr,
+      price: service.price ?? 0,
+      type: "service",
+      image: service.pet_sitter_service_categories.icon_url,
+      providerId: sitterId,
+      priceType: service.price_type || "",
+    });
+    Toast.show({
+      type: "success",
+      text1: "Hizmet sepete eklendi!",
+      bottomOffset: 40,
+    });
+  };
   // Loading state
   if (isLoading) {
     return (
@@ -154,7 +173,7 @@ export const SitterServicesList: React.FC<SitterServicesListProps> = ({
                   activeOpacity={0.8}
                   onPress={() => {
                     // TODO: Sepete ekleme işlemi
-                    console.log("Sepete eklendi:", service.id);
+                    handleAddToCart(service);
                   }}
                 >
                   <Fontisto
