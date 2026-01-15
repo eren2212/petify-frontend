@@ -2121,3 +2121,38 @@ export const homeApi = {
     }
   },
 };
+
+// Map API
+export const mapApi = {
+  // Yakındaki tüm ilanları ve profilleri getir
+  getNearbyItems: async (
+    latitude: number,
+    longitude: number,
+    radius?: number,
+    types?: string
+  ) => {
+    try {
+      let url = `/map/nearby?latitude=${latitude}&longitude=${longitude}`;
+
+      // Radius belirtilmişse ekle (metre cinsinden)
+      if (radius) {
+        url += `&radius=${radius}`;
+      }
+
+      // Types belirtilmişse ekle (comma separated: adoption,lost_pet,clinic,hotel,shop)
+      if (types) {
+        url += `&types=${types}`;
+      }
+
+      const { data } = await instance.get(url);
+      console.log("✅ Nearby map items fetched:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Nearby Map Items Error:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+};
