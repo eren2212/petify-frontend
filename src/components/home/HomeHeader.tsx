@@ -2,9 +2,14 @@ import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useCurrentUser } from "@/hooks/useAuth";
+import { router } from "expo-router";
+import { useCartStore } from "@/stores/useCartStore";
+import { useCurrentCart } from "@/hooks/useCurrentCart";
 
 export const HomeHeader = () => {
   const { data: user } = useCurrentUser();
+  const { cart, getTotalPrice } = useCurrentCart();
+  const cartCount = cart.length;
 
   // Günün saatine göre selamlama
   const getGreeting = () => {
@@ -62,16 +67,32 @@ export const HomeHeader = () => {
         </View>
       </View>
 
-      {/* Sağ Taraf: Bildirim İkonu */}
-      <TouchableOpacity
-        onPress={handleNotificationPress}
-        className="w-11 h-11 bg-white rounded-full items-center justify-center shadow-sm"
-        activeOpacity={0.7}
-      >
-        <Ionicons name="notifications-outline" size={24} color="#1F2937" />
-        {/* Bildirim badge'i (örnek) */}
-        <View className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-      </TouchableOpacity>
+      <View className="flex-row items-center gap-3">
+        {/* Sağ Taraf: Sepet İkonu */}
+        <TouchableOpacity
+          onPress={() => router.push("/card")}
+          className="w-11 h-11 bg-white rounded-full items-center justify-center shadow-sm"
+          activeOpacity={0.7}
+        >
+          <Ionicons name="cart-outline" size={24} color="#1F2937" />
+          {/* Bildirim badge'i (örnek) */}
+          {cart.length > 0 && (
+            <Text className="text-xs text-white absolute bottom-6 left-8 text-center bg-red-500 rounded-full w-5 h-5 p-0.5 items-center justify-center shadow-sm font-bold">
+              {cartCount}
+            </Text>
+          )}
+        </TouchableOpacity>
+        {/* Sağ Taraf: Bildirim İkonu */}
+        <TouchableOpacity
+          onPress={handleNotificationPress}
+          className="w-11 h-11 bg-white rounded-full items-center justify-center shadow-sm"
+          activeOpacity={0.7}
+        >
+          <Ionicons name="notifications-outline" size={24} color="#1F2937" />
+          {/* Bildirim badge'i (örnek) */}
+          <View className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

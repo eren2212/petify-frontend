@@ -1,3 +1,5 @@
+import "react-native-gesture-handler";
+
 import { Slot } from "expo-router";
 import "../../global.css";
 import { AuthProvider } from "../providers/AuthProvider";
@@ -6,24 +8,27 @@ import { COLORS } from "../styles/theme/color";
 import Toast from "react-native-toast-message";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "../lib/queryClient";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const MyTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    background: COLORS.background, // tüm proje arka plan rengi
+    background: COLORS.background,
   },
 };
 
 export default function RootLayout() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider value={MyTheme}>
-        <AuthProvider>
-          <Slot />
-          <Toast />
-        </AuthProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider value={MyTheme}>
+          <AuthProvider>
+            <Slot />
+            <Toast />
+          </AuthProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   );
 }

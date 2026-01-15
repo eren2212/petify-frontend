@@ -68,3 +68,31 @@ export interface CreatePetRequest {
   color?: string;
   description?: string;
 }
+
+// 1. Ortak özellikler (Her iki türde de olanlar)
+export type ItemType = "product" | "service";
+
+interface BaseItem {
+  id: string;
+  name: string;
+  price: number;
+  type: ItemType;
+  image?: string | null; // <--- Buraya ekle (ProductItem'dan silip buraya al)
+}
+
+// 2. Fiziksel Ürün Tipi
+export interface ProductItem extends BaseItem {
+  type: "product";
+  quantity: number;
+}
+
+// 3. Bakıcı Hizmeti Tipi
+export interface ServiceItem extends BaseItem {
+  type: "service";
+  providerId: string;
+  priceType: string;
+  // BaseItem sayesinde artık burada da otomatik olarak image var
+}
+
+// 4. Sepet Elemanı (Union Type)
+export type CartItem = ProductItem | ServiceItem;

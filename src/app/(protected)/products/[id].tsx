@@ -22,6 +22,7 @@ import { getActiveRole, useCurrentUser } from "../../../hooks/useAuth";
 import EditProductModal from "../../../components/product/EditProductModal";
 import Toast from "react-native-toast-message";
 import { PetifySpinner } from "@/components/PetifySpinner";
+import { useCartHandler } from "@/hooks/useCartHandler";
 
 const { width, height } = Dimensions.get("window");
 const IMAGE_HEIGHT = height * 0.45;
@@ -73,6 +74,27 @@ export default function ProductDetailScreen() {
         },
       }
     );
+  };
+
+  const { safeAddToCart } = useCartHandler();
+
+  const handleAddToCart = () => {
+    if (!product) return;
+    safeAddToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image_url,
+      type: "product",
+      quantity: quantity,
+    });
+    Toast.show({
+      type: "success",
+      text1: "Ürün sepete eklendi!",
+      bottomOffset: 40,
+    });
+    router.back();
+    refetch();
   };
 
   // Loading State
@@ -421,6 +443,7 @@ export default function ProductDetailScreen() {
                 shadowOpacity: 0.3,
                 shadowRadius: 8,
               }}
+              onPress={handleAddToCart}
             >
               <Ionicons name="cart" size={20} color="white" />
               <Text className="text-white font-bold text-base ml-2">
