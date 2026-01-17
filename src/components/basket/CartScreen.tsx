@@ -1,10 +1,14 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { View, Text, FlatList, Pressable, Alert, Animated } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { useCurrentCart } from "@/hooks/useCurrentCart";
 import { CartItemCard } from "@/components/basket/CartItemCard";
+import { AddressModal } from "@/components/basket/AddressModal";
+import { PaymentModal } from "@/components/payment/PaymentModal";
+import { orderApi, paymentApi } from "@/lib/api";
+import { Linking } from "react-native";
 
 const CartScreen = () => {
   const {
@@ -14,9 +18,15 @@ const CartScreen = () => {
     getTotalPrice,
     addQuantity,
     removeQuantity,
+    activeUserId,
   } = useCurrentCart();
 
   const total = useMemo(() => getTotalPrice(), [cart, getTotalPrice]);
+
+  const [addressModalVisible, setAddressModalVisible] = useState(false);
+  const [isCreatingOrder, setIsCreatingOrder] = useState(false);
+  const [paymentModalVisible, setPaymentModalVisible] = useState(false);
+  const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
 
   const totalScale = useRef(new Animated.Value(1)).current;
   useEffect(() => {
@@ -51,10 +61,8 @@ const CartScreen = () => {
       Alert.alert("Sepet Boş", "Lütfen önce sepete bir şeyler ekleyin.");
       return;
     }
-    try {
-      // await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    } catch {}
-    console.log("Sipariş veriliyor...");
+    // Adres modal aç
+    setAddressModalVisible(true);
   };
 
   const askClearCart = () => {
@@ -73,8 +81,104 @@ const CartScreen = () => {
             clearCart();
           },
         },
-      ]
+      ],
     );
+  };
+
+  const handleOrderConfirm = async (
+    deliveryType: "delivery" | "pickup",
+    address?: string,
+  ) => {
+    if (!activeUserId) {
+      Alert.alert("Hata", "Kullanıcı bilgisi bulunamadı");
+      return;
+    }
+
+    setAddressModalVisible(false);
+    setIsCreatingOrder(true);
+
+    try {
+      // Sepetteki ürünleri API formatına çevir (sadece product tipindekiler)
+      const cartItems = cart
+        .filter((item) => item.type === "product")
+        .map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+        }));
+
+      if (cartItems.length === 0) {
+        Alert.alert("Hata", "Sepette sipariş verebileceğiniz ürün yok");
+        return;
+      }
+
+      // Sipariş oluştur
+      const response = await orderApi.createOrder(
+        activeUserId,
+        cartItems,
+        deliveryType,
+        address,
+      );
+
+      console.log("📦 Order Response:", response);
+      console.log("📦 Order Data:", response?.data);
+
+      // Backend response format: { code: 201, data: { orderIds, orders, ... } }
+      const orderData = response?.data?.data;
+
+      if (orderData?.orderIds && orderData.orderIds.length > 0) {
+        console.log("🔵 Starting payment for orders:", orderData.orderIds);
+
+        // Ödeme başlat
+        const paymentResponse = await paymentApi.initializePayment(
+          activeUserId,
+          orderData.orderIds,
+        );
+
+        console.log("💳 Payment Response:", paymentResponse);
+
+        // paymentPageUrl kullan - bu iyzico'nun hazır ödeme sayfası URL'i
+        if (paymentResponse?.paymentPageUrl) {
+          console.log(
+            "✅ Payment URL received:",
+            paymentResponse.paymentPageUrl,
+          );
+
+          setPaymentUrl(paymentResponse.paymentPageUrl);
+          setPaymentModalVisible(true);
+        } else {
+          console.error("❌ No paymentPageUrl in response:", paymentResponse);
+          Alert.alert(
+            "Hata",
+            paymentResponse?.error || "Ödeme sayfası oluşturulamadı",
+          );
+        }
+      } else {
+        Alert.alert("Hata", "Sipariş ID'leri alınamadı");
+      }
+    } catch (error: any) {
+      console.error("Order creation error:", error);
+      Alert.alert(
+        "Hata",
+        error.response?.data?.error || "Sipariş oluşturulurken bir hata oluştu",
+      );
+    } finally {
+      setIsCreatingOrder(false);
+    }
+  };
+
+  const handlePaymentComplete = (success: boolean) => {
+    setPaymentModalVisible(false);
+    setPaymentUrl(null);
+
+    if (success) {
+      // Başarılı ödeme - sepeti temizle
+      clearCart();
+    } else {
+      // Başarısız ödeme
+      console.log("Ödeme başarısız");
+    }
   };
 
   return (
@@ -174,6 +278,24 @@ const CartScreen = () => {
           </Pressable>
         </View>
       )}
+
+      {/* Address Modal */}
+      <AddressModal
+        visible={addressModalVisible}
+        onClose={() => setAddressModalVisible(false)}
+        onConfirm={handleOrderConfirm}
+      />
+
+      {/* Payment Modal */}
+      <PaymentModal
+        visible={paymentModalVisible}
+        paymentUrl={paymentUrl}
+        onClose={() => {
+          setPaymentModalVisible(false);
+          setPaymentUrl(null);
+        }}
+        onPaymentComplete={handlePaymentComplete}
+      />
     </SafeAreaView>
   );
 };
