@@ -26,7 +26,7 @@ instance.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Token yenileme için değişkenler
@@ -91,11 +91,11 @@ instance.interceptors.response.use(
           // Yeni token'ları kaydet
           await AsyncStorage.setItem(
             "access_token",
-            data.data.session.access_token
+            data.data.session.access_token,
           );
           await AsyncStorage.setItem(
             "refresh_token",
-            data.data.session.refresh_token
+            data.data.session.refresh_token,
           );
 
           console.log("✅ Token başarıyla yenilendi!");
@@ -112,7 +112,7 @@ instance.interceptors.response.use(
       } catch (refreshError: any) {
         // Refresh token da geçersizse, çıkış yap
         console.log(
-          "🚨 Refresh token geçersiz veya süresi dolmuş, çıkış yapılıyor..."
+          "🚨 Refresh token geçersiz veya süresi dolmuş, çıkış yapılıyor...",
         );
 
         processQueue(refreshError, null);
@@ -146,7 +146,7 @@ instance.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export const authApi = {
@@ -172,11 +172,11 @@ export const authApi = {
       if (data?.data?.session) {
         await AsyncStorage.setItem(
           "access_token",
-          data.data.session.access_token
+          data.data.session.access_token,
         );
         await AsyncStorage.setItem(
           "refresh_token",
-          data.data.session.refresh_token
+          data.data.session.refresh_token,
         );
 
         // ⭐ User bilgilerini userRole ile birlikte kaydet
@@ -189,7 +189,7 @@ export const authApi = {
           await AsyncStorage.setItem("user", JSON.stringify(userWithRole));
           console.log(
             "✅ Register: User with role saved to storage:",
-            userWithRole
+            userWithRole,
           );
         }
       }
@@ -214,11 +214,11 @@ export const authApi = {
       if (data?.data?.session) {
         await AsyncStorage.setItem(
           "access_token",
-          data.data.session.access_token
+          data.data.session.access_token,
         );
         await AsyncStorage.setItem(
           "refresh_token",
-          data.data.session.refresh_token
+          data.data.session.refresh_token,
         );
 
         // ⭐ User bilgilerini userRole ile birlikte kaydet
@@ -231,7 +231,7 @@ export const authApi = {
           await AsyncStorage.setItem("user", JSON.stringify(userWithRole));
           console.log(
             "✅ Login: User with role saved to storage:",
-            userWithRole
+            userWithRole,
           );
         }
       }
@@ -312,7 +312,7 @@ export const profileApi = {
     } catch (error: any) {
       console.log(
         "Avatar Upload Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -330,7 +330,7 @@ export const profileApi = {
     } catch (error: any) {
       console.log(
         "Update Information Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -345,7 +345,7 @@ export const profileApi = {
     } catch (error: any) {
       console.log(
         "Delete Avatar Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -363,7 +363,7 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Get Pet Types Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -414,7 +414,7 @@ export const petApi = {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       console.log("✅ Pet image uploaded:", data);
@@ -422,7 +422,7 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Pet Image Upload Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -437,7 +437,7 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Get Pet Images Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -452,7 +452,7 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Delete Pet Image Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -467,7 +467,7 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Get Pet Detail Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -492,7 +492,7 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Vaccination added Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -506,7 +506,7 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Get vaccination error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -516,14 +516,14 @@ export const petApi = {
   getVaccinationDetail: async (vaccinationId: string) => {
     try {
       const { data } = await instance.get(
-        `/pet/vaccination/detail/${vaccinationId}`
+        `/pet/vaccination/detail/${vaccinationId}`,
       );
       console.log("✅ Vaccination detail fetched:", data);
       return data;
     } catch (error: any) {
       console.log(
         "Get Vaccination Detail Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -568,7 +568,7 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Lost Pet Image Upload Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -578,14 +578,14 @@ export const petApi = {
   getNearbyLostPets: async (latitude: number, longitude: number) => {
     try {
       const { data } = await instance.get(
-        `/pet/lost/nearby?latitude=${latitude}&longitude=${longitude}`
+        `/pet/lost/nearby?latitude=${latitude}&longitude=${longitude}`,
       );
       console.log("✅ Nearby lost pets fetched:", data);
       return data;
     } catch (error: any) {
       console.log(
         "Get Nearby Lost Pets Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -599,7 +599,7 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Get Lost Pet Detail Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -613,7 +613,7 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Get Lost Pet Images Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -627,7 +627,7 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Get My Lost Pet Listings Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -642,7 +642,7 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Add Adoption Pet Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -675,7 +675,7 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Adoption Pet Image Upload Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -685,7 +685,7 @@ export const petApi = {
   getNearbyAdoptionPets: async (
     latitude: number,
     longitude: number,
-    radiusInMeters?: number
+    radiusInMeters?: number,
   ) => {
     try {
       let url = `/adoptionpet/nearby?latitude=${latitude}&longitude=${longitude}`;
@@ -701,7 +701,7 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Get Nearby Adoption Pets Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -711,14 +711,14 @@ export const petApi = {
   getAdoptionPetDetail: async (adoptionPetId: string) => {
     try {
       const { data } = await instance.get(
-        `/adoptionpet/detail/${adoptionPetId}`
+        `/adoptionpet/detail/${adoptionPetId}`,
       );
       console.log("✅ Adoption pet detail fetched:", data);
       return data;
     } catch (error: any) {
       console.log(
         "Get Adoption Pet Detail Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -733,7 +733,7 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Get My Adoption Pet Listings Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -748,7 +748,7 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Mark Adoption Pet As Adopted Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -763,7 +763,7 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Delete Adoption Pet Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -778,7 +778,7 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Mark Lost Pet As Found Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -793,7 +793,7 @@ export const petApi = {
     } catch (error: any) {
       console.log(
         "Delete Lost Pet Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -811,7 +811,7 @@ export const petShopApi = {
     } catch (error: any) {
       console.log(
         "Create Pet Shop Profile Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -825,7 +825,7 @@ export const petShopApi = {
     } catch (error: any) {
       console.log(
         "Update Pet Shop Profile Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -839,7 +839,7 @@ export const petShopApi = {
     } catch (error: any) {
       console.log(
         "Get Pet Shop Profile Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -866,7 +866,7 @@ export const petShopApi = {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       console.log("✅ Pet shop logo uploaded:", data);
@@ -874,7 +874,7 @@ export const petShopApi = {
     } catch (error: any) {
       console.log(
         "Pet Shop Logo Upload Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -889,7 +889,7 @@ export const petShopApi = {
     } catch (error: any) {
       console.log(
         "Delete Pet Shop Logo Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -907,7 +907,7 @@ export const productApi = {
     } catch (error: any) {
       console.log(
         "Get Product Categories Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -934,7 +934,7 @@ export const productApi = {
     } catch (error: any) {
       console.log(
         "Update Product Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -951,7 +951,7 @@ export const productApi = {
     } catch (error: any) {
       console.log(
         "Update Product Stock Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -968,7 +968,7 @@ export const productApi = {
     } catch (error: any) {
       console.log(
         "Update Product Status Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -983,7 +983,7 @@ export const productApi = {
     } catch (error: any) {
       console.log(
         "Delete Product Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -994,7 +994,7 @@ export const productApi = {
     page: number = 1,
     limit: number = 10,
     categoryId?: string,
-    status?: boolean
+    status?: boolean,
   ) => {
     try {
       const params: any = { page, limit };
@@ -1007,7 +1007,7 @@ export const productApi = {
     } catch (error: any) {
       console.log(
         "Get My Products Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1024,7 +1024,7 @@ export const productApi = {
     } catch (error: any) {
       console.log(
         "Get All Products Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1034,21 +1034,21 @@ export const productApi = {
   getProductsByCategory: async (
     categoryName: string,
     page: number = 1,
-    limit: number = 10
+    limit: number = 10,
   ) => {
     try {
       const { data } = await instance.get(
         `/products/category/${categoryName}`,
         {
           params: { page, limit },
-        }
+        },
       );
       console.log("✅ Products by category fetched:", data);
       return data;
     } catch (error: any) {
       console.log(
         "Get Products By Category Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1063,7 +1063,7 @@ export const productApi = {
     } catch (error: any) {
       console.log(
         "Get Product By ID Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1090,7 +1090,7 @@ export const productApi = {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       console.log("✅ Product image uploaded:", data);
@@ -1098,7 +1098,7 @@ export const productApi = {
     } catch (error: any) {
       console.log(
         "Product Image Upload Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1113,7 +1113,7 @@ export const productApi = {
     } catch (error: any) {
       console.log(
         "Get Product Image Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1126,14 +1126,14 @@ export const petSitterApi = {
     try {
       const { data } = await instance.post(
         "/petsitter/add/profile",
-        profileData
+        profileData,
       );
       console.log("✅ Pet sitter profile created:", data);
       return data;
     } catch (error: any) {
       console.log(
         "Create Pet Sitter Profile Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1147,7 +1147,7 @@ export const petSitterApi = {
     } catch (error: any) {
       console.log(
         "Update Pet Sitter Profile Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1161,7 +1161,7 @@ export const petSitterApi = {
     } catch (error: any) {
       console.log(
         "Get Pet Sitter Profile Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1188,7 +1188,7 @@ export const petSitterApi = {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       console.log("✅ Pet sitter logo uploaded:", data);
@@ -1196,7 +1196,7 @@ export const petSitterApi = {
     } catch (error: any) {
       console.log(
         "Pet Sitter Logo Upload Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1211,7 +1211,7 @@ export const petSitterApi = {
     } catch (error: any) {
       console.log(
         "Delete Pet Sitter Logo Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1229,7 +1229,7 @@ export const petSitterServiceApi = {
     } catch (error: any) {
       console.log(
         "Get Pet Sitter Service Categories Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1240,7 +1240,7 @@ export const petSitterServiceApi = {
     page: number = 1,
     limit: number = 10,
     categoryId?: string,
-    status?: boolean
+    status?: boolean,
   ) => {
     try {
       const params: any = { page, limit };
@@ -1255,7 +1255,7 @@ export const petSitterServiceApi = {
     } catch (error: any) {
       console.log(
         "Get My Pet Sitter Services Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1266,14 +1266,14 @@ export const petSitterServiceApi = {
     try {
       const { data } = await instance.post(
         "/petsitterservices/add-service",
-        serviceData
+        serviceData,
       );
       console.log("✅ Pet sitter service added:", data);
       return data;
     } catch (error: any) {
       console.log(
         "Add Pet Sitter Service Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1284,14 +1284,14 @@ export const petSitterServiceApi = {
     try {
       const { data } = await instance.put(
         `/petsitterservices/update-service/${id}`,
-        serviceData
+        serviceData,
       );
       console.log("✅ Pet sitter service updated:", data);
       return data;
     } catch (error: any) {
       console.log(
         "Update Pet Sitter Service Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1306,7 +1306,7 @@ export const petSitterServiceApi = {
     } catch (error: any) {
       console.log(
         "Get Pet Sitter Service Detail Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1316,14 +1316,14 @@ export const petSitterServiceApi = {
   deleteService: async (id: string) => {
     try {
       const { data } = await instance.delete(
-        `/petsitterservices/service/${id}`
+        `/petsitterservices/service/${id}`,
       );
       console.log("✅ Pet sitter service deleted:", data);
       return data;
     } catch (error: any) {
       console.log(
         "Delete Pet Sitter Service Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1334,14 +1334,14 @@ export const petSitterServiceApi = {
     try {
       const { data } = await instance.patch(
         `/petsitterservices/toggle-status/${id}`,
-        { status }
+        { status },
       );
       console.log("✅ Pet sitter service status updated:", data);
       return data;
     } catch (error: any) {
       console.log(
         "Toggle Pet Sitter Service Status Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1359,7 +1359,7 @@ export const petOtelApi = {
     } catch (error: any) {
       console.log(
         "Create Pet Otel Profile Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1373,7 +1373,7 @@ export const petOtelApi = {
     } catch (error: any) {
       console.log(
         "Update Pet Otel Profile Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1387,7 +1387,7 @@ export const petOtelApi = {
     } catch (error: any) {
       console.log(
         "Get Pet Otel Profile Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1414,7 +1414,7 @@ export const petOtelApi = {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       console.log("✅ Pet otel logo uploaded:", data);
@@ -1422,7 +1422,7 @@ export const petOtelApi = {
     } catch (error: any) {
       console.log(
         "Pet Otel Logo Upload Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1437,7 +1437,7 @@ export const petOtelApi = {
     } catch (error: any) {
       console.log(
         "Delete Pet Otel Logo Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1455,7 +1455,7 @@ export const petOtelServiceApi = {
     } catch (error: any) {
       console.log(
         "Get Pet Otel Service Categories Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1470,7 +1470,7 @@ export const petOtelServiceApi = {
     } catch (error: any) {
       console.log(
         "Get My Pet Otel Services Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1487,7 +1487,7 @@ export const petOtelServiceApi = {
     } catch (error: any) {
       console.log(
         "Add Pet Otel Service Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1502,7 +1502,7 @@ export const petOtelServiceApi = {
     } catch (error: any) {
       console.log(
         "Get Pet Otel Service Detail Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1517,7 +1517,7 @@ export const petOtelServiceApi = {
     } catch (error: any) {
       console.log(
         "Delete Pet Otel Service Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1528,14 +1528,14 @@ export const petOtelServiceApi = {
     try {
       const { data } = await instance.patch(
         `/petotelservices/toggle-status/${id}`,
-        { status }
+        { status },
       );
       console.log("✅ Pet otel service status updated:", data);
       return data;
     } catch (error: any) {
       console.log(
         "Toggle Pet Otel Service Status Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1549,14 +1549,14 @@ export const petClinicApi = {
     try {
       const { data } = await instance.post(
         "/petclinic/add/profile",
-        profileData
+        profileData,
       );
       console.log("✅ Pet clinic profile created:", data);
       return data;
     } catch (error: any) {
       console.log(
         "Create Pet Clinic Profile Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1570,7 +1570,7 @@ export const petClinicApi = {
     } catch (error: any) {
       console.log(
         "Update Pet Clinic Profile Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1584,7 +1584,7 @@ export const petClinicApi = {
     } catch (error: any) {
       console.log(
         "Get Pet Clinic Profile Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1611,7 +1611,7 @@ export const petClinicApi = {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       console.log("✅ Pet clinic logo uploaded:", data);
@@ -1619,7 +1619,7 @@ export const petClinicApi = {
     } catch (error: any) {
       console.log(
         "Pet Clinic Logo Upload Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1634,7 +1634,7 @@ export const petClinicApi = {
     } catch (error: any) {
       console.log(
         "Delete Pet Shop Logo Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1652,7 +1652,7 @@ export const petClinicServiceApi = {
     } catch (error: any) {
       console.log(
         "Get Pet Clinic Service Categories Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1667,7 +1667,7 @@ export const petClinicServiceApi = {
     } catch (error: any) {
       console.log(
         "Get My Pet Clinic Services Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1684,7 +1684,7 @@ export const petClinicServiceApi = {
     } catch (error: any) {
       console.log(
         "Add Pet Clinic Service Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1699,7 +1699,7 @@ export const petClinicServiceApi = {
     } catch (error: any) {
       console.log(
         "Get Pet Clinic Service Detail Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1709,14 +1709,14 @@ export const petClinicServiceApi = {
   deleteService: async (id: string) => {
     try {
       const { data } = await instance.delete(
-        `/petclinicservices/service/${id}`
+        `/petclinicservices/service/${id}`,
       );
       console.log("✅ Pet clinic service deleted:", data);
       return data;
     } catch (error: any) {
       console.log(
         "Delete Pet Clinic Service Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1727,14 +1727,14 @@ export const petClinicServiceApi = {
     try {
       const { data } = await instance.patch(
         `/petclinicservices/toggle-status/${id}`,
-        { status }
+        { status },
       );
       console.log("✅ Pet clinic service status updated:", data);
       return data;
     } catch (error: any) {
       console.log(
         "Toggle Pet Clinic Service Status Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1769,7 +1769,7 @@ export const petClinicDoctorsApi = {
     } catch (error: any) {
       console.log(
         "Get My Doctors Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1784,7 +1784,7 @@ export const petClinicDoctorsApi = {
     } catch (error: any) {
       console.log(
         "Get Doctor Detail Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1795,14 +1795,14 @@ export const petClinicDoctorsApi = {
     try {
       const { data } = await instance.put(
         `/petclinicdoctors/update/${id}`,
-        doctorData
+        doctorData,
       );
       console.log("✅ Doctor updated:", data);
       return data;
     } catch (error: any) {
       console.log(
         "Update Doctor Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1817,7 +1817,7 @@ export const petClinicDoctorsApi = {
     } catch (error: any) {
       console.log(
         "Delete Doctor Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1844,7 +1844,7 @@ export const petClinicDoctorsApi = {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       console.log("✅ Doctor image uploaded:", data);
@@ -1852,7 +1852,7 @@ export const petClinicDoctorsApi = {
     } catch (error: any) {
       console.log(
         "Doctor Image Upload Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1883,7 +1883,7 @@ export const homeApi = {
     } catch (error: any) {
       console.log(
         "Get Featured Products Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1900,7 +1900,7 @@ export const homeApi = {
     } catch (error: any) {
       console.log(
         "Get All Products Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1927,7 +1927,7 @@ export const homeApi = {
     } catch (error: any) {
       console.log(
         "Get Lost Pets Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1942,7 +1942,7 @@ export const homeApi = {
     } catch (error: any) {
       console.log(
         "Get Clinic Detail Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1968,7 +1968,7 @@ export const homeApi = {
     } catch (error: any) {
       console.log(
         "Get Hotel Detail Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1982,7 +1982,7 @@ export const homeApi = {
     } catch (error: any) {
       console.log(
         "Get Hotel Services Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -1996,7 +1996,7 @@ export const homeApi = {
     } catch (error: any) {
       console.log(
         "Get Pet Shops Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -2011,7 +2011,7 @@ export const homeApi = {
     } catch (error: any) {
       console.log(
         "Get Shop Detail Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -2026,7 +2026,7 @@ export const homeApi = {
     } catch (error: any) {
       console.log(
         "Get Shop Products Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -2053,7 +2053,7 @@ export const homeApi = {
     } catch (error: any) {
       console.log(
         "Get Sitter Detail Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -2068,7 +2068,7 @@ export const homeApi = {
     } catch (error: any) {
       console.log(
         "Get Clinic Doctors Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -2078,14 +2078,14 @@ export const homeApi = {
   getDoctorDetail: async (clinicId: string, doctorId: string) => {
     try {
       const { data } = await instance.get(
-        `/home/clinic/${clinicId}/doctor/${doctorId}`
+        `/home/clinic/${clinicId}/doctor/${doctorId}`,
       );
       console.log("✅ Doctor detail fetched:", data);
       return data;
     } catch (error: any) {
       console.log(
         "Get Doctor Detail Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -2100,7 +2100,7 @@ export const homeApi = {
     } catch (error: any) {
       console.log(
         "Get Clinic Services Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -2115,7 +2115,7 @@ export const homeApi = {
     } catch (error: any) {
       console.log(
         "Get Sitter Services Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -2129,7 +2129,7 @@ export const mapApi = {
     latitude: number,
     longitude: number,
     radius?: number,
-    types?: string
+    types?: string,
   ) => {
     try {
       let url = `/map/nearby?latitude=${latitude}&longitude=${longitude}`;
@@ -2150,7 +2150,59 @@ export const mapApi = {
     } catch (error: any) {
       console.log(
         "Get Nearby Map Items Error:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
+      );
+      throw error;
+    }
+  },
+};
+
+// Order API
+export const orderApi = {
+  // Sepetten sipariş oluştur
+  createOrder: async (
+    userId: string,
+    cartItems: Array<{
+      id: string;
+      name: string;
+      price: number;
+      quantity: number;
+    }>,
+    deliveryType: "delivery" | "pickup",
+    address?: string,
+  ) => {
+    try {
+      const requestData = {
+        userId,
+        cartItems,
+        deliveryType,
+        address: deliveryType === "delivery" ? address : undefined,
+      };
+
+      const { data } = await instance.post("/orders/create", requestData);
+      console.log("✅ Orders created:", data);
+      return data;
+    } catch (error: any) {
+      console.log("Create Order Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+};
+
+// Payment API
+export const paymentApi = {
+  initializePayment: async (userId: string, orderIds: string[]) => {
+    try {
+      const { data } = await instance.post("/payments/initialize", {
+        userId,
+        orderIds,
+      });
+      console.log("✅ Payment initialized:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Payment Initialize Error:",
+        error.response?.data || error.message,
       );
       throw error;
     }
