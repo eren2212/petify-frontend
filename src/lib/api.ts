@@ -800,6 +800,24 @@ export const petApi = {
   },
 };
 
+export const conversationApi = {
+  startConversation: async (targetRoleId: string) => {
+    try {
+      const { data } = await instance.post("/conversations/start", {
+        target_role_id: targetRoleId,
+      });
+      console.log("✅ Conversation started/retrieved:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Start Conversation Error:",
+        error.response?.data || error.message,
+      );
+      throw error;
+    }
+  },
+};
+
 // Pet Shop API
 export const petShopApi = {
   // Pet Shop profili oluştur
