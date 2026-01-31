@@ -1,11 +1,10 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   FlatList,
   Image,
   TouchableOpacity,
-  RefreshControl,
   ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
@@ -17,126 +16,47 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/tr";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useConversations } from "@/hooks/useConversations";
 
 dayjs.extend(relativeTime);
 dayjs.locale("tr");
 
 export default function MessagesScreen() {
   const router = useRouter();
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [currentUserData, setCurrentUserData] = useState<any>(null);
+  const [currentUserRoleId, setCurrentUserRoleId] = useState<string | null>(
+    null,
+  );
+
+  // TanStack Query hook - otomatik real-time güncellemeler
+  const {
+    data: conversations = [],
+    isLoading,
+    refetch,
+    isRefetching,
+    currentUserRoleId: myRoleId, // Get current user's role ID for comparison
+  } = useConversations(currentUserRoleId);
 
   // Load User Data
-  const loadUser = async () => {
-    try {
+  useEffect(() => {
+    const loadUser = async () => {
       const userStr = await AsyncStorage.getItem("user");
       if (userStr) {
         const user = JSON.parse(userStr);
-        // We need the role ID.
-        // Assuming the stored user object has the role ID via a previous login response logic
-        // If not, we might need to fetch it. For now, let's assume 'id' in user_roles context creates a mapping.
-        // Actually, let's fetch the user_role_id from Supabase to be safe if it's missing.
 
-        const { data: roleData, error } = await supabase
+        // Get the user's role_id from user_roles table
+        const { data: roleData } = await supabase
           .from("user_roles")
           .select("id")
           .eq("user_id", user.id)
           .single();
 
         if (roleData) {
-          setCurrentUserData({ ...user, role_id: roleData.id });
-        } else {
-          console.error("User role not found");
+          setCurrentUserRoleId(roleData.id);
         }
       }
-    } catch (e) {
-      console.error("Error loading user:", e);
-    }
-  };
-
-  const fetchConversations = async () => {
-    if (!currentUserData?.role_id) return;
-
-    try {
-      // 1. Get my conversation participations
-      const { data, error } = await supabase
-        .from("conversation_participants")
-        .select(
-          `
-          conversation:conversations (
-            *,
-            conversation_participants (
-              participant_role_id,
-              user_roles (
-                id,
-                user_profiles (
-                  full_name,
-                  avatar_url
-                )
-              )
-            )
-          )
-        `,
-        )
-        .eq("participant_role_id", currentUserData.role_id)
-        .eq("is_deleted", false)
-        .order("created_at", { ascending: false }); // Ideally order by conversation.last_message_at
-
-      if (error) throw error;
-
-      // 2. Transform data
-      const formattedConversations: Conversation[] = data.map((item: any) => {
-        const convo = item.conversation;
-        // Find the "other" participant
-        const otherParticipant = convo.conversation_participants.find(
-          (p: any) => p.participant_role_id !== currentUserData.role_id,
-        )?.user_roles;
-
-        return {
-          ...convo,
-          other_participant: otherParticipant,
-        };
-      });
-
-      // Sort by last message time locally since Supabase join sorting is tricky
-      formattedConversations.sort((a, b) => {
-        const timeA = a.last_message_at
-          ? new Date(a.last_message_at).getTime()
-          : 0;
-        const timeB = b.last_message_at
-          ? new Date(b.last_message_at).getTime()
-          : 0;
-        return timeB - timeA;
-      });
-
-      setConversations(formattedConversations);
-    } catch (error) {
-      console.error("Error fetching conversations:", error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
-
-  useEffect(() => {
+    };
     loadUser();
   }, []);
-
-  useEffect(() => {
-    if (currentUserData?.role_id) {
-      fetchConversations();
-
-      // Realtime subscription for list updates (optional but good)
-      // For simplicity in this step, we rely on focus effect or pull to refresh
-    }
-  }, [currentUserData]);
-
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    fetchConversations();
-  }, [currentUserData]);
 
   const getAvatarUrl = (filename: string) => {
     const baseUrl =
@@ -182,20 +102,8 @@ export default function MessagesScreen() {
             </Text>
           </View>
 
-          <Text
-            className="text-sm text-gray-500"
-            numberOfLines={1}
-            style={{
-              fontWeight:
-                item.last_message_sender_role_id !== currentUserData?.role_id
-                  ? "normal"
-                  : "normal",
-            }}
-            // Add bold logic if 'is_read' was tracked per participant in the list query
-          >
-            {item.last_message_sender_role_id === currentUserData?.role_id
-              ? "Siz: "
-              : ""}
+          <Text className="text-sm text-gray-500" numberOfLines={1}>
+            {item.last_message_sender_role_id === myRoleId ? "Siz: " : ""}
             {item.last_message_content || "Sohbete başlayın 👋"}
           </Text>
         </View>
@@ -209,7 +117,7 @@ export default function MessagesScreen() {
         <Text className="text-2xl font-bold text-gray-900">Mesajlar</Text>
       </View>
 
-      {loading ? (
+      {isLoading ? (
         <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color="#F43F5E" />
         </View>
@@ -218,16 +126,26 @@ export default function MessagesScreen() {
           data={conversations}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
+          contentContainerStyle={{ paddingBottom: 20 }}
+          onRefresh={refetch}
+          refreshing={isRefetching}
           ListEmptyComponent={
-            <View className="flex-1 justify-center items-center mt-20 px-10">
-              <Ionicons name="chatbubbles-outline" size={64} color="#E5E7EB" />
-              <Text className="text-gray-500 text-center mt-4 text-base">
-                Henüz hiç mesajınız yok.
-              </Text>
-            </View>
+            isLoading ? (
+              <View className="flex-1 items-center justify-center py-20">
+                <ActivityIndicator size="large" color="#6366F1" />
+              </View>
+            ) : (
+              <View className="flex-1 items-center justify-center py-20">
+                <Ionicons
+                  name="chatbubbles-outline"
+                  size={64}
+                  color="#D1D5DB"
+                />
+                <Text className="text-gray-400 text-base mt-4">
+                  Henüz mesajınız yok
+                </Text>
+              </View>
+            )
           }
         />
       )}
