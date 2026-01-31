@@ -96,3 +96,55 @@ export interface ServiceItem extends BaseItem {
 
 // 4. Sepet Elemanı (Union Type)
 export type CartItem = ProductItem | ServiceItem;
+
+// Chat & Social Types
+export interface UserRole {
+  id: string;
+  user_id: string;
+  role_type: string;
+  status: string;
+  user_profiles?: {
+    full_name: string;
+    avatar_url: string;
+  };
+}
+
+export interface ConversationParticipant {
+  id: string;
+  conversation_id: string;
+  participant_role_id: string;
+  is_deleted: boolean;
+  last_read_at: string;
+  is_muted: boolean;
+  user_roles?: UserRole;
+}
+
+export interface Conversation {
+  id: string;
+  participant_1_role_id: string;
+  participant_2_role_id: string;
+  last_message_content: string | null;
+  last_message_at: string | null;
+  last_message_sender_role_id: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  conversation_participants?: ConversationParticipant[];
+  other_participant?: UserRole; // Helper for UI
+}
+
+export interface Message {
+  id: string;
+  conversation_id: string;
+  sender_role_id: string;
+  message_type: "text" | "image" | "location";
+  content: string | null;
+  image_url?: string | null;
+  location_name?: string | null;
+  location_latitude?: number | null;
+  location_longitude?: number | null;
+  is_read: boolean;
+  read_at?: string;
+  created_at: string;
+  is_deleted: boolean;
+}

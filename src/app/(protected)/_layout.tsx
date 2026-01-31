@@ -83,6 +83,13 @@ export default function ProtectedLayout() {
           presentation: "modal",
         }}
       />
+      <Stack.Screen
+        name="chat"
+        options={{
+          headerShown: false,
+          presentation: "containedModal",
+        }}
+      />
     </Stack>
   );
 }

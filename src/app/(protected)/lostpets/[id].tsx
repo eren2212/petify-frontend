@@ -15,6 +15,7 @@ import {
   useMarkLostPetAsFound,
   useDeleteLostPet,
 } from "../../../hooks/usePet";
+import { conversationApi } from "@/lib/api";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getPetTypeImageByName } from "../../../constants/petTypes";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
@@ -131,7 +132,7 @@ export default function LostPetDetailScreen() {
     }
     // Yoksa default pet type resmini kullan
     return getPetTypeImageByName(
-      lostPet.pet_type?.name_tr || lostPet.pet_type?.name
+      lostPet.pet_type?.name_tr || lostPet.pet_type?.name,
     );
   };
 
@@ -201,7 +202,7 @@ export default function LostPetDetailScreen() {
 
     // Oluşturulan URL'yi açmayı dene
     Linking.openURL(url).catch((err) =>
-      console.error("Harita uygulaması açılamadı:", err)
+      console.error("Harita uygulaması açılamadı:", err),
     );
   };
 
@@ -226,13 +227,13 @@ export default function LostPetDetailScreen() {
             } catch (error: any) {
               Alert.alert(
                 "Hata",
-                error?.response?.data?.message || "İşlem başarısız oldu"
+                error?.response?.data?.message || "İşlem başarısız oldu",
               );
             }
           },
         },
       ],
-      { cancelable: true }
+      { cancelable: true },
     );
   };
 
@@ -257,14 +258,43 @@ export default function LostPetDetailScreen() {
             } catch (error: any) {
               Alert.alert(
                 "Hata",
-                error?.response?.data?.message || "İşlem başarısız oldu"
+                error?.response?.data?.message || "İşlem başarısız oldu",
               );
             }
           },
         },
       ],
-      { cancelable: true }
+      { cancelable: true },
     );
+  };
+
+  // Mesaj Gönder
+  const handleSendMessage = async () => {
+    try {
+      if (!lostPet.user_id) {
+        Alert.alert("Hata", "İlan sahibi bilgisi bulunamadı.");
+        return;
+      }
+
+      // Owner role_id is needed.
+      const targetRoleId = lostPet.user_roles?.id;
+
+      if (!targetRoleId) {
+        Alert.alert("Hata", "Kullanıcı rolü bulunamadı.");
+        return;
+      }
+
+      const response = await conversationApi.startConversation(targetRoleId);
+
+      if (response.data && response.data.conversation_id) {
+        router.push(`/(protected)/chat/${response.data.conversation_id}`);
+      }
+    } catch (error: any) {
+      Alert.alert(
+        "Hata",
+        error.response?.data?.message || "Mesaj başlatılamadı.",
+      );
+    }
   };
 
   return (
@@ -313,7 +343,7 @@ export default function LostPetDetailScreen() {
               style={{ width: "100%", height: "100%" }}
               resizeMode="cover"
               defaultSource={getPetTypeImageByName(
-                lostPet.pet_type?.name_tr || lostPet.pet_type?.name
+                lostPet.pet_type?.name_tr || lostPet.pet_type?.name,
               )}
             />
           </View>
@@ -642,7 +672,7 @@ export default function LostPetDetailScreen() {
                   openMaps(
                     lostPet.last_seen_latitude,
                     lostPet.last_seen_longitude,
-                    lostPet.last_seen_location
+                    lostPet.last_seen_location,
                   )
                 }
               >
@@ -687,7 +717,10 @@ export default function LostPetDetailScreen() {
                   Tel : {lostPet.contact_phone}
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity className="bg-text p-4 rounded-full items-center justify-center w-full">
+              <TouchableOpacity
+                className="bg-text p-4 rounded-full items-center justify-center w-full"
+                onPress={handleSendMessage}
+              >
                 <Text className="text-white text-base text-center font-bold ">
                   Mesaj Gönder
                 </Text>

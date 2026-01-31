@@ -15,6 +15,7 @@ import {
   useMarkAdoptionPetAsAdopted,
   useDeleteAdoptionPet,
 } from "../../../hooks/usePet";
+import { conversationApi } from "@/lib/api";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getPetTypeImageByName } from "../../../constants/petTypes";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
@@ -118,7 +119,7 @@ export default function AdoptionPetDetailScreen() {
     }
     // Yoksa default pet type resmini kullan
     return getPetTypeImageByName(
-      adoptionPet.pet_type?.name_tr || adoptionPet.pet_type?.name
+      adoptionPet.pet_type?.name_tr || adoptionPet.pet_type?.name,
     );
   };
 
@@ -172,7 +173,7 @@ export default function AdoptionPetDetailScreen() {
     }
 
     Linking.openURL(url).catch((err) =>
-      console.error("Harita uygulaması açılamadı:", err)
+      console.error("Harita uygulaması açılamadı:", err),
     );
   };
 
@@ -194,19 +195,19 @@ export default function AdoptionPetDetailScreen() {
               await markAsAdoptedMutation.mutateAsync(adoptionPetId);
               Alert.alert(
                 "Başarılı!",
-                "Hayvan sahiplendirildi olarak işaretlendi."
+                "Hayvan sahiplendirildi olarak işaretlendi.",
               );
               router.back();
             } catch (error: any) {
               Alert.alert(
                 "Hata",
-                error?.response?.data?.message || "İşlem başarısız oldu"
+                error?.response?.data?.message || "İşlem başarısız oldu",
               );
             }
           },
         },
       ],
-      { cancelable: true }
+      { cancelable: true },
     );
   };
 
@@ -231,14 +232,37 @@ export default function AdoptionPetDetailScreen() {
             } catch (error: any) {
               Alert.alert(
                 "Hata",
-                error?.response?.data?.message || "İşlem başarısız oldu"
+                error?.response?.data?.message || "İşlem başarısız oldu",
               );
             }
           },
         },
       ],
-      { cancelable: true }
+      { cancelable: true },
     );
+  };
+
+  // Mesaj Gönder
+  const handleSendMessage = async () => {
+    try {
+      const targetRoleId = adoptionPet.user_roles?.id;
+
+      if (!targetRoleId) {
+        Alert.alert("Hata", "İlan sahibi bilgisi tam yüklenemedi.");
+        return;
+      }
+
+      const response = await conversationApi.startConversation(targetRoleId);
+
+      if (response.data && response.data.conversation_id) {
+        router.push(`/(protected)/chat/${response.data.conversation_id}`);
+      }
+    } catch (error: any) {
+      Alert.alert(
+        "Hata",
+        error.response?.data?.message || "Mesaj başlatılamadı.",
+      );
+    }
   };
 
   return (
@@ -291,7 +315,7 @@ export default function AdoptionPetDetailScreen() {
               style={{ width: "100%", height: "100%" }}
               resizeMode="cover"
               defaultSource={getPetTypeImageByName(
-                adoptionPet.pet_type?.name_tr || adoptionPet.pet_type?.name
+                adoptionPet.pet_type?.name_tr || adoptionPet.pet_type?.name,
               )}
             />
           </View>
@@ -650,7 +674,7 @@ export default function AdoptionPetDetailScreen() {
                     openMaps(
                       adoptionPet.latitude,
                       adoptionPet.longitude,
-                      adoptionPet.location_description
+                      adoptionPet.location_description,
                     )
                   }
                 >
@@ -700,7 +724,10 @@ export default function AdoptionPetDetailScreen() {
                   Tel: {adoptionPet.contact_phone}
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity className="bg-text p-4 rounded-full items-center justify-center w-full">
+              <TouchableOpacity
+                className="bg-text p-4 rounded-full items-center justify-center w-full"
+                onPress={handleSendMessage}
+              >
                 <Text className="text-white text-base text-center font-bold">
                   Mesaj Gönder
                 </Text>
