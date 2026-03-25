@@ -6,6 +6,7 @@ import { getCurrentLocation } from "../utils/location";
 import { PetifySpinner } from "@/components/PetifySpinner";
 import { useCartStore } from "@/stores/useCartStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNotifications } from "@/hooks/useNotifications";
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -19,6 +20,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // CartStore'dan setActiveUser fonksiyonunu alıyoruz
   const setActiveUser = useCartStore((state) => state.setActiveUser);
+
+  // 🔔 Push Notification Hook (sadece isAuthenticated=true iken token kaydeder/siler)
+  const { expoPushToken, isRegistered } = useNotifications(isAuthenticated);
 
   // 1. AUTH VE SEPET SENKRONİZASYONU (En Önemli Kısım)
   useEffect(() => {
@@ -98,6 +102,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     fetchLocation();
   }, []);
+
+  // 🔔 NOTIFICATION TOKEN KAYIT DURUMU LOGLAMA
+  useEffect(() => {
+    if (isRegistered && expoPushToken) {
+      console.log(
+        "✅ Push notification başarıyla kaydedildi:",
+        expoPushToken
+      );
+    }
+  }, [isRegistered, expoPushToken]);
 
   // 3. YÖNLENDİRME (ROUTING) MANTIĞI
   // Burayı yorum satırına almıştın, ihtiyacın varsa açabilirsin.

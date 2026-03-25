@@ -27,27 +27,49 @@
       "config": {
         "googleMaps": {
           "apiKey": "process.env.ANDORID_GOOGLE_MAPS_API_KEY"
-        },
-        "package": "com.eren1247.petfiy",
-        "adaptiveIcon": {
-          "foregroundImage": "./assets/adaptive-icon.png",
-          "backgroundColor": "#ffffff"
-        },
-        "edgeToEdgeEnabled": true,
-        "predictiveBackGestureEnabled": false
-      },
-      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
-      "web": {
-        "favicon": "./assets/favicon.png",
-        "bundler": "metro"
-      },
-      "plugins": ["expo-router"],
-      "extra": {
-        "router": {},
-        "eas": {
-          "projectId": "87f0b95e-49e2-490a-9a8d-8dc550dbba2b"
         }
+      },
+      "package": "com.eren1247.petfiy",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "POST_NOTIFICATIONS"
+      ],
+      "googleServicesFile": "./google-services.json"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/petify_white.png",
+          "color": "#ffffff",
+          "sounds": ["./assets/notification.wav"]
+        }
+      ]
+    ],
+    "notification": {
+      "icon": "./assets/images/petify_white.png",
+      "color": "#FF6B6B",
+      "androidMode": "default",
+      "androidCollapsedTitle": "Petify"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "87f0b95e-49e2-490a-9a8d-8dc550dbba2b"
       }
-    }
+    },
+    "owner": "eren1247"
   }
 }

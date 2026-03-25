@@ -246,6 +246,15 @@ export const authApi = {
   // Logout fonksiyonu - Backend'e istek at ve storage temizle
   logout: async () => {
     try {
+      // Push token'ı temizle
+      try {
+        await instance.delete("/profile/push-token");
+        console.log("✅ Push token temizlendi");
+      } catch (tokenError) {
+        console.log("⚠️ Push token temizlenemedi:", tokenError);
+        // Devam et, kritik değil
+      }
+
       // Backend'e logout isteği at
       await instance.post("/auth/logout");
 
@@ -330,6 +339,38 @@ export const profileApi = {
     } catch (error: any) {
       console.log(
         "Update Information Error:",
+        error.response?.data || error.message,
+      );
+      throw error;
+    }
+  },
+
+  // Push token güncelle
+  updatePushToken: async (push_token: string) => {
+    try {
+      const response = await instance.put("/profile/push-token", {
+        push_token,
+      });
+      console.log("✅ Push token updated:", response.data);
+      return response.data;
+    } catch (error: any) {
+      console.log(
+        "Update Push Token Error:",
+        error.response?.data || error.message,
+      );
+      throw error;
+    }
+  },
+
+  // Push token sil
+  deletePushToken: async () => {
+    try {
+      const response = await instance.delete("/profile/push-token");
+      console.log("✅ Push token deleted:", response.data);
+      return response.data;
+    } catch (error: any) {
+      console.log(
+        "Delete Push Token Error:",
         error.response?.data || error.message,
       );
       throw error;
