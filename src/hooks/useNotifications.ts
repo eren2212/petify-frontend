@@ -60,12 +60,19 @@ export const useNotifications = (isAuthenticated: boolean = false) => {
         const data = response.notification.request.content.data as {
           type?: string;
           conversation_id?: string;
+          pet_id?: string;
+          vaccination_id?: string;
         };
         console.log("🔔 Bildirime tıklandı, data:", data);
 
         // Mesaj bildirimine tıklandıysa chat ekranına yönlendir
         if (data?.type === "NEW_MESSAGE" && data?.conversation_id) {
           router.push(`/(protected)/chat/${data.conversation_id}`);
+        }
+
+        // Aşı hatırlatıcısına tıklandıysa aşı detay sayfasına git
+        if (data?.type === "VACCINATION_REMINDER" && data?.vaccination_id) {
+          router.push(`/(protected)/pets/vaccination/${data.vaccination_id}`);
         }
       }
     );
