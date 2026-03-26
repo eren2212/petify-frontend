@@ -10,9 +10,13 @@ import {
 import { router } from "expo-router";
 import { useFeaturedProducts } from "@/hooks/useHome";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { useEntityRatings } from "@/hooks/useReviews";
 
 export const HomeFeaturedProducts = () => {
   const { data, isLoading, isError } = useFeaturedProducts();
+  const productIds = data?.data?.map((p) => p.id) ?? [];
+  const { data: ratingsMap } = useEntityRatings("product", productIds);
+  const ratings = ratingsMap ?? {};
 
   // Ürün resim URL'i oluştur
   const getProductImageUrl = (imageUrl: string) => {
@@ -145,7 +149,9 @@ export const HomeFeaturedProducts = () => {
                   <View className="flex-row items-center border border-amber-100 rounded-lg p-1 bg-amber-50">
                     <AntDesign name="star" size={11} color="#F59E0B" />
                     <Text className="text-xs text-amber-700 font-bold ml-1">
-                      4.8
+                      {ratings[product.id]?.total
+                        ? ratings[product.id].average.toFixed(1)
+                        : "Yeni"}
                     </Text>
                   </View>
                 </View>

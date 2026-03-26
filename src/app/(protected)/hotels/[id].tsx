@@ -8,6 +8,7 @@ import {
 import { PetifySpinner } from "@/components/PetifySpinner";
 import { useHotelDetail } from "@/hooks/useHome";
 import { HotelServicesList } from "@/components/hotel/HotelServicesList";
+import { ReviewsSection } from "@/components/reviews/ReviewsSection";
 
 /**
  * Pet Otel Detay Sayfası
@@ -66,6 +67,11 @@ export default function HotelDetailScreen() {
       extraSections={
         <>
           <HotelServicesList hotelId={hotel.id} />
+          <ReviewsSection
+            reviewType="pet_hotel"
+            targetId={hotel.id}
+            targetName={hotel.hotel_name}
+          />
         </>
       }
     />

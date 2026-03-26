@@ -9,6 +9,7 @@ import { PetifySpinner } from "@/components/PetifySpinner";
 import { useClinicDetail } from "@/hooks/useHome";
 import { ClinicDoctorsList } from "@/components/clinic/ClinicDoctorsList";
 import { ClinicServicesList } from "@/components/clinic/ClinicServicesList";
+import { ReviewsSection } from "@/components/reviews/ReviewsSection";
 
 /**
  * Klinik Detay Sayfası
@@ -67,10 +68,13 @@ export default function ClinicDetailScreen() {
       logoImagePath="/home/images/clinic-logo/"
       extraSections={
         <>
-          {/* Hizmetler */}
           <ClinicServicesList clinicId={clinic.id} />
-          {/* Veteriner Hekimler */}
           <ClinicDoctorsList clinicId={clinic.id} />
+          <ReviewsSection
+            reviewType="pet_clinic"
+            targetId={clinic.id}
+            targetName={clinic.clinic_name}
+          />
         </>
       }
     />

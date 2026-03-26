@@ -2267,3 +2267,152 @@ export const paymentApi = {
     }
   },
 };
+
+// Reviews API
+export type ReviewType =
+  | "pet_shop"
+  | "product"
+  | "pet_sitter"
+  | "pet_clinic"
+  | "pet_hotel";
+
+export type ReportReason =
+  | "spam"
+  | "inappropriate"
+  | "fake"
+  | "offensive"
+  | "other";
+
+export const reviewsApi = {
+  // Bir hedefe ait yorumları getir
+  getReviews: async (
+    reviewType: ReviewType,
+    targetId: string,
+    page = 1,
+    limit = 10,
+  ) => {
+    try {
+      const { data } = await instance.get(
+        `/reviews/${reviewType}/${targetId}`,
+        { params: { page, limit } },
+      );
+      return data;
+    } catch (error: any) {
+      console.log("Get Reviews Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+
+  // Yorum oluştur
+  createReview: async (payload: {
+    review_type: ReviewType;
+    target_id: string;
+    rating: number;
+    comment: string;
+  }) => {
+    try {
+      const { data } = await instance.post("/reviews", payload);
+      console.log("✅ Review created:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Create Review Error:",
+        error.response?.data || error.message,
+      );
+      throw error;
+    }
+  },
+
+  // Kendi yorumunu sil
+  deleteReview: async (reviewId: string) => {
+    try {
+      const { data } = await instance.delete(`/reviews/${reviewId}`);
+      console.log("✅ Review deleted:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Delete Review Error:",
+        error.response?.data || error.message,
+      );
+      throw error;
+    }
+  },
+
+  // Yoruma cevap ver
+  replyToReview: async (
+    reviewId: string,
+    reply_text: string,
+    role_type?: string,
+  ) => {
+    try {
+      const { data } = await instance.post(`/reviews/${reviewId}/reply`, {
+        reply_text,
+        role_type,
+      });
+      console.log("✅ Reply added:", data);
+      return data;
+    } catch (error: any) {
+      console.log("Reply Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+
+  // Kendi cevabını sil
+  deleteReply: async (reviewId: string, replyId: string) => {
+    try {
+      const { data } = await instance.delete(
+        `/reviews/${reviewId}/reply/${replyId}`,
+      );
+      console.log("✅ Reply deleted:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Delete Reply Error:",
+        error.response?.data || error.message,
+      );
+      throw error;
+    }
+  },
+
+  // Yorumu şikayet et
+  reportReview: async (
+    reviewId: string,
+    reason: ReportReason,
+    description?: string,
+  ) => {
+    try {
+      const { data } = await instance.post(`/reviews/${reviewId}/report`, {
+        reason,
+        description,
+      });
+      console.log("✅ Review reported:", data);
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Report Review Error:",
+        error.response?.data || error.message,
+      );
+      throw error;
+    }
+  },
+
+  // Birden fazla hedef için toplu puan istatistiği
+  getBulkRatings: async (
+    reviewType: ReviewType,
+    ids: string[],
+  ): Promise<{ data: Record<string, { average: number; total: number }> }> => {
+    try {
+      const { data } = await instance.get(
+        `/reviews/bulk-stats/${reviewType}`,
+        { params: { ids: ids.join(",") } },
+      );
+      return data.data ?? { data: {} };
+    } catch (error: any) {
+      console.log(
+        "getBulkRatings Error:",
+        error.response?.data || error.message,
+      );
+      return { data: {} };
+    }
+  },
+};
