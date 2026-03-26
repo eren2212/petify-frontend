@@ -8,10 +8,14 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { useClinicsForHome } from "@/hooks/useHome";
+import { useEntityRatings } from "@/hooks/useReviews";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 
 export const HomeClinicCard = () => {
   const { data, isLoading, isError } = useClinicsForHome();
+  const clinicIds = data?.data?.map((c) => c.id) ?? [];
+  const { data: ratingsMap } = useEntityRatings("pet_clinic", clinicIds);
+  const ratings = ratingsMap ?? {};
 
   // Resim URL'i oluştur
   const getClinicImageUrl = (filename: string) => {
@@ -130,7 +134,9 @@ export const HomeClinicCard = () => {
                 <View className="bg-amber-50 px-2 py-1 rounded-lg flex-row items-center mr-2 border border-amber-100">
                   <AntDesign name="star" size={12} color="#F59E0B" />
                   <Text className="text-xs text-amber-700 font-bold ml-1">
-                    4.8
+                    {ratings[clinic.id]?.total
+                      ? ratings[clinic.id].average.toFixed(1)
+                      : "Yeni"}
                   </Text>
                 </View>
                 <View className="bg-green-50 px-2 py-1 rounded-lg border border-green-100">

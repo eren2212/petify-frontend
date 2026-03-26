@@ -8,6 +8,7 @@ import {
 import { PetifySpinner } from "@/components/PetifySpinner";
 import { useShopDetail } from "@/hooks/useHome";
 import { PetShopProductList } from "@/components/petshop/PetShopProductList";
+import { ReviewsSection } from "@/components/reviews/ReviewsSection";
 
 /**
  * Pet Shop Detay Sayfası
@@ -62,7 +63,16 @@ export default function ShopDetailScreen() {
       profileData={profileData}
       editable={false}
       logoImagePath="/home/images/shop-logo/"
-      extraSections={<PetShopProductList shopId={shop.id} />}
+      extraSections={
+        <>
+          <PetShopProductList shopId={shop.id} />
+          <ReviewsSection
+            reviewType="pet_shop"
+            targetId={shop.id}
+            targetName={shop.shop_name}
+          />
+        </>
+      }
     />
   );
 }

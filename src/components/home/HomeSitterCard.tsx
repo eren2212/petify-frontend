@@ -8,10 +8,14 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { useSittersForHome } from "@/hooks/useHome";
+import { useEntityRatings } from "@/hooks/useReviews";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 
 export const HomeSitterCard = () => {
   const { data, isLoading, isError } = useSittersForHome();
+  const sitterIds = data?.data?.map((s) => s.id) ?? [];
+  const { data: ratingsMap } = useEntityRatings("pet_sitter", sitterIds);
+  const ratings = ratingsMap ?? {};
 
   // Resim URL'i oluştur
   const getSitterImageUrl = (filename: string) => {
@@ -138,7 +142,9 @@ export const HomeSitterCard = () => {
                 <View className="bg-amber-50 px-2 py-1 rounded-lg flex-row items-center mr-2 border border-amber-100">
                   <AntDesign name="star" size={12} color="#F59E0B" />
                   <Text className="text-xs text-amber-700 font-bold ml-1">
-                    4.9
+                    {ratings[sitter.id]?.total
+                      ? ratings[sitter.id].average.toFixed(1)
+                      : "Yeni"}
                   </Text>
                 </View>
                 <View className="bg-purple-50 px-2 py-1 rounded-lg border border-purple-100">

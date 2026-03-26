@@ -8,6 +8,7 @@ import {
 import { PetifySpinner } from "@/components/PetifySpinner";
 import { useSitterDetail } from "@/hooks/useHome";
 import { SitterServicesList } from "@/components/sitter/SitterServicesList";
+import { ReviewsSection } from "@/components/reviews/ReviewsSection";
 
 /**
  * Pet Sitter Detay Sayfası
@@ -63,6 +64,11 @@ export default function SitterDetailScreen() {
       extraSections={
         <>
           <SitterServicesList sitterId={sitter.id} />
+          <ReviewsSection
+            reviewType="pet_sitter"
+            targetId={sitter.id}
+            targetName={sitter.display_name}
+          />
         </>
       }
     />

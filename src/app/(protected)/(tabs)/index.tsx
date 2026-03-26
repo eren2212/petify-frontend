@@ -109,12 +109,6 @@ export default function Home() {
           {/* Kayıp Evcil Hayvanlar */}
           <HomeLostPetsCard />
 
-          {/* Ana içerik buraya gelecek */}
-          <View className="px-6 py-4">
-            <Text className="text-gray-400 text-center">
-              🚧 İçerik yapım aşamasında...
-            </Text>
-          </View>
         </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>

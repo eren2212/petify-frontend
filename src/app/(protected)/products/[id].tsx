@@ -23,6 +23,8 @@ import EditProductModal from "../../../components/product/EditProductModal";
 import Toast from "react-native-toast-message";
 import { PetifySpinner } from "@/components/PetifySpinner";
 import { useCartHandler } from "@/hooks/useCartHandler";
+import { ReviewsSection } from "../../../components/reviews/ReviewsSection";
+import { useReviews } from "../../../hooks/useReviews";
 
 const { width, height } = Dimensions.get("window");
 const IMAGE_HEIGHT = height * 0.45;
@@ -44,6 +46,9 @@ export default function ProductDetailScreen() {
   // Aktif rolü al
   const activeRole = getActiveRole(user);
   const roleType = activeRole?.role_type;
+
+  // Ürün yorumları için istatistik
+  const { data: reviewsData } = useReviews("product", id!, 1);
 
   // Header opacity animation
   const headerOpacity = scrollY.interpolate({
@@ -215,9 +220,15 @@ export default function ProductDetailScreen() {
               <View className="flex-row items-center bg-gray-50 px-2.5 py-1 rounded-full">
                 <Ionicons name="star" size={14} color="#FBBF24" />
                 <Text className="text-xs font-bold text-gray-700 ml-1">
-                  4.8
+                  {reviewsData?.stats?.total
+                    ? reviewsData.stats.average.toFixed(1)
+                    : "Yeni"}
                 </Text>
-                <Text className="text-xs text-gray-400 ml-1">(256)</Text>
+                {reviewsData?.stats?.total ? (
+                  <Text className="text-xs text-gray-400 ml-1">
+                    ({reviewsData.stats.total})
+                  </Text>
+                ) : null}
               </View>
             </View>
 
@@ -367,6 +378,13 @@ export default function ProductDetailScreen() {
               </View>
             )}
           </View>
+
+          {/* Reviews Section */}
+          <ReviewsSection
+            reviewType="product"
+            targetId={id!}
+            targetName={product.name}
+          />
         </View>
       </Animated.ScrollView>
 

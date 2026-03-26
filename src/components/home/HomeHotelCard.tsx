@@ -8,10 +8,14 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { useClinicsForHome, useHotelsForHome } from "@/hooks/useHome";
+import { useEntityRatings } from "@/hooks/useReviews";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 
 export const HomeHotelCard = () => {
   const { data, isLoading, isError } = useHotelsForHome();
+  const hotelIds = data?.data?.map((h) => h.id) ?? [];
+  const { data: ratingsMap } = useEntityRatings("pet_hotel", hotelIds);
+  const ratings = ratingsMap ?? {};
 
   // Resim URL'i oluştur
   const getHotelImageUrl = (filename: string) => {
@@ -132,7 +136,9 @@ export const HomeHotelCard = () => {
                 <View className="bg-amber-50 px-2 py-1 rounded-lg flex-row items-center mr-2 border border-amber-100">
                   <AntDesign name="star" size={12} color="#F59E0B" />
                   <Text className="text-xs text-amber-700 font-bold ml-1">
-                    4.9
+                    {ratings[hotel.id]?.total
+                      ? ratings[hotel.id].average.toFixed(1)
+                      : "Yeni"}
                   </Text>
                 </View>
                 <View className="bg-blue-50 px-2 py-1 rounded-lg border border-blue-100">

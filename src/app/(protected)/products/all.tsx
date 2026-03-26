@@ -13,6 +13,7 @@ import { router } from "expo-router";
 import { useAllProducts } from "@/hooks/useHome";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 import { PetifySpinner } from "@/components/PetifySpinner";
+import { useEntityRatings } from "@/hooks/useReviews";
 
 export default function AllProductsScreen() {
   const {
@@ -25,6 +26,9 @@ export default function AllProductsScreen() {
     refetch,
     isRefetching,
   } = useAllProducts();
+  const productIds = data?.pages.flatMap((page) => page.data.map((p) => p.id)) ?? [];
+  const { data: ratingsMap } = useEntityRatings("product", productIds);
+  const ratings = ratingsMap ?? {};
 
   // Ürün resim URL'i oluştur
   const getProductImageUrl = (imageUrl: string) => {
@@ -154,7 +158,11 @@ export default function AllProductsScreen() {
             {/* Rating */}
             <View className="flex-row items-center border border-amber-100 rounded-lg p-1 bg-amber-50">
               <AntDesign name="star" size={11} color="#F59E0B" />
-              <Text className="text-xs text-amber-700 font-bold ml-1">4.8</Text>
+              <Text className="text-xs text-amber-700 font-bold ml-1">
+                {ratings[item.id]?.total
+                  ? ratings[item.id].average.toFixed(1)
+                  : "Yeni"}
+              </Text>
             </View>
           </View>
         </View>

@@ -8,10 +8,14 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { usePetShopsForHome } from "@/hooks/useHome";
+import { useEntityRatings } from "@/hooks/useReviews";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 
 export const HomePetShopCard = () => {
   const { data, isLoading, isError } = usePetShopsForHome();
+  const shopIds = data?.data?.map((s) => s.id) ?? [];
+  const { data: ratingsMap } = useEntityRatings("pet_shop", shopIds);
+  const ratings = ratingsMap ?? {};
 
   // Resim URL'i oluştur
   const getPetShopImageUrl = (filename: string) => {
@@ -132,7 +136,9 @@ export const HomePetShopCard = () => {
                 <View className="bg-amber-50 px-2 py-1 rounded-lg flex-row items-center mr-2 border border-amber-100">
                   <AntDesign name="star" size={12} color="#F59E0B" />
                   <Text className="text-xs text-amber-700 font-bold ml-1">
-                    4.9
+                    {ratings[petShop.id]?.total
+                      ? ratings[petShop.id].average.toFixed(1)
+                      : "Yeni"}
                   </Text>
                 </View>
                 <View className="bg-blue-50 px-2 py-1 rounded-lg border border-blue-100">
