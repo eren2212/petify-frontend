@@ -74,7 +74,7 @@ export default function ProfileScreen() {
         contentContainerStyle={{ alignItems: "center", paddingVertical: 32 }}
       >
         <View
-          className="absolute top-4 right-5 z-10"
+          className="absolute top-4 right-5 z-10 flex-row gap-3"
           style={{
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 2 },
@@ -83,6 +83,22 @@ export default function ProfileScreen() {
             elevation: 3,
           }}
         >
+          {/* Favoriler Butonu */}
+          <Pressable
+            onPress={() => router.push("/(protected)/favorites" as any)}
+            className="bg-white w-12 h-12 rounded-full items-center justify-center"
+            style={{
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 4,
+              elevation: 3,
+            }}
+          >
+            <MaterialIcons name="favorite-border" size={24} color="#EF4444" />
+          </Pressable>
+
+          {/* Çıkış Butonu */}
           <Pressable
             onPress={() => signOut()}
             className="bg-white w-12 h-12 rounded-full items-center justify-center"

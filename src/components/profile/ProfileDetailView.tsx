@@ -12,6 +12,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import { COLORS } from "@/styles/theme/color";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { FavoriteButton } from "@/components/favorites/FavoriteButton";
+import { FavoriteType } from "@/lib/api";
 
 /**
  * Ortak profil alanları - Tüm profil tiplerinde ortak olan alanlar
@@ -37,6 +39,14 @@ export interface BaseProfileData {
  * Profil tipi - Her profil türü için farklı stil ve davranış
  */
 export type ProfileType = "clinic" | "hotel" | "shop" | "sitter";
+
+// ProfileType → FavoriteType eşleşmesi
+const profileToFavoriteType: Record<ProfileType, FavoriteType> = {
+  clinic: "pet_clinic",
+  hotel: "pet_hotel",
+  shop: "pet_shop",
+  sitter: "pet_sitter",
+};
 
 /**
  * ProfileDetailView Props
@@ -162,10 +172,21 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
             </View>
           </View>
 
-          {/* İsim */}
-          <Text className="text-2xl font-black text-gray-900 text-center tracking-tight mb-2 mt-4 px-4">
-            {profileData.name}
-          </Text>
+          {/* İsim + Favori Butonu */}
+          <View className="flex-row items-center justify-center mt-4 px-4 gap-3">
+            <Text
+              className="text-2xl font-black text-gray-900 text-center tracking-tight flex-shrink"
+              numberOfLines={2}
+            >
+              {profileData.name}
+            </Text>
+            {!editable && (
+              <FavoriteButton
+                favoriteType={profileToFavoriteType[profileType]}
+                targetId={profileData.id}
+              />
+            )}
+          </View>
 
           {/* Edit Button */}
           {editable && onEdit && (

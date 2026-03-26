@@ -90,6 +90,13 @@ export default function ProtectedLayout() {
           presentation: "containedModal",
         }}
       />
+      <Stack.Screen
+        name="favorites"
+        options={{
+          headerShown: false,
+          presentation: "modal",
+        }}
+      />
     </Stack>
   );
 }
