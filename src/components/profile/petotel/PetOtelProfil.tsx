@@ -175,9 +175,9 @@ export default function PetOtelProfil() {
   if (!petOtelProfile) {
     return (
       <SafeAreaView className="flex-1 bg-background">
-        {/* Logout Button */}
+        {/* Top Buttons */}
         <View
-          className="absolute top-12 right-5 z-10"
+          className="absolute top-12 right-5 z-10 flex-row gap-3"
           style={{
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 2 },
@@ -186,6 +186,12 @@ export default function PetOtelProfil() {
             elevation: 3,
           }}
         >
+          <Pressable
+            onPress={() => router.push("/(protected)/favorites" as any)}
+            className="bg-white w-12 h-12 rounded-full items-center justify-center"
+          >
+            <MaterialIcons name="favorite-border" size={24} color="#EF4444" />
+          </Pressable>
           <Pressable
             onPress={() => signOut()}
             className="bg-white w-12 h-12 rounded-full items-center justify-center"
@@ -236,9 +242,9 @@ export default function PetOtelProfil() {
         contentContainerStyle={{ alignItems: "center", paddingVertical: 32 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Logout Button */}
+        {/* Top Buttons */}
         <View
-          className="absolute top-4 right-5 z-10"
+          className="absolute top-4 right-5 z-10 flex-row gap-3"
           style={{
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 2 },
@@ -247,6 +253,12 @@ export default function PetOtelProfil() {
             elevation: 3,
           }}
         >
+          <Pressable
+            onPress={() => router.push("/(protected)/favorites" as any)}
+            className="bg-white w-12 h-12 rounded-full items-center justify-center"
+          >
+            <MaterialIcons name="favorite-border" size={24} color="#EF4444" />
+          </Pressable>
           <Pressable
             onPress={() => signOut()}
             className="bg-white w-12 h-12 rounded-full items-center justify-center"

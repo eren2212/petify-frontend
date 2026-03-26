@@ -33,6 +33,9 @@ export * from "./useHome";
 // Map hooks
 export * from "./useMap";
 
+// Favorites hooks
+export * from "./useFavorites";
+
 // Messages hooks (sonradan eklenecek)
 // export * from './useMessages';
 

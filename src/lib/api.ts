@@ -2248,6 +2248,81 @@ export const orderApi = {
   },
 };
 
+// Favorites API
+export type FavoriteType =
+  | "product"
+  | "pet_shop"
+  | "pet_sitter"
+  | "pet_clinic"
+  | "pet_hotel";
+
+export const favoritesApi = {
+  // Favori toggle (ekle/kaldır)
+  toggle: async (favorite_type: FavoriteType, target_id: string) => {
+    try {
+      const { data } = await instance.post("/favorites/toggle", {
+        favorite_type,
+        target_id,
+      });
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Favorites Toggle Error:",
+        error.response?.data || error.message,
+      );
+      throw error;
+    }
+  },
+
+  // Kullanıcının favorilerini listele (opsiyonel tip filtresi)
+  getMyFavorites: async (favorite_type?: FavoriteType) => {
+    try {
+      const params: any = {};
+      if (favorite_type) params.favorite_type = favorite_type;
+      const { data } = await instance.get("/favorites", { params });
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Favorites Error:",
+        error.response?.data || error.message,
+      );
+      throw error;
+    }
+  },
+
+  // Tek öğenin favori durumunu kontrol et
+  checkStatus: async (favorite_type: FavoriteType, target_id: string) => {
+    try {
+      const { data } = await instance.get(
+        `/favorites/check/${favorite_type}/${target_id}`,
+      );
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Check Favorite Status Error:",
+        error.response?.data || error.message,
+      );
+      throw error;
+    }
+  },
+
+  // Öğenin toplam favori sayısını getir
+  getCount: async (favorite_type: FavoriteType, target_id: string) => {
+    try {
+      const { data } = await instance.get(
+        `/favorites/counts/${favorite_type}/${target_id}`,
+      );
+      return data;
+    } catch (error: any) {
+      console.log(
+        "Get Favorite Count Error:",
+        error.response?.data || error.message,
+      );
+      throw error;
+    }
+  },
+};
+
 // Payment API
 export const paymentApi = {
   initializePayment: async (userId: string, orderIds: string[]) => {

@@ -25,6 +25,7 @@ import { PetifySpinner } from "@/components/PetifySpinner";
 import { useCartHandler } from "@/hooks/useCartHandler";
 import { ReviewsSection } from "../../../components/reviews/ReviewsSection";
 import { useReviews } from "../../../hooks/useReviews";
+import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 
 const { width, height } = Dimensions.get("window");
 const IMAGE_HEIGHT = height * 0.45;
@@ -190,9 +191,15 @@ export default function ProductDetailScreen() {
               </Text>
             </View>
           )}
-          <View className="absolute top-10 right-5 bg-white px-3 py-1.5 rounded-full">
-            <Ionicons name="heart-outline" size={20} color="red" />
-          </View>
+          {roleType !== "pet_shop" && (
+            <View className="absolute top-10 right-5">
+              <FavoriteButton
+                favoriteType="product"
+                targetId={product.id}
+                size={20}
+              />
+            </View>
+          )}
         </View>
 
         {/* PRODUCT INFO CONTAINER */}
