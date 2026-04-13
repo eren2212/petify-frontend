@@ -17,6 +17,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/tr";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useConversations } from "@/hooks/useConversations";
+import { PetifySpinner } from "@/components/PetifySpinner";
 
 dayjs.extend(relativeTime);
 dayjs.locale("tr");
@@ -119,7 +120,7 @@ export default function MessagesScreen() {
 
       {isLoading ? (
         <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color="#F43F5E" />
+          <PetifySpinner size={180} />
         </View>
       ) : (
         <FlatList

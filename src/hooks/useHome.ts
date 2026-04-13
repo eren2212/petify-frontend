@@ -77,6 +77,7 @@ export interface HotelsResponse {
 // Klinik detayı için
 export interface ClinicDetail {
   id: string;
+  user_role_id: string;
   clinic_name: string;
   description: string | null;
   address: string;
@@ -102,6 +103,7 @@ export interface ClinicDetailResponse {
 // Otel detayı için
 export interface HotelDetail {
   id: string;
+  user_role_id: string;
   hotel_name: string;
   description: string | null;
   address: string;
@@ -132,6 +134,7 @@ export interface HotelDetailResponse {
 // Shop detayı için
 export interface ShopDetail {
   id: string;
+  user_role_id: string;
   shop_name: string;
   description: string | null;
   address: string;
@@ -188,6 +191,7 @@ export interface ShopProductsResponse {
 // Sitter detayı için
 export interface SitterDetail {
   id: string;
+  user_role_id: string;
   display_name: string;
   bio: string | null;
   experience_years: number | null;

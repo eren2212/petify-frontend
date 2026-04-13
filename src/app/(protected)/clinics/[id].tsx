@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Text } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { View, Text, Alert } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   ProfileDetailView,
   BaseProfileData,
@@ -10,6 +10,7 @@ import { useClinicDetail } from "@/hooks/useHome";
 import { ClinicDoctorsList } from "@/components/clinic/ClinicDoctorsList";
 import { ClinicServicesList } from "@/components/clinic/ClinicServicesList";
 import { ReviewsSection } from "@/components/reviews/ReviewsSection";
+import { conversationApi } from "@/lib/api";
 
 /**
  * Klinik Detay Sayfası
@@ -17,6 +18,7 @@ import { ReviewsSection } from "@/components/reviews/ReviewsSection";
  */
 export default function ClinicDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
 
   // API'den klinik detayını çek
   const { data, isLoading, isError } = useClinicDetail(id || "");
@@ -43,6 +45,26 @@ export default function ClinicDetailScreen() {
 
   const clinic = data.data;
 
+  // Mesaj Gönder
+  const handleSendMessage = async () => {
+    try {
+      const targetRoleId = clinic.user_role_id;
+      if (!targetRoleId) {
+        Alert.alert("Hata", "Kullanıcı rol bilgisi bulunamadı.");
+        return;
+      }
+      const response = await conversationApi.startConversation(targetRoleId);
+      if (response.data && response.data.conversation_id) {
+        router.push(`/(protected)/chat/${response.data.conversation_id}`);
+      }
+    } catch (error: any) {
+      Alert.alert(
+        "Hata",
+        error.response?.data?.message || "Mesaj başlatılamadı."
+      );
+    }
+  };
+
   // BaseProfileData formatına çevir
   const profileData: BaseProfileData = {
     id: clinic.id,
@@ -66,6 +88,7 @@ export default function ClinicDetailScreen() {
       profileData={profileData}
       editable={false}
       logoImagePath="/home/images/clinic-logo/"
+      onSendMessage={handleSendMessage}
       extraSections={
         <>
           <ClinicServicesList clinicId={clinic.id} />
