@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Text } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { View, Text, Alert } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   ProfileDetailView,
   BaseProfileData,
@@ -9,12 +9,14 @@ import { PetifySpinner } from "@/components/PetifySpinner";
 import { useSitterDetail } from "@/hooks/useHome";
 import { SitterServicesList } from "@/components/sitter/SitterServicesList";
 import { ReviewsSection } from "@/components/reviews/ReviewsSection";
+import { conversationApi } from "@/lib/api";
 
 /**
  * Pet Sitter Detay Sayfası
  */
 export default function SitterDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
 
   // API'den sitter detayını çek
   const { data, isLoading, isError } = useSitterDetail(id || "");
@@ -41,6 +43,26 @@ export default function SitterDetailScreen() {
 
   const sitter = data.data;
 
+  // Mesaj Gönder
+  const handleSendMessage = async () => {
+    try {
+      const targetRoleId = sitter.user_role_id;
+      if (!targetRoleId) {
+        Alert.alert("Hata", "Kullanıcı rol bilgisi bulunamadı.");
+        return;
+      }
+      const response = await conversationApi.startConversation(targetRoleId);
+      if (response.data && response.data.conversation_id) {
+        router.push(`/(protected)/chat/${response.data.conversation_id}`);
+      }
+    } catch (error: any) {
+      Alert.alert(
+        "Hata",
+        error.response?.data?.message || "Mesaj başlatılamadı."
+      );
+    }
+  };
+
   // BaseProfileData formatına çevir
   const profileData: BaseProfileData = {
     id: sitter.id,
@@ -61,6 +83,7 @@ export default function SitterDetailScreen() {
       profileData={profileData}
       editable={false}
       logoImagePath="/home/images/sitter-profile/"
+      onSendMessage={handleSendMessage}
       extraSections={
         <>
           <SitterServicesList sitterId={sitter.id} />

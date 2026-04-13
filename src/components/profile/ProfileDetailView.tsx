@@ -57,6 +57,7 @@ interface ProfileDetailViewProps {
   isLoading?: boolean;
   editable?: boolean; // Kullanıcı kendi profilini mi görüyor?
   onEdit?: () => void; // Edit butonuna basıldığında
+  onSendMessage?: () => void; // Mesaj gönder butonuna basıldığında
   extraSections?: ReactNode; // Profil tipine özel ekstra içerik (doktorlar, servisler, vs.)
   logoImagePath?: string; // Logo için API path (örn: /petclinic/profile/logo/)
 }
@@ -84,6 +85,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
   isLoading = false,
   editable = false,
   onEdit,
+  onSendMessage,
   extraSections,
   logoImagePath,
 }) => {
@@ -414,6 +416,19 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
           </View>
         </View>
 
+        {/* Mesaj Gönder Butonu */}
+        {!editable && onSendMessage && (
+          <View className="w-full px-5 mb-6">
+            <TouchableOpacity
+              className="bg-text p-4 rounded-full items-center justify-center w-full"
+              onPress={onSendMessage}
+            >
+              <Text className="text-white text-base text-center font-bold">
+                Mesaj Gönder
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
         {/* Harita */}
         {profileData.latitude !== 0 && profileData.longitude !== 0 && (
           <View className="w-full px-5 mb-8">

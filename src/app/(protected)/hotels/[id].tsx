@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Text } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { View, Text, Alert } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   ProfileDetailView,
   BaseProfileData,
@@ -9,12 +9,14 @@ import { PetifySpinner } from "@/components/PetifySpinner";
 import { useHotelDetail } from "@/hooks/useHome";
 import { HotelServicesList } from "@/components/hotel/HotelServicesList";
 import { ReviewsSection } from "@/components/reviews/ReviewsSection";
+import { conversationApi } from "@/lib/api";
 
 /**
  * Pet Otel Detay Sayfası
  */
 export default function HotelDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
 
   // API'den otel detayını çek
   const { data, isLoading, isError } = useHotelDetail(id || "");
@@ -41,6 +43,26 @@ export default function HotelDetailScreen() {
 
   const hotel = data.data;
 
+  // Mesaj Gönder
+  const handleSendMessage = async () => {
+    try {
+      const targetRoleId = hotel.user_role_id;
+      if (!targetRoleId) {
+        Alert.alert("Hata", "Kullanıcı rol bilgisi bulunamadı.");
+        return;
+      }
+      const response = await conversationApi.startConversation(targetRoleId);
+      if (response.data && response.data.conversation_id) {
+        router.push(`/(protected)/chat/${response.data.conversation_id}`);
+      }
+    } catch (error: any) {
+      Alert.alert(
+        "Hata",
+        error.response?.data?.message || "Mesaj başlatılamadı."
+      );
+    }
+  };
+
   // BaseProfileData formatına çevir
   const profileData: BaseProfileData = {
     id: hotel.id,
@@ -64,6 +86,7 @@ export default function HotelDetailScreen() {
       profileData={profileData}
       editable={false}
       logoImagePath="/home/images/hotel-logo/"
+      onSendMessage={handleSendMessage}
       extraSections={
         <>
           <HotelServicesList hotelId={hotel.id} />

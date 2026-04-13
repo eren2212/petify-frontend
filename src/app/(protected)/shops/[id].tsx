@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Text } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { View, Text, Alert } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   ProfileDetailView,
   BaseProfileData,
@@ -9,12 +9,14 @@ import { PetifySpinner } from "@/components/PetifySpinner";
 import { useShopDetail } from "@/hooks/useHome";
 import { PetShopProductList } from "@/components/petshop/PetShopProductList";
 import { ReviewsSection } from "@/components/reviews/ReviewsSection";
+import { conversationApi } from "@/lib/api";
 
 /**
  * Pet Shop Detay Sayfası
  */
 export default function ShopDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
 
   // API'den shop detayını çek
   const { data, isLoading, isError } = useShopDetail(id || "");
@@ -41,6 +43,26 @@ export default function ShopDetailScreen() {
 
   const shop = data.data;
 
+  // Mesaj Gönder
+  const handleSendMessage = async () => {
+    try {
+      const targetRoleId = shop.user_role_id;
+      if (!targetRoleId) {
+        Alert.alert("Hata", "Kullanıcı rol bilgisi bulunamadı.");
+        return;
+      }
+      const response = await conversationApi.startConversation(targetRoleId);
+      if (response.data && response.data.conversation_id) {
+        router.push(`/(protected)/chat/${response.data.conversation_id}`);
+      }
+    } catch (error: any) {
+      Alert.alert(
+        "Hata",
+        error.response?.data?.message || "Mesaj başlatılamadı."
+      );
+    }
+  };
+
   // BaseProfileData formatına çevir
   const profileData: BaseProfileData = {
     id: shop.id,
@@ -63,6 +85,7 @@ export default function ShopDetailScreen() {
       profileData={profileData}
       editable={false}
       logoImagePath="/home/images/shop-logo/"
+      onSendMessage={handleSendMessage}
       extraSections={
         <>
           <PetShopProductList shopId={shop.id} />

@@ -82,16 +82,6 @@ export const HomeHeader = () => {
             </Text>
           )}
         </TouchableOpacity>
-        {/* Sağ Taraf: Bildirim İkonu */}
-        <TouchableOpacity
-          onPress={handleNotificationPress}
-          className="w-11 h-11 bg-white rounded-full items-center justify-center shadow-sm"
-          activeOpacity={0.7}
-        >
-          <Ionicons name="notifications-outline" size={24} color="#1F2937" />
-          {/* Bildirim badge'i (örnek) */}
-          <View className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-        </TouchableOpacity>
       </View>
     </View>
   );
